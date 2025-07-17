@@ -4,10 +4,10 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { List, LayoutGrid } from "lucide-react";
+import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTestPaperById } from "@/lib/api";
+import { getTestPaperById, moveMCQToTrash } from "@/lib/api";
 
 type MCQ = {
   id: string;
@@ -27,8 +27,19 @@ export default function TestPaperPage() {
     getTestPaperById(testPaperId)
       .then((data) => setMcqs(data.mcqs || []))
       .catch(console.error)
-      .finally(() => setLoading(false))
+      .finally(() => setLoading(false));
   }, [testPaperId]);
+
+  const handleDelete = async (mcqId: string) => {
+    if (!confirm("Are you sure you want to delete this question?")) return;
+    try {
+      await moveMCQToTrash(mcqId);
+      setMcqs((prev) => prev ? prev.filter((mcq) => mcq.id !== mcqId) : null);
+    } catch (error) {
+      console.error("Failed to delete MCQ", error);
+      alert("Failed to delete MCQ. Please try again.");
+    }
+  };
 
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
@@ -82,10 +93,23 @@ export default function TestPaperPage() {
             <Card
               key={mcq.id}
               className={cn(
-                "transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4",
+                "relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group",
                 viewMode === "grid" && "max-w-xs min-w-[250px] flex-1"
               )}
             >
+              {/* Delete Button */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(mcq.id);
+                }}
+              >
+                <Trash2 size={16} className="text-red-500" />
+              </Button>
+
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-medium">
                   {idx + 1}. {mcq.question}

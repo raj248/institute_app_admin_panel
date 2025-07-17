@@ -64,7 +64,7 @@ export function AppBreadcrumbs() {
           const segment = segments[idx];
           const name = dynamicNames[segment] || beautify(segment);
 
-          return (
+          return segment === "testpaper" ? null : (
             <span key={path} className="flex items-center">
               <BreadcrumbItem>
                 {idx === paths.length - 1 ? (
@@ -82,4 +82,5 @@ export function AppBreadcrumbs() {
       </BreadcrumbList>
     </Breadcrumb>
   );
+
 }
