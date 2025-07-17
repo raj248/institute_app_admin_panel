@@ -33,3 +33,10 @@ export async function fetchTestPaperById(testPaperId: string) {
   return result;
 }
 
+export async function moveTopicToTrash(topicId: string) {
+  const res = await fetch(`http://localhost:3000/api/topics/${topicId}/move-to-trash`, {
+    method: "POST",
+  });
+  if (!res.ok) return null;
+  return res.json();
+}

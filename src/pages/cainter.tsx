@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { fetchTopicsByCourseType } from "@/lib/api";
+import { fetchTopicsByCourseType, moveTopicToTrash } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
-import { List, LayoutGrid } from "lucide-react";
+import { List, LayoutGrid, Trash2 } from "lucide-react";
 
 type Topic = {
   id: string;
@@ -27,6 +27,19 @@ export default function CAInter() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const handleMoveToTrash = async (topicId: string) => {
+    if (!confirm("Are you sure you want to move this topic to trash?")) return;
+    const topic = await moveTopicToTrash(topicId);
+    if (!topic) {
+      console.error("Failed to move topic to trash.");
+      alert("Failed to move topic to trash.");
+      return;
+    }
+    else {
+      setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
+    }
+  };
 
   const handleCardClick = (topic: Topic) => {
     navigate(`/CAInter/${topic.id}`);
@@ -81,18 +94,32 @@ export default function CAInter() {
           {topics.map((topic) => (
             <Card
               key={topic.id}
-              onClick={() => handleCardClick(topic)}
               className={cn(
-                "cursor-pointer transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4",
+                "relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group",
                 viewMode === "grid" && "max-w-xs min-w-[220px] flex-1"
               )}
             >
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium">{topic.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                {topic.description ?? <em>No description provided.</em>}
-              </CardContent>
+              {/* Move to Trash Button */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveToTrash(topic.id);
+                }}
+              >
+                <Trash2 size={16} className="text-yellow-600" />
+              </Button>
+
+              <div onClick={() => handleCardClick(topic)} className="cursor-pointer">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium">{topic.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  {topic.description ?? <em>No description provided.</em>}
+                </CardContent>
+              </div>
             </Card>
           ))}
         </div>

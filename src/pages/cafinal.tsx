@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { fetchTopicsByCourseType, moveTopicToTrash } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { fetchTopicsByCourseType } from "@/lib/api";
+import { List, LayoutGrid, Trash2 } from "lucide-react";
 
 type Topic = {
   id: string;
@@ -29,13 +29,29 @@ export default function CAFinal() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCardClick = (topicId: string) => {
-    navigate(`/CAFinal/${topicId}`);
+  const handleMoveToTrash = async (topicId: string) => {
+    if (!confirm("Are you sure you want to move this topic to trash?")) return;
+    try {
+      const topic = await moveTopicToTrash(topicId);
+      if (!topic) {
+        console.error("Failed to move topic to trash.");
+        alert("Failed to move topic to trash.");
+        return;
+      }
+      setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
+    } catch (error) {
+      console.error(error);
+      alert("Error moving topic to trash.");
+    }
+  };
+
+  const handleCardClick = (topic: Topic) => {
+    navigate(`/CAFinal/${topic.id}`);
   };
 
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mx-4">
         <h2 className="text-xl font-semibold tracking-tight">CA Final Topics</h2>
         <div className="flex gap-1">
           <Button
@@ -82,18 +98,33 @@ export default function CAFinal() {
           {topics.map((topic) => (
             <Card
               key={topic.id}
-              onClick={() => handleCardClick(topic.id)}
               className={cn(
-                "cursor-pointer transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg",
+                "relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group",
                 viewMode === "grid" && "max-w-xs min-w-[220px] flex-1"
               )}
             >
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium">{topic.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                {topic.description ?? <em>No description provided.</em>}
-              </CardContent>
+              {/* Move to Trash Button */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveToTrash(topic.id);
+                }}
+              >
+                <Trash2 size={16} className="text-yellow-600" />
+              </Button>
+
+              {/* Card clickable area */}
+              <div onClick={() => handleCardClick(topic)} className="cursor-pointer">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium">{topic.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  {topic.description ?? <em>No description provided.</em>}
+                </CardContent>
+              </div>
             </Card>
           ))}
         </div>
