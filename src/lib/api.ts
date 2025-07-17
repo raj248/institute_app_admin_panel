@@ -1,5 +1,5 @@
 export async function getTopicsByCourseType(courseType: string) {
-  const res = await fetch(`http://localhost:3000/api/courses/${courseType}/topics`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/courses/${courseType}/topics`, {
     cache: "no-store"
   });
   if (!res.ok) return {}
@@ -9,7 +9,7 @@ export async function getTopicsByCourseType(courseType: string) {
 }
 
 export async function getTopicById(topicId: string) {
-  const res = await fetch(`http://localhost:3000/api/topics/${topicId}`);
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/topics/${topicId}`);
   if (!res.ok) return {};
 
   const result = await res.json()
@@ -18,7 +18,7 @@ export async function getTopicById(topicId: string) {
 }
 
 export async function getAllTestPapersByTopicId(topicId: string) {
-  const res = await fetch(`http://localhost:3000/api/topics/${topicId}/testpapers`)
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/topics/${topicId}/testpapers`)
   if (!res.ok) return {};
   const result = await res.json()
   console.log("fetchAllTestPapersByTopicId ", result)
@@ -26,7 +26,7 @@ export async function getAllTestPapersByTopicId(topicId: string) {
 }
 
 export async function getTestPaperById(testPaperId: string) {
-  const res = await fetch(`http://localhost:3000/api/testpapers/${testPaperId}`);
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/testpapers/${testPaperId}`);
   if (!res.ok) return {};
   const result = await res.json()
   console.log("fetchTestPaperById ", result)
@@ -34,13 +34,13 @@ export async function getTestPaperById(testPaperId: string) {
 }
 
 export async function getMCQById(id: string) {
-  const res = await fetch(`http://localhost:3000/api/mcqs/${id}`);
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/mcqs/${id}`);
   if (!res.ok) return null;
   return res.json();
 }
 
 export async function moveTopicToTrash(topicId: string) {
-  const res = await fetch(`http://localhost:3000/api/topics/${topicId}/move-to-trash`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/topics/${topicId}/move-to-trash`, {
     method: "POST",
   });
   if (!res.ok) return null;
@@ -48,25 +48,25 @@ export async function moveTopicToTrash(topicId: string) {
 }
 
 export async function getTrashItems() {
-  const res = await fetch("http://localhost:3000/api/trash");
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash`);
   if (!res.ok) throw new Error("Failed to fetch trash items");
   return res.json();
 }
 
 export async function restoreTrashItem(id: string) {
-  const res = await fetch(`http://localhost:3000/api/trash/${id}/restore`, { method: "POST" });
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash/${id}/restore`, { method: "POST" });
   if (!res.ok) throw new Error("Failed to restore trash item");
   return res.json();
 }
 
 export async function permanentlyDeleteTrashItem(id: string) {
-  const res = await fetch(`http://localhost:3000/api/trash/${id}`, { method: "DELETE" });
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete trash item");
   return res.json();
 }
 
 export async function purgeTrash() {
-  const res = await fetch("http://localhost:3000/api/trash", { method: "DELETE" });
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to purge trash");
   return res.json();
 }

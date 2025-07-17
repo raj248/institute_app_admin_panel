@@ -11,7 +11,9 @@ type TrashItem = {
   tableName: string;
   entityId: string;
   trashedAt: string;
+  displayName: string; // <-- add this
 };
+
 
 export default function Trash() {
   const [trashItems, setTrashItems] = useState<TrashItem[] | null>(null);
@@ -92,11 +94,12 @@ export default function Trash() {
       ) : trashItems && trashItems.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {trashItems.map((item) => (
-            <Card key={item.id} className="relative border border-border/50 rounded-lg">
+            <Card key={item.id} className="relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium">
-                  {item.tableName} | {item.entityId.slice(0, 8)}
+                <CardTitle className="text-base font-medium truncate">
+                  {item.tableName}: {item.displayName}
                 </CardTitle>
+
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-1">
                 <p>
