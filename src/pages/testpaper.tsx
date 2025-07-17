@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchTestPaperById } from "@/lib/api";
+import { getTestPaperById } from "@/lib/api";
 
 type MCQ = {
   id: string;
@@ -24,7 +24,7 @@ export default function TestPaperPage() {
 
   useEffect(() => {
     if (!testPaperId) return;
-    fetchTestPaperById(testPaperId)
+    getTestPaperById(testPaperId)
       .then((data) => setMcqs(data.mcqs || []))
       .catch(console.error)
       .finally(() => setLoading(false))

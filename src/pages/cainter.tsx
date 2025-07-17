@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { fetchTopicsByCourseType, moveTopicToTrash } from "@/lib/api";
+import { getTopicsByCourseType, moveTopicToTrash } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
 import { List, LayoutGrid, Trash2 } from "lucide-react";
@@ -22,7 +22,7 @@ export default function CAInter() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchTopicsByCourseType("CAInter")
+    getTopicsByCourseType("CAInter")
       .then((data) => setTopics(data))
       .catch(console.error)
       .finally(() => setLoading(false));

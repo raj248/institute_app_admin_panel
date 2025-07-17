@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { fetchAllTestPapersByTopicId } from "@/lib/api";
+import { getAllTestPapersByTopicId } from "@/lib/api";
 
 type TestPaper = {
   id: string;
@@ -25,7 +25,7 @@ export default function TopicPage() {
 
   useEffect(() => {
     if (!topicId) return;
-    fetchAllTestPapersByTopicId(topicId)
+    getAllTestPapersByTopicId(topicId)
       .then(setTestPapers)
       .catch(console.error)
       .finally(() => setLoading(false));

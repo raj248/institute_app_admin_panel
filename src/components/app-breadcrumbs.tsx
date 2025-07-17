@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchTopicById, fetchTestPaperById } from "@/lib/api"; // implement as needed
+import { getTopicById, getTestPaperById } from "@/lib/api"; // implement as needed
 
 export function AppBreadcrumbs() {
   const location = useLocation();
@@ -27,13 +27,13 @@ export function AppBreadcrumbs() {
 
           // Check for topicId directly after CAInter/CAFinal
           if (prevSegment === "CAInter" || prevSegment === "CAFinal") {
-            const topic = await fetchTopicById(segment);
+            const topic = await getTopicById(segment);
             if (topic) updates[segment] = topic.name;
           }
 
           // Check for testPaperId after "topic"
           if (prevSegment === "testpaper") {
-            const testPaper = await fetchTestPaperById(segment);
+            const testPaper = await getTestPaperById(segment);
             if (testPaper) updates[segment] = testPaper.name;
           }
         })
