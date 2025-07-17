@@ -47,11 +47,19 @@ export async function moveTopicToTrash(topicId: string) {
   return res.json();
 }
 
+export async function moveTestPaperToTrash(testPaperId: string) {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/testpapers/${testPaperId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) return {};
+  return res.json();
+}
+
 export async function moveMCQToTrash(mcqId: string) {
   const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/mcqs/${mcqId}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Failed to delete MCQ");
+  if (!res.ok) return {};
   return res.json();
 }
 

@@ -8,6 +8,7 @@ import { getTopicsByCourseType, moveTopicToTrash } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
 import { List, LayoutGrid, Trash2 } from "lucide-react";
+import { useConfirm } from "@/components/global-confirm-dialog";
 
 type Topic = {
   id: string;
@@ -29,20 +30,26 @@ export default function CAFinal() {
       .finally(() => setLoading(false));
   }, []);
 
+  const confirm = useConfirm();
+
   const handleMoveToTrash = async (topicId: string) => {
-    if (!confirm("Are you sure you want to move this topic to trash?")) return;
-    try {
-      const topic = await moveTopicToTrash(topicId);
-      if (!topic) {
-        console.error("Failed to move topic to trash.");
-        alert("Failed to move topic to trash.");
-        return;
-      }
-      setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
-    } catch (error) {
-      console.error(error);
-      alert("Error moving topic to trash.");
+    const confirmed = await confirm({
+      title: "Move this topic to trash?",
+      description: "This will move the topic to trash along with its test papers and MCQs. You can restore it later if needed.",
+      confirmText: "Move to Trash",
+      cancelText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    const topic = await moveTopicToTrash(topicId);
+    if (!topic) {
+      console.error("Failed to move topic to trash.");
+      alert("Failed to move topic to trash.");
+      return;
     }
+
+    setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
   };
 
   const handleCardClick = (topic: Topic) => {

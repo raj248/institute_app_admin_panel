@@ -8,6 +8,7 @@ import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTestPaperById, moveMCQToTrash } from "@/lib/api";
+import { useConfirm } from "@/components/global-confirm-dialog";
 
 type MCQ = {
   id: string;
@@ -21,7 +22,6 @@ export default function TestPaperPage() {
   const [mcqs, setMcqs] = useState<MCQ[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
-
   useEffect(() => {
     if (!testPaperId) return;
     getTestPaperById(testPaperId)
@@ -30,16 +30,27 @@ export default function TestPaperPage() {
       .finally(() => setLoading(false));
   }, [testPaperId]);
 
-  const handleDelete = async (mcqId: string) => {
-    if (!confirm("Are you sure you want to delete this question?")) return;
-    try {
-      await moveMCQToTrash(mcqId);
-      setMcqs((prev) => prev ? prev.filter((mcq) => mcq.id !== mcqId) : null);
-    } catch (error) {
-      console.error("Failed to delete MCQ", error);
-      alert("Failed to delete MCQ. Please try again.");
+  const confirm = useConfirm();
+
+  const handleMoveToTrash = async (mcqId: string) => {
+    const confirmed = await confirm({
+      title: "Delete this question?",
+      description: "This will move the question to trash. You can restore it later if needed.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    const mcq = await moveMCQToTrash(mcqId);
+    if (!mcq) {
+      console.error("Failed to move MCQ to trash.");
+      alert("Failed to move MCQ to trash.");
+      return;
     }
+    setMcqs((prev) => prev ? prev.filter((mcq) => mcq.id !== mcqId) : null);
   };
+
 
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
@@ -104,7 +115,7 @@ export default function TestPaperPage() {
                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDelete(mcq.id);
+                  handleMoveToTrash(mcq.id);
                 }}
               >
                 <Trash2 size={16} className="text-red-500" />

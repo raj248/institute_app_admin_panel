@@ -9,28 +9,30 @@ import Trash from "@/pages/trash";
 import { ThemeProvider } from "./components/theme-provider";
 import TopicPage from "./pages/topic";
 import TestPaperPage from "./pages/testpaper";
-
+import { ConfirmDialogProvider } from "./components/global-confirm-dialog";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <BrowserRouter>
-        <Routes>
-          {/* Layout Route */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/CAInter" element={<CAInter />} />
-            <Route path="/CAFinal" element={<CAFinal />} />
-            <Route path="/CAInter/:topicId" element={<TopicPage />} />
-            <Route path="/CAFinal/:topicId" element={<TopicPage />} />
-            <Route path="/CAInter/:topicId/testpaper/:testPaperId" element={<TestPaperPage />} />
-            <Route path="/CAFinal/:topicId/testpaper/:testPaperId" element={<TestPaperPage />} />
-            <Route path="/Debug" element={<Debug />} />
-            <Route path="/Settings" element={<Settings />} />
-            <Route path="/Trash" element={<Trash />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <ConfirmDialogProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Layout Route */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/CAInter" element={<CAInter />} />
+              <Route path="/CAFinal" element={<CAFinal />} />
+              <Route path="/CAInter/:topicId" element={<TopicPage />} />
+              <Route path="/CAFinal/:topicId" element={<TopicPage />} />
+              <Route path="/CAInter/:topicId/testpaper/:testPaperId" element={<TestPaperPage />} />
+              <Route path="/CAFinal/:topicId/testpaper/:testPaperId" element={<TestPaperPage />} />
+              <Route path="/Debug" element={<Debug />} />
+              <Route path="/Settings" element={<Settings />} />
+              <Route path="/Trash" element={<Trash />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ConfirmDialogProvider>
     </ThemeProvider>
   );
 }

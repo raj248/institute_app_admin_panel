@@ -1,13 +1,12 @@
-// src/pages/topic.tsx
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { List, LayoutGrid } from "lucide-react";
+import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { getAllTestPapersByTopicId } from "@/lib/api";
+import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
+import { useConfirm } from "@/components/global-confirm-dialog";
 
 type TestPaper = {
   id: string;
@@ -23,13 +22,43 @@ export default function TopicPage() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
 
-  useEffect(() => {
+  const loadTestPapers = async () => {
     if (!topicId) return;
-    getAllTestPapersByTopicId(topicId)
-      .then(setTestPapers)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setLoading(true);
+    try {
+      const data = await getAllTestPapersByTopicId(topicId);
+      setTestPapers(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTestPapers();
   }, [topicId]);
+
+  const confirm = useConfirm();
+
+  const handleMoveToTrash = async (id: string) => {
+    const confirmed = await confirm({
+      title: "Delete this test paper?",
+      description: "This will move the test paper to trash. You can restore it later if needed.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    const test = await moveTestPaperToTrash(id);
+    if (!test) {
+      console.error("Failed to move test paper to trash.");
+      alert("Failed to move test paper to trash.");
+      return;
+    }
+    setTestPapers((prev) => prev?.filter((t) => t.id !== id) ?? null);
+  };
 
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
@@ -80,20 +109,36 @@ export default function TopicPage() {
           {testPapers.map((paper) => (
             <Card
               key={paper.id}
-              onClick={() =>
-                navigate(`/CAInter/${topicId}/testpaper/${paper.id}`)
-              }
               className={cn(
-                "cursor-pointer transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg  mx-4",
+                "relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group",
                 viewMode === "grid" && "max-w-xs min-w-[220px] flex-1"
               )}
             >
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium">{paper.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                {paper.mcqs.length} question{paper.mcqs.length !== 1 ? "s" : ""}
-              </CardContent>
+              {/* 🗑️ Delete Button */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveToTrash(paper.id);
+                }}
+              >
+                <Trash2 size={16} className="text-yellow-600" />
+              </Button>
+
+              {/* Click to open test paper */}
+              <div
+                onClick={() => navigate(`/CAInter/${topicId}/testpaper/${paper.id}`)}
+                className="cursor-pointer"
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium">{paper.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  {paper.mcqs.length} question{paper.mcqs.length !== 1 ? "s" : ""}
+                </CardContent>
+              </div>
             </Card>
           ))}
         </div>

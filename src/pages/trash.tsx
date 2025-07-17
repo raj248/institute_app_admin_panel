@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, RotateCcw, XCircle } from "lucide-react";
 import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById } from "@/lib/api";
+import { useConfirm } from "@/components/global-confirm-dialog";
 
 type TrashItem = {
   id: string;
@@ -62,23 +63,51 @@ export default function Trash() {
     setDetails(detailMap);
   };
 
+
+  // inside your component:
+  const confirm = useConfirm();
+
   const handleRestore = async (id: string) => {
-    if (!confirm("Restore this item?")) return;
+    const confirmed = await confirm({
+      title: "Restore item?",
+      description: "This will restore the item from trash back into your system.",
+      confirmText: "Restore",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
     await restoreTrashItem(id);
     await loadTrashItems();
   };
 
   const handlePermanentDelete = async (id: string) => {
-    if (!confirm("Permanently delete this item? This cannot be undone.")) return;
+    const confirmed = await confirm({
+      title: "Permanently delete item?",
+      description:
+        "This will permanently delete the item and all its data. This action cannot be undone.",
+      confirmText: "Delete Permanently",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
     await permanentlyDeleteTrashItem(id);
     await loadTrashItems();
   };
 
   const handlePurgeAll = async () => {
-    if (!confirm("Permanently delete ALL trash? This cannot be undone.")) return;
+    const confirmed = await confirm({
+      title: "Permanently purge all trash?",
+      description:
+        "This will permanently delete ALL trashed items and cannot be undone.",
+      confirmText: "Purge All",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
     await purgeTrash();
     await loadTrashItems();
   };
+
 
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
