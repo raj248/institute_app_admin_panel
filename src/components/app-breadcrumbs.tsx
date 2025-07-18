@@ -68,9 +68,9 @@ export function AppBreadcrumbs() {
             <span key={path} className="flex items-center">
               <BreadcrumbItem>
                 {idx === paths.length - 1 ? (
-                  <BreadcrumbPage>{name}</BreadcrumbPage>
+                  <BreadcrumbPage className="text-base font-medium">{name}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink asChild>
+                  <BreadcrumbLink asChild className="text-base font-medium">
                     <Link to={path}>{name}</Link>
                   </BreadcrumbLink>
                 )}

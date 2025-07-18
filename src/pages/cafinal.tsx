@@ -57,14 +57,14 @@ export default function CAFinal() {
         <div className="flex gap-1">
           <Button
             size="icon"
-            variant={viewMode === "list" ? "secondary" : "ghost"}
+            variant={viewMode === "list" ? "default" : "secondary"}
             onClick={() => setViewMode("list")}
           >
             <List size={18} />
           </Button>
           <Button
             size="icon"
-            variant={viewMode === "grid" ? "secondary" : "ghost"}
+            variant={viewMode === "grid" ? "default" : "secondary"}
             onClick={() => setViewMode("grid")}
           >
             <LayoutGrid size={18} />
@@ -122,9 +122,15 @@ export default function CAFinal() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium">{topic.name}</CardTitle>
                 </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  {topic.description ?? <em>No description provided.</em>}
+                <CardContent className="text-sm text-muted-foreground space-y-1">
+                  <div>
+                    {topic.description ?? <em>No description provided.</em>}
+                  </div>
+                  <div>
+                    {topic.testPaperCount ?? 0} Test Paper{(topic.testPaperCount ?? 0) !== 1 ? "s" : ""}
+                  </div>
                 </CardContent>
+
               </div>
             </Card>
           ))}

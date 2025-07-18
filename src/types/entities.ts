@@ -1,5 +1,7 @@
 // src/types/entities.ts
 
+import z from "zod";
+
 export type CourseType = "CAInter" | "CAFinal";
 
 export interface Course {
@@ -23,7 +25,24 @@ export interface Topic {
   course?: Course;
   testPapers?: TestPaper[];
   mcqs?: MCQ[];
+  testPaperCount?: number;
+  courseType: CourseType;
+
 }
+
+export const TopicSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  courseId: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  deletedAt: z.string().nullable(),
+  testPaperCount: z.number().optional(),
+  courseType: z.string(),
+});
+
+export type Topic_schema = z.infer<typeof TopicSchema>;
 
 export interface TestPaper {
   id: string;

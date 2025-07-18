@@ -1,18 +1,29 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/topic-table";
+import { getTopicsByCourseType } from "@/lib/api";
+import type { Topic } from "@/types/entities";
+import { useEffect, useState } from "react";
+
 
 export default function Dashboard() {
+  const [topics, setTopics] = useState<Topic[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getTopicsByCourseType("CAInter")
+      .then((res) => setTopics(res.data ?? null))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            The dashboard page is currently not implemented.
-          </p>
-        </CardContent>
-      </Card>
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          {/* <SectionCards /> */}
+          {/* <div className="px-4 lg:px-6"> */}
+          {/* <ChartAreaInteractive /> */}
+          {/* </div> */}
+          {!loading && <DataTable data={topics ?? []} />}
+        </div>
+      </div>
     </div>
   );
 }

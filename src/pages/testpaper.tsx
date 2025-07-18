@@ -55,14 +55,14 @@ export default function TestPaperPage() {
         <div className="flex gap-1">
           <Button
             size="icon"
-            variant={viewMode === "list" ? "secondary" : "ghost"}
+            variant={viewMode === "list" ? "default" : "secondary"}
             onClick={() => setViewMode("list")}
           >
             <List size={18} />
           </Button>
           <Button
             size="icon"
-            variant={viewMode === "grid" ? "secondary" : "ghost"}
+            variant={viewMode === "grid" ? "default" : "secondary"}
             onClick={() => setViewMode("grid")}
           >
             <LayoutGrid size={18} />
