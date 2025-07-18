@@ -1,5 +1,3 @@
-// src/pages/cafinal.tsx
-
 import { useEffect, useState } from "react";
 import { getTopicsByCourseType } from "@/lib/api";
 import type { Topic_schema } from "@/types/entities";
@@ -11,12 +9,16 @@ export default function CAFinal() {
 
   useEffect(() => {
     getTopicsByCourseType("CAFinal")
-      .then((data) => setTopics(data.data ?? null))
+      .then((res) => {
+        const result = res.data
+        setTopics(result ?? null)
+        if (!result) return
+        console.log(result[0].name)
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
+    console.debug("CAFinal")
   }, []);
-
-
 
   return (
     <div className="flex flex-1 flex-col">
@@ -26,7 +28,14 @@ export default function CAFinal() {
           {/* <div className="px-4 lg:px-6"> */}
           {/* <ChartAreaInteractive /> */}
           {/* </div> */}
-          {!loading && <DataTable data={topics ?? []} setData={setTopics} loading={loading} setLoading={setLoading} />}
+          {!loading &&
+            <DataTable
+              key={"CAFinal"}
+              data={topics ?? []}
+              setData={setTopics}
+              loading={loading}
+              setLoading={setLoading}
+            />}
         </div>
       </div>
     </div>

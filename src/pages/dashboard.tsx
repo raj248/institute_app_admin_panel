@@ -8,8 +8,13 @@ export default function Dashboard() {
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    getTopicsByCourseType("CAInter")
-      .then((res) => setTopics(res.data ?? null))
+    getTopicsByCourseType("CAFinal")
+      .then((res) => {
+        const result = res.data
+        setTopics(result ?? null)
+        if (!result) return
+        console.log(result[0].name)
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -21,7 +26,7 @@ export default function Dashboard() {
           {/* <div className="px-4 lg:px-6"> */}
           {/* <ChartAreaInteractive /> */}
           {/* </div> */}
-          {!loading && <DataTable data={topics ?? []} setData={setTopics} setLoading={setLoading} loading={loading} />}
+          {!loading && <DataTable key={"CAFinal"} data={topics ?? []} setData={setTopics} setLoading={setLoading} loading={loading} />}
         </div>
       </div>
     </div>

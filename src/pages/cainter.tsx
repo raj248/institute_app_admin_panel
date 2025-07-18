@@ -9,9 +9,15 @@ export default function CAInter() {
 
   useEffect(() => {
     getTopicsByCourseType("CAInter")
-      .then((res) => setTopics(res.data ?? null))
+      .then((res) => {
+        const result = res.data
+        setTopics(result ?? null)
+        if (!result) return
+        console.log(result[0].name)
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
+    console.debug("CAInter")
   }, []);
 
   return (
@@ -22,7 +28,14 @@ export default function CAInter() {
           {/* <div className="px-4 lg:px-6"> */}
           {/* <ChartAreaInteractive /> */}
           {/* </div> */}
-          {!loading && <DataTable data={topics ?? []} setData={setTopics} loading={loading} setLoading={setLoading} />}
+          {!loading &&
+            <DataTable
+              key={"CAInter"}
+              data={topics ?? []}
+              setData={setTopics}
+              loading={loading}
+              setLoading={setLoading}
+            />}
         </div>
       </div>
     </div>

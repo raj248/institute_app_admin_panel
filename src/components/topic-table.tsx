@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { format } from "date-fns";
 import {
   closestCenter,
   DndContext,
@@ -94,14 +95,21 @@ import {
 import type { Topic, Topic_schema } from "@/types/entities"
 import { Textarea } from "./ui/textarea"
 import { useNavigate } from "react-router-dom"
-import { useEffect, useRef, useState } from "react"
-import { getTopicsByCourseType, moveTopicToTrash } from "@/lib/api"
+import { useState } from "react"
+import { moveTopicToTrash } from "@/lib/api"
 import { useConfirm } from "./global-confirm-dialog"
 import { TopicGridView } from "./TopicGridView"
 import { cn } from "@/lib/cn"
 import YouTubeVideoGridTab from "./YouTubeVideoGridTab"
 
-export function DataTable({ data: topic, setData: setTopics, loading: loading, setLoading: setLoading }: { data: Topic_schema[], setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
+interface DataTableProps {
+  data: Topic_schema[],
+  setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>,
+  loading: boolean,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export function DataTable({ data: topic, setData: setTopics, loading: loading }: DataTableProps) {
   function DragHandle({ id }: { id: string }) {
     const { attributes, listeners } = useSortable({
       id,
@@ -120,8 +128,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
       </Button>
     )
   }
-
-  const shouldIgnoreNextClick = useRef(false);
 
   function DraggableRow({
     row,
@@ -146,13 +152,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
           transform: CSS.Transform.toString(transform),
           transition: transition,
         }}
-        onClick={() => {
-          if (shouldIgnoreNextClick.current) {
-            shouldIgnoreNextClick.current = false; // reset
-            return;
-          }
-          onRowClick(row.original as Topic);
-        }}
+        onClick={() => { onRowClick(row.original as Topic) }}
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell key={cell.id}>
@@ -179,12 +179,21 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
         >
           Edit
         </Button>
-        <Drawer direction={isMobile ? "bottom" : "right"} open={open} onOpenChange={setOpen}>
-          <DrawerContent>
+        <Drawer
+          direction={isMobile ? "bottom" : "right"}
+          open={open}
+          onOpenChange={(o) => {
+            console.log('Drawer open change triggered', o);
+            setOpen(o);
+          }}
+        >
+          <DrawerContent
+            onClick={(e) => { e.stopPropagation(); }}
+          >
             <DrawerHeader className="gap-1">
               <DrawerTitle>{item.name}</DrawerTitle>
               <DrawerDescription>
-                Showing total visitors for the last 6 months
+                {item.description ?? "No description provided."}
               </DrawerDescription>
             </DrawerHeader>
             <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
@@ -193,7 +202,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" defaultValue={item.name} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols gap-4">
                   <div className="flex flex-col gap-3">
                     <Label htmlFor="course">Course</Label>
                     <Select defaultValue={item.courseType}>
@@ -207,10 +216,10 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols gap-4">
                   <div className="flex flex-col gap-3">
                     <Label htmlFor="description">Description</Label>
-                    <Textarea id="description" defaultValue={item.description ?? ""} />
+                    <Textarea id="description" className="h-34" defaultValue={item.description ?? ""} />
                   </div>
                 </div>
               </form>
@@ -253,13 +262,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
   const handleClick = (topic: Topic) => {
     navigate(`/CAInter/${topic.id}`);
   };
-
-  useEffect(() => {
-    getTopicsByCourseType("CAInter")
-      .then((res) => setTopics(res.data ?? null))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
 
   const columns: ColumnDef<Topic_schema>[] = [
     {
@@ -317,9 +319,11 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
     {
       accessorKey: "updatedAt",
       header: "Last Updated",
-      cell: ({ row }) => (
-        <div className="w-32 truncate">{row.original.updatedAt}</div>
-      ),
+      cell: ({ row }) => {
+        const dateString = row.original.updatedAt;
+        const formatted = format(new Date(dateString), "dd MMM yyyy, hh:mm a"); // Customize pattern as needed
+        return <div className="w-40 truncate">{formatted}</div>;
+      },
     },
     {
       accessorKey: "testpapercount",
@@ -416,7 +420,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
 
   return (
     <Tabs
-      defaultValue={currentTab}
+      value={currentTab}
       onValueChange={(value) => setCurrentTab(value as "table" | "grid")}
       className="w-full flex-col justify-start gap-6"
     >
@@ -424,7 +428,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
-        <Select defaultValue="table">
+        <Select defaultValue={currentTab} onValueChange={(value) => setCurrentTab(value as "table" | "grid" | "videogrid")}>
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
             size="sm"
