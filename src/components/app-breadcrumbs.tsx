@@ -28,13 +28,13 @@ export function AppBreadcrumbs() {
           // Check for topicId directly after CAInter/CAFinal
           if (prevSegment === "CAInter" || prevSegment === "CAFinal") {
             const topic = await getTopicById(segment);
-            if (topic) updates[segment] = topic.name;
+            if (topic) updates[segment] = topic.data?.name || 'Unknown Topic';
           }
 
           // Check for testPaperId after "topic"
           if (prevSegment === "testpaper") {
             const testPaper = await getTestPaperById(segment);
-            if (testPaper) updates[segment] = testPaper.name;
+            if (testPaper) updates[segment] = testPaper.data?.name || 'Unknown Test Paper';
           }
         })
       );
