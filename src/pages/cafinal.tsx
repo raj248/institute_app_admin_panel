@@ -9,13 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
 import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { useConfirm } from "@/components/global-confirm-dialog";
-
-type Topic = {
-  id: string;
-  name: string;
-  description?: string;
-  courseId: string;
-};
+import type { Topic } from "@/types/entities";
 
 export default function CAFinal() {
   const navigate = useNavigate();
@@ -25,7 +19,7 @@ export default function CAFinal() {
 
   useEffect(() => {
     getTopicsByCourseType("CAFinal")
-      .then((data) => setTopics(data))
+      .then((data) => setTopics(data.data ?? null))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

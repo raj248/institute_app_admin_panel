@@ -7,13 +7,7 @@ import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/global-confirm-dialog";
-
-type TestPaper = {
-  id: string;
-  name: string;
-  topicId: string;
-  mcqs: { id: string }[];
-};
+import type { TestPaper } from "@/types/entities";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -26,8 +20,8 @@ export default function TopicPage() {
     if (!topicId) return;
     setLoading(true);
     try {
-      const data = await getAllTestPapersByTopicId(topicId);
-      setTestPapers(data);
+      const res = await getAllTestPapersByTopicId(topicId);
+      setTestPapers(res.data ?? null);
     } catch (e) {
       console.error(e);
     } finally {
@@ -136,7 +130,7 @@ export default function TopicPage() {
                   <CardTitle className="text-base font-medium">{paper.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  {paper.mcqs.length} question{paper.mcqs.length !== 1 ? "s" : ""}
+                  {paper.mcqs?.length} question{paper.mcqs?.length !== 1 ? "s" : ""}
                 </CardContent>
               </div>
             </Card>

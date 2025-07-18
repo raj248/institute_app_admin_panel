@@ -6,18 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Trash2, RotateCcw, XCircle } from "lucide-react";
 import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById } from "@/lib/api";
 import { useConfirm } from "@/components/global-confirm-dialog";
-
-type TrashItem = {
-  id: string;
-  tableName: string;
-  entityId: string;
-  trashedAt: string;
-  displayName: string; // <-- add this
-};
-
+import type { Trash } from "@/types/entities";
 
 export default function Trash() {
-  const [trashItems, setTrashItems] = useState<TrashItem[] | null>(null);
+  const [trashItems, setTrashItems] = useState<Trash[] | null>(null);
   const [details, setDetails] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
@@ -28,9 +20,10 @@ export default function Trash() {
   const loadTrashItems = async () => {
     setLoading(true);
     try {
-      const items = await getTrashItems();
+      const res = await getTrashItems();
+      const items = res.data ?? null
       setTrashItems(items);
-      fetchEntityDetails(items);
+      if (items) fetchEntityDetails(items);
     } catch (error) {
       console.error("Error fetching trash items", error);
     } finally {
@@ -38,20 +31,20 @@ export default function Trash() {
     }
   };
 
-  const fetchEntityDetails = async (items: TrashItem[]) => {
+  const fetchEntityDetails = async (items: Trash[]) => {
     const detailMap: Record<string, string> = {};
 
     for (const item of items) {
       try {
         if (item.tableName === "Topic") {
           const topic = await getTopicById(item.entityId);
-          if (topic) detailMap[item.id] = topic.description ?? "No description.";
+          if (topic) detailMap[item.id] = topic.data?.description ?? "No description.";
         } else if (item.tableName === "TestPaper") {
           const testPaper = await getTestPaperById(item.entityId);
-          if (testPaper) detailMap[item.id] = testPaper.name;
+          if (testPaper) detailMap[item.id] = testPaper.data?.name || "No name.";
         } else if (item.tableName === "MCQ") {
           const mcq = await getMCQById(item.entityId);
-          if (mcq) detailMap[item.id] = mcq.question;
+          if (mcq) detailMap[item.id] = mcq.data?.question || "No question.";
         } else {
           detailMap[item.id] = "No details available.";
         }

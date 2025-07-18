@@ -7,13 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/cn";
 import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { useConfirm } from "@/components/global-confirm-dialog";
-
-type Topic = {
-  id: string;
-  name: string;
-  description?: string;
-  courseId: string;
-};
+import type { Topic } from "@/types/entities";
 
 export default function CAInter() {
   const [topics, setTopics] = useState<Topic[] | null>(null);
@@ -24,7 +18,7 @@ export default function CAInter() {
 
   useEffect(() => {
     getTopicsByCourseType("CAInter")
-      .then((data) => setTopics(data))
+      .then((res) => setTopics(res.data ?? null))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

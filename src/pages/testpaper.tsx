@@ -9,13 +9,7 @@ import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTestPaperById, moveMCQToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/global-confirm-dialog";
-
-type MCQ = {
-  id: string;
-  question: string;
-  options: { a: string; b: string; c: string; d: string };
-  correctAnswer: "a" | "b" | "c" | "d";
-};
+import type { MCQ } from "@/types/entities";
 
 export default function TestPaperPage() {
   const { testPaperId } = useParams<{ testPaperId: string }>();
@@ -25,7 +19,7 @@ export default function TestPaperPage() {
   useEffect(() => {
     if (!testPaperId) return;
     getTestPaperById(testPaperId)
-      .then((data) => setMcqs(data.mcqs || []))
+      .then((res) => setMcqs(res.data?.mcqs || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [testPaperId]);
