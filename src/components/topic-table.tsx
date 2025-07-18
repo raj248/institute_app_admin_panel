@@ -47,19 +47,10 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 
-import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -68,7 +59,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -92,7 +82,6 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import type { Topic, Topic_schema } from "@/types/entities"
-import { Textarea } from "./ui/textarea"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { moveTopicToTrash } from "@/lib/api"
@@ -101,6 +90,7 @@ import { TopicGridView } from "./TopicGridView"
 import { cn } from "@/lib/cn"
 import YouTubeVideoGridTab from "./YouTubeVideoGridTab"
 import { AddTopicDialog } from "./AddTopicDialog";
+import { TableCellViewer } from "./TableCellViewer";
 
 interface DataTableProps {
   data: Topic_schema[],
@@ -163,79 +153,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
     );
   }
 
-  function TableCellViewer({ item }: { item: Topic_schema }) {
-    const isMobile = useIsMobile()
-    const [open, setOpen] = useState(false);
 
-    return (
-      <>
-        <Button
-          variant="ghost"
-          className="text-foreground w-full justify-start px-0"
-          onClick={(e) => {
-            e.stopPropagation(); // prevent triggering row click
-            setOpen(true);
-          }}
-        >
-          Edit
-        </Button>
-        <Drawer
-          direction={isMobile ? "bottom" : "right"}
-          open={open}
-          onOpenChange={(o) => {
-            console.log('Drawer open change triggered', o);
-            setOpen(o);
-          }}
-        >
-          <DrawerContent
-            onClick={(e) => { e.stopPropagation(); }}
-          >
-            <DrawerHeader className="gap-1">
-              <DrawerTitle>{item.name}</DrawerTitle>
-              <DrawerDescription>
-                {item.description ?? "No description provided."}
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-              <form className="flex flex-col gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" defaultValue={item.name} />
-                </div>
-                <div className="grid grid-cols gap-4">
-                  <div className="flex flex-col gap-3">
-                    <Label htmlFor="course">Course</Label>
-                    <Select defaultValue={item.courseType}>
-                      <SelectTrigger id="course" className="w-full">
-                        <SelectValue placeholder="Select a Course" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="CAInter">CA-Inter</SelectItem>
-                        <SelectItem value="CAFinal">CA-Final</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols gap-4">
-                  <div className="flex flex-col gap-3">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea id="description" className="h-34" defaultValue={item.description ?? ""} />
-                  </div>
-                </div>
-              </form>
-            </div>
-            <DrawerFooter>
-              <Button>Submit</Button>
-              <DrawerClose asChild>
-                <Button variant="outline">Close</Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      </>
-
-    )
-  }
   const navigate = useNavigate();
   const confirm = useConfirm();
 
@@ -348,7 +266,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}><TableCellViewer item={row.original} /></DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}><TableCellViewer item={row.original} setTopics={setTopics} /></DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={(e) => {
               handleMoveToTrash(row.original.id)

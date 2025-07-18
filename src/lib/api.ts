@@ -28,16 +28,6 @@ export async function getTopicById(topicId: string): Promise<APIResponse<Topic>>
   return safeFetch(`${BASE_URL}/api/topics/${topicId}`);
 }
 
-// ------------------- Test Papers --------------------
-
-export async function getAllTestPapersByTopicId(topicId: string): Promise<APIResponse<TestPaper[]>> {
-  return safeFetch(`${BASE_URL}/api/topics/${topicId}/testpapers`);
-}
-
-export async function getTestPaperById(testPaperId: string): Promise<APIResponse<TestPaper>> {
-  return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
-}
-
 export async function createTopic(data: {
   name: string;
   description?: string;
@@ -49,6 +39,32 @@ export async function createTopic(data: {
     body: JSON.stringify(data),
   });
 }
+
+export async function updateTopic(
+  id: string,
+  data: {
+    name?: string;
+    description?: string;
+    courseType?: "CAInter" | "CAFinal";
+  }
+): Promise<APIResponse<Topic>> {
+  return safeFetch<Topic>(`${BASE_URL}/api/topics/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+// ------------------- Test Papers --------------------
+
+export async function getAllTestPapersByTopicId(topicId: string): Promise<APIResponse<TestPaper[]>> {
+  return safeFetch(`${BASE_URL}/api/topics/${topicId}/testpapers`);
+}
+
+export async function getTestPaperById(testPaperId: string): Promise<APIResponse<TestPaper>> {
+  return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
+}
+
 
 // ------------------- MCQs --------------------
 
