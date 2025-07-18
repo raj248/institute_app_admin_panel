@@ -30,7 +30,6 @@ import {
   IconDotsVertical,
   IconGripVertical,
   IconLayoutColumns,
-  IconPlus,
 } from "@tabler/icons-react"
 import {
   type ColumnDef,
@@ -101,6 +100,7 @@ import { useConfirm } from "./global-confirm-dialog"
 import { TopicGridView } from "./TopicGridView"
 import { cn } from "@/lib/cn"
 import YouTubeVideoGridTab from "./YouTubeVideoGridTab"
+import { AddTopicDialog } from "./AddTopicDialog";
 
 interface DataTableProps {
   data: Topic_schema[],
@@ -483,10 +483,12 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <Button variant="outline" size="sm">
-            <IconPlus />
-            <span className="hidden lg:inline">Add Topic</span>
-          </Button>
+          <AddTopicDialog
+            defaultCourseType={topic && topic.length > 0 && (topic[0].courseType === "CAInter" || topic[0].courseType === "CAFinal")
+              ? topic[0].courseType
+              : "CAInter"}
+            setTopics={setTopics}
+          />
         </div>
       </div>
       <TabsContent

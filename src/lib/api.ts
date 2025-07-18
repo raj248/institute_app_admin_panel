@@ -38,6 +38,18 @@ export async function getTestPaperById(testPaperId: string): Promise<APIResponse
   return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
 }
 
+export async function createTopic(data: {
+  name: string;
+  description?: string;
+  courseType: "CAInter" | "CAFinal";
+}): Promise<APIResponse<Topic>> {
+  return safeFetch<Topic>(`${BASE_URL}/api/topics`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
 // ------------------- MCQs --------------------
 
 export async function getMCQById(id: string): Promise<APIResponse<MCQ>> {
