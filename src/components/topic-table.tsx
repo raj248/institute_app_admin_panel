@@ -59,7 +59,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
 import {
   DropdownMenu,
@@ -101,13 +100,7 @@ import { useConfirm } from "./global-confirm-dialog"
 import { TopicGridView } from "./TopicGridView"
 import { cn } from "@/lib/cn"
 
-
-// Create a separate component for the drag handle
-
-
-
-
-export function DataTable({ data: initialData, setData: setTopics, loading: loading, setLoading: setLoading }: { data: Topic_schema[], setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
+export function DataTable({ data: topic, setData: setTopics, loading: loading, setLoading: setLoading }: { data: Topic_schema[], setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   function DragHandle({ id }: { id: string }) {
     const { attributes, listeners } = useSortable({
       id,
@@ -171,63 +164,66 @@ export function DataTable({ data: initialData, setData: setTopics, loading: load
 
   function TableCellViewer({ item }: { item: Topic_schema }) {
     const isMobile = useIsMobile()
+    const [open, setOpen] = useState(false);
 
     return (
-      <Drawer direction={isMobile ? "bottom" : "right"}>
-        <DrawerTrigger asChild>
-          <Button
-            variant="link"
-            className="text-foreground w-fit px-0 text-left"
-            onClick={(e) => { e.stopPropagation(); shouldIgnoreNextClick.current = true; }} // prevent row click
-          >
-            {/* {item.name} */}
-            Edit
-          </Button>
+      <>
+        <Button
+          variant="ghost"
+          className="text-foreground w-full justify-start px-0"
+          onClick={(e) => {
+            e.stopPropagation(); // prevent triggering row click
+            setOpen(true);
+          }}
+        >
+          Edit
+        </Button>
+        <Drawer direction={isMobile ? "bottom" : "right"} open={open} onOpenChange={setOpen}>
+          <DrawerContent>
+            <DrawerHeader className="gap-1">
+              <DrawerTitle>{item.name}</DrawerTitle>
+              <DrawerDescription>
+                Showing total visitors for the last 6 months
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+              <form className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" defaultValue={item.name} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="course">Course</Label>
+                    <Select defaultValue={item.courseType}>
+                      <SelectTrigger id="course" className="w-full">
+                        <SelectValue placeholder="Select a Course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CAInter">CA-Inter</SelectItem>
+                        <SelectItem value="CAFinal">CA-Final</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea id="description" defaultValue={item.description ?? ""} />
+                  </div>
+                </div>
+              </form>
+            </div>
+            <DrawerFooter>
+              <Button>Submit</Button>
+              <DrawerClose asChild>
+                <Button variant="outline">Close</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      </>
 
-        </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader className="gap-1">
-            <DrawerTitle>{item.name}</DrawerTitle>
-            <DrawerDescription>
-              Showing total visitors for the last 6 months
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-            <form className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" defaultValue={item.name} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="course">Course</Label>
-                  <Select defaultValue={item.courseType}>
-                    <SelectTrigger id="course" className="w-full">
-                      <SelectValue placeholder="Select a Course" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CAInter">CA-Inter</SelectItem>
-                      <SelectItem value="CAFinal">CA-Final</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" defaultValue={item.description ?? ""} />
-                </div>
-              </div>
-            </form>
-          </div>
-          <DrawerFooter>
-            <Button>Submit</Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
     )
   }
   const navigate = useNavigate();
@@ -360,7 +356,6 @@ export function DataTable({ data: initialData, setData: setTopics, loading: load
   ]
 
 
-  const [data, setData] = React.useState(() => initialData)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -377,12 +372,12 @@ export function DataTable({ data: initialData, setData: setTopics, loading: load
   )
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => data?.map(({ id }) => id) || [],
-    [data]
+    () => topic?.map(({ id }) => id) || [],
+    [topic]
   )
 
   const table = useReactTable({
-    data,
+    data: topic || [],
     columns,
     state: {
       sorting,
@@ -409,10 +404,10 @@ export function DataTable({ data: initialData, setData: setTopics, loading: load
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (active && over && active.id !== over.id) {
-      setData((data) => {
+      setTopics((data) => {
         const oldIndex = dataIds.indexOf(active.id)
         const newIndex = dataIds.indexOf(over.id)
-        return arrayMove(data, oldIndex, newIndex)
+        return arrayMove(data as Topic_schema[], oldIndex, newIndex)
       })
     }
   }
@@ -625,7 +620,7 @@ export function DataTable({ data: initialData, setData: setTopics, loading: load
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="w-full flex-1 rounded-lg ">
-          <TopicGridView topics={initialData as Topic[]} loading={loading} />
+          <TopicGridView topics={topic as Topic[]} loading={loading} />
         </div>
       </TabsContent>
     </Tabs>
