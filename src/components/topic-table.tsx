@@ -92,152 +92,274 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import type { Topic_schema } from "@/types/entities"
+import type { Topic, Topic_schema } from "@/types/entities"
 import { Textarea } from "./ui/textarea"
+import { useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { getTopicsByCourseType, moveTopicToTrash } from "@/lib/api"
+import { useConfirm } from "./global-confirm-dialog"
+import { TopicGridView } from "./TopicGridView"
+import { cn } from "@/lib/cn"
 
 
 // Create a separate component for the drag handle
-function DragHandle({ id }: { id: string }) {
-  const { attributes, listeners } = useSortable({
-    id,
-  })
 
-  return (
-    <Button
-      {...attributes}
-      {...listeners}
-      variant="ghost"
-      size="icon"
-      className="text-muted-foreground size-7 hover:bg-transparent"
-    >
-      <IconGripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
-    </Button>
-  )
-}
 
-const columns: ColumnDef<Topic_schema>[] = [
-  {
-    id: "drag",
-    header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id} />,
-  },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />
-    },
-    enableHiding: false,
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div
-        className="max-w-[180px] sm:max-w-[240px] md:max-w-[300px] lg:max-w-[350px] truncate"
-        title={row.original.description ?? "No description provided."}
+
+
+export function DataTable({ data: initialData, setData: setTopics, loading: loading, setLoading: setLoading }: { data: Topic_schema[], setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
+  function DragHandle({ id }: { id: string }) {
+    const { attributes, listeners } = useSortable({
+      id,
+    })
+
+    return (
+      <Button
+        {...attributes}
+        {...listeners}
+        variant="ghost"
+        size="icon"
+        className="text-muted-foreground size-7 hover:bg-transparent"
       >
-        {row.original.description ?? <em className="text-muted-foreground">No description</em>}
-      </div>
-    ),
-  },
+        <IconGripVertical className="text-muted-foreground size-3" />
+        <span className="sr-only">Drag to reorder</span>
+      </Button>
+    )
+  }
 
-  {
-    accessorKey: "updatedAt",
-    header: "Last Updated",
-    cell: ({ row }) => (
-      <div className="w-32 truncate">{row.original.updatedAt}</div>
-    ),
-  },
-  {
-    accessorKey: "testpapercount",
-    header: "Tests",
-    cell: ({ row }) => (
-      <div className="w-32 truncate">{row.original.testPaperCount ?? 0}</div>
-    ),
-  },
-  {
-    id: "actions",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+  const shouldIgnoreNextClick = useRef(false);
+
+  function DraggableRow({
+    row,
+    onRowClick,
+  }: {
+    row: Row<Topic_schema>;
+    onRowClick: (topic: Topic) => void;
+  }) {
+    const { transform, transition, setNodeRef, isDragging } = useSortable({
+      id: row.original.id,
+    });
+
+    return (
+      <TableRow
+        data-state={row.getIsSelected() && "selected"}
+        data-dragging={isDragging}
+        ref={setNodeRef}
+        className={cn(
+          "relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80 cursor-pointer hover:bg-muted/50 transition-colors"
+        )}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition: transition,
+        }}
+        onClick={() => {
+          if (shouldIgnoreNextClick.current) {
+            shouldIgnoreNextClick.current = false; // reset
+            return;
+          }
+          onRowClick(row.original as Topic);
+        }}
+      >
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    );
+  }
+
+  function TableCellViewer({ item }: { item: Topic_schema }) {
+    const isMobile = useIsMobile()
+
+    return (
+      <Drawer direction={isMobile ? "bottom" : "right"}>
+        <DrawerTrigger asChild>
           <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
+            variant="link"
+            className="text-foreground w-fit px-0 text-left"
+            onClick={(e) => { e.stopPropagation(); shouldIgnoreNextClick.current = true; }} // prevent row click
           >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
+            {/* {item.name} */}
+            Edit
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>View</DropdownMenuItem>
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-]
 
-function DraggableRow({ row }: { row: Row<Topic_schema> }) {
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.id,
-  })
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="gap-1">
+            <DrawerTitle>{item.name}</DrawerTitle>
+            <DrawerDescription>
+              Showing total visitors for the last 6 months
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+            <form className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" defaultValue={item.name} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="course">Course</Label>
+                  <Select defaultValue={item.courseType}>
+                    <SelectTrigger id="course" className="w-full">
+                      <SelectValue placeholder="Select a Course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CAInter">CA-Inter</SelectItem>
+                      <SelectItem value="CAFinal">CA-Final</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea id="description" defaultValue={item.description ?? ""} />
+                </div>
+              </div>
+            </form>
+          </div>
+          <DrawerFooter>
+            <Button>Submit</Button>
+            <DrawerClose asChild>
+              <Button variant="outline">Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
+  const navigate = useNavigate();
+  const confirm = useConfirm();
 
-  return (
-    <TableRow
-      data-state={row.getIsSelected() && "selected"}
-      data-dragging={isDragging}
-      ref={setNodeRef}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition: transition,
-      }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
-    </TableRow>
-  )
-}
+  const handleMoveToTrash = async (topicId: string) => {
+    const confirmed = await confirm({
+      title: "Move this topic to trash?",
+      description: "This will move the topic to trash along with its test papers and MCQs. You can restore it later if needed.",
+      confirmText: "Move to Trash",
+      cancelText: "Cancel",
+    });
 
-export function DataTable({
-  data: initialData,
-}: {
-  data: Topic_schema[]
-}) {
+    if (!confirmed) return;
+
+    const topic = await moveTopicToTrash(topicId);
+    if (!topic) {
+      console.error("Failed to move topic to trash.");
+      alert("Failed to move topic to trash.");
+      return;
+    }
+
+    setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
+  };
+
+  const handleClick = (topic: Topic) => {
+    navigate(`/CAInter/${topic.id}`);
+  };
+
+  useEffect(() => {
+    getTopicsByCourseType("CAInter")
+      .then((res) => setTopics(res.data ?? null))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const columns: ColumnDef<Topic_schema>[] = [
+    {
+      id: "drag",
+      header: () => null,
+      cell: ({ row }) => <DragHandle id={row.original.id} />,
+    },
+    {
+      id: "select",
+      header: ({ table }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => {
+        return <div className="font-medium">{row.original.name}</div>
+      },
+      enableHiding: false,
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: ({ row }) => (
+        <div
+          className="max-w-[180px] sm:max-w-[240px] md:max-w-[300px] lg:max-w-[350px] truncate"
+          title={row.original.description ?? "No description provided."}
+        >
+          {row.original.description ?? <em className="text-muted-foreground">No description</em>}
+        </div>
+      ),
+    },
+
+    {
+      accessorKey: "updatedAt",
+      header: "Last Updated",
+      cell: ({ row }) => (
+        <div className="w-32 truncate">{row.original.updatedAt}</div>
+      ),
+    },
+    {
+      accessorKey: "testpapercount",
+      header: "Tests",
+      cell: ({ row }) => (
+        <div className="w-32 truncate">{row.original.testPaperCount ?? 0}</div>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem>View</DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}><TableCellViewer item={row.original} /></DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onClick={(e) => {
+              handleMoveToTrash(row.original.id)
+              e.stopPropagation();
+            }}>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
+
+
   const [data, setData] = React.useState(() => initialData)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -294,17 +416,19 @@ export function DataTable({
       })
     }
   }
-  console.log("DATA FOR RENDER: ", data)
+  const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
+
   return (
     <Tabs
-      defaultValue="outline"
+      defaultValue={currentTab}
+      onValueChange={(value) => setCurrentTab(value as "table" | "grid")}
       className="w-full flex-col justify-start gap-6"
     >
       <div className="flex items-center justify-between px-4 lg:px-6">
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
-        <Select defaultValue="outline">
+        <Select defaultValue="table">
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
             size="sm"
@@ -322,39 +446,41 @@ export function DataTable({
           <TabsTrigger value="grid">Grid</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <IconLayoutColumns />
-                <span className="hidden lg:inline">Customize Columns</span>
-                <span className="lg:hidden">Columns</span>
-                <IconChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {table
-                .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
-                )
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
+          {currentTab === "table" && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <IconLayoutColumns />
+                  <span className="hidden lg:inline">Customize Columns</span>
+                  <span className="lg:hidden">Columns</span>
+                  <IconChevronDown />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {table
+                  .getAllColumns()
+                  .filter(
+                    (column) =>
+                      typeof column.accessorFn !== "undefined" &&
+                      column.getCanHide()
                   )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    )
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <Button variant="outline" size="sm">
             <IconPlus />
             <span className="hidden lg:inline">Add Topic</span>
@@ -399,7 +525,7 @@ export function DataTable({
                     strategy={verticalListSortingStrategy}
                   >
                     {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} />
+                      <DraggableRow key={row.id} row={row} onRowClick={handleClick} />
                     ))}
                   </SortableContext>
                 ) : (
@@ -496,66 +622,13 @@ export function DataTable({
       </TabsContent>
       <TabsContent
         value="grid"
-        className="flex flex-col px-4 lg:px-6"
+        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
+        <div className="w-full flex-1 rounded-lg ">
+          <TopicGridView topics={initialData as Topic[]} loading={loading} />
+        </div>
       </TabsContent>
     </Tabs>
   )
 }
 
-function TableCellViewer({ item }: { item: Topic_schema }) {
-  const isMobile = useIsMobile()
-
-  return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
-      <DrawerTrigger asChild>
-        <Button variant="link" className="text-foreground w-fit px-0 text-left">
-          {item.name}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="gap-1">
-          <DrawerTitle>{item.name}</DrawerTitle>
-          <DrawerDescription>
-            Showing total visitors for the last 6 months
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
-          <form className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" defaultValue={item.name} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="course">Course</Label>
-                <Select defaultValue={item.courseType}>
-                  <SelectTrigger id="course" className="w-full">
-                    <SelectValue placeholder="Select a Course" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="CAInter">CA-Inter</SelectItem>
-                    <SelectItem value="CAFinal">CA-Final</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" defaultValue={item.description ?? ""} />
-              </div>
-            </div>
-          </form>
-        </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Close</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  )
-}

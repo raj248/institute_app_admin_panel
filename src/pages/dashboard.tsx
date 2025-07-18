@@ -1,11 +1,11 @@
 import { DataTable } from "@/components/topic-table";
 import { getTopicsByCourseType } from "@/lib/api";
-import type { Topic } from "@/types/entities";
+import type { Topic_schema } from "@/types/entities";
 import { useEffect, useState } from "react";
 
 
 export default function Dashboard() {
-  const [topics, setTopics] = useState<Topic[] | null>(null);
+  const [topics, setTopics] = useState<Topic_schema[] | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     getTopicsByCourseType("CAInter")
@@ -21,7 +21,7 @@ export default function Dashboard() {
           {/* <div className="px-4 lg:px-6"> */}
           {/* <ChartAreaInteractive /> */}
           {/* </div> */}
-          {!loading && <DataTable data={topics ?? []} />}
+          {!loading && <DataTable data={topics ?? []} setData={setTopics} setLoading={setLoading} loading={loading} />}
         </div>
       </div>
     </div>
