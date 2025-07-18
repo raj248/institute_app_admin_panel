@@ -1,88 +1,74 @@
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
+
+async function safeFetch<T>(url: string, options?: RequestInit): Promise<{ success: boolean; error?: string; data?: T }> {
+  try {
+    const res = await fetch(url, options);
+    const result = await res.json();
+    if (!res.ok || !result.success) {
+      console.error(`API error (${url}):`, result.error ?? res.statusText);
+      return { success: false, error: result.error ?? res.statusText };
+    }
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error(`Fetch error (${url}):`, error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+// ------------------- Courses & Topics --------------------
+
 export async function getTopicsByCourseType(courseType: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/courses/${courseType}/topics`, {
-    cache: "no-store"
-  });
-  if (!res.ok) return {}
-  const result = await res.json()
-  console.log("fetchTopicsByCourseType ", result)
-  return result;
+  return safeFetch(`${BASE_URL}/api/courses/${courseType}/topics`, { cache: "no-store" });
 }
 
 export async function getTopicById(topicId: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/topics/${topicId}`);
-  if (!res.ok) return {};
-
-  const result = await res.json()
-  console.log("fetchTopicById ", result)
-  return result;
+  return safeFetch(`${BASE_URL}/api/topics/${topicId}`);
 }
 
+// ------------------- Test Papers --------------------
+
 export async function getAllTestPapersByTopicId(topicId: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/topics/${topicId}/testpapers`)
-  if (!res.ok) return {};
-  const result = await res.json()
-  console.log("fetchAllTestPapersByTopicId ", result)
-  return result;
+  return safeFetch(`${BASE_URL}/api/topics/${topicId}/testpapers`);
 }
 
 export async function getTestPaperById(testPaperId: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/testpapers/${testPaperId}`);
-  if (!res.ok) return {};
-  const result = await res.json()
-  console.log("fetchTestPaperById ", result)
-  return result;
+  return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
 }
+
+// ------------------- MCQs --------------------
 
 export async function getMCQById(id: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/mcqs/${id}`);
-  if (!res.ok) return null;
-  return res.json();
+  return safeFetch(`${BASE_URL}/api/mcqs/${id}`);
 }
 
-export async function moveTopicToTrash(topicId: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/topics/${topicId}/move-to-trash`, {
-    method: "POST",
-  });
-  if (!res.ok) return null;
-  return res.json();
-}
-
-export async function moveTestPaperToTrash(testPaperId: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/testpapers/${testPaperId}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) return {};
-  return res.json();
-}
-
-export async function moveMCQToTrash(mcqId: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/mcqs/${mcqId}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) return {};
-  return res.json();
-}
+// ------------------- Trash --------------------
 
 export async function getTrashItems() {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash`);
-  if (!res.ok) return {};
-  return res.json();
+  return safeFetch(`${BASE_URL}/api/trash`);
 }
 
 export async function restoreTrashItem(id: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash/${id}/restore`, { method: "POST" });
-  if (!res.ok) return {};
-  return res.json();
+  return safeFetch(`${BASE_URL}/api/trash/${id}/restore`, { method: "POST" });
 }
 
 export async function permanentlyDeleteTrashItem(id: string) {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash/${id}`, { method: "DELETE" });
-  if (!res.ok) return {};
-  return res.json();
+  return safeFetch(`${BASE_URL}/api/trash/${id}`, { method: "DELETE" });
 }
 
 export async function purgeTrash() {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/trash`, { method: "DELETE" });
-  if (!res.ok) return {};
-  return res.json();
+  return safeFetch(`${BASE_URL}/api/trash`, { method: "DELETE" });
+}
+
+// ------------------- Move to Trash --------------------
+
+export async function moveTopicToTrash(topicId: string) {
+  return safeFetch(`${BASE_URL}/api/topics/${topicId}/move-to-trash`, { method: "POST" });
+}
+
+export async function moveTestPaperToTrash(testPaperId: string) {
+  return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`, { method: "DELETE" });
+}
+
+export async function moveMCQToTrash(mcqId: string) {
+  return safeFetch(`${BASE_URL}/api/mcqs/${mcqId}`, { method: "DELETE" });
 }
