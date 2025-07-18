@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { List, LayoutGrid, Trash2 } from "lucide-react";
+import { List, LayoutGrid, Trash2, Clock, FileText } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/global-confirm-dialog";
@@ -12,6 +12,7 @@ import type { TestPaper } from "@/types/entities";
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
@@ -80,35 +81,30 @@ export default function TopicPage() {
         <div
           className={cn(
             "gap-3",
-            viewMode === "grid" ? "flex flex-wrap" : "space-y-3"
+            viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" : "space-y-3"
           )}
         >
           {[...Array(4)].map((_, idx) => (
             <Skeleton
               key={idx}
-              className={cn(
-                "h-20 w-full rounded-md",
-                viewMode === "grid" && "max-w-xs flex-1"
-              )}
+              className="h-24 w-full rounded-lg"
             />
           ))}
         </div>
       ) : testPapers && testPapers.length > 0 ? (
         <div
           className={cn(
-            "gap-3",
-            viewMode === "grid" ? "flex flex-wrap" : "space-y-3"
+            viewMode === "grid"
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              : "flex flex-col gap-3"
           )}
         >
           {testPapers.map((paper) => (
             <Card
               key={paper.id}
-              className={cn(
-                "relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group",
-                viewMode === "grid" && "max-w-xs min-w-[220px] flex-1"
-              )}
+              className="relative transition-transform hover:scale-[1.02] hover:shadow-md border border-border/40 rounded-xl cursor-pointer"
+              onClick={() => navigate(`/${location.pathname.split("/")[1]}/${topicId}/testpaper/${paper.id}`)}
             >
-              {/* 🗑️ Delete Button */}
               <Button
                 size="icon"
                 variant="ghost"
@@ -118,21 +114,30 @@ export default function TopicPage() {
                   handleMoveToTrash(paper.id);
                 }}
               >
-                <Trash2 size={16} className="text-yellow-600" />
+                <Trash2 size={16} className="text-destructive" />
               </Button>
 
-              {/* Click to open test paper */}
-              <div
-                onClick={() => navigate(`/CAInter/${topicId}/testpaper/${paper.id}`)}
-                className="cursor-pointer"
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-medium">{paper.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  {paper.mcqs?.length} question{paper.mcqs?.length !== 1 ? "s" : ""}
-                </CardContent>
-              </div>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold truncate">{paper.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-1">
+                <div className="flex items-center gap-1">
+                  <FileText size={14} />
+                  {paper.mcqs?.length ?? 0} question{paper.mcqs?.length !== 1 ? "s" : ""}
+                </div>
+                {paper.timeLimitMinutes && (
+                  <div className="flex items-center gap-1">
+                    <Clock size={14} />
+                    {paper.timeLimitMinutes} min
+                  </div>
+                )}
+                {paper.totalMarks && (
+                  <div className="flex items-center gap-1">
+                    <span className="font-medium">Marks:</span>
+                    {paper.totalMarks}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           ))}
         </div>

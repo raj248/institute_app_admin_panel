@@ -13,11 +13,9 @@ export default function CAFinal() {
         const result = res.data
         setTopics(result ?? null)
         if (!result) return
-        console.log(result[0].name)
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-    console.debug("CAFinal")
   }, []);
 
   return (

@@ -47,6 +47,9 @@ export type Topic_schema = z.infer<typeof TopicSchema>;
 export interface TestPaper {
   id: string;
   name: string;
+  description?: string;
+  timeLimitMinutes?: string;
+  totalMarks?: string
   topicId: string;
   createdAt: string;
   updatedAt: string;
