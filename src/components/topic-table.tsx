@@ -435,11 +435,13 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
           <SelectContent>
             <SelectItem value="table">Table</SelectItem>
             <SelectItem value="grid">Grid</SelectItem>
+            <SelectItem value="videogrid">Videos</SelectItem>
           </SelectContent>
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="table">Table</TabsTrigger>
           <TabsTrigger value="grid">Grid</TabsTrigger>
+          <TabsTrigger value="videogrid">Videos</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
           {currentTab === "table" && (
