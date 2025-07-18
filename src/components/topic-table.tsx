@@ -99,6 +99,7 @@ import { getTopicsByCourseType, moveTopicToTrash } from "@/lib/api"
 import { useConfirm } from "./global-confirm-dialog"
 import { TopicGridView } from "./TopicGridView"
 import { cn } from "@/lib/cn"
+import YouTubeVideoGridTab from "./YouTubeVideoGridTab"
 
 export function DataTable({ data: topic, setData: setTopics, loading: loading, setLoading: setLoading }: { data: Topic_schema[], setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>, loading: boolean, setLoading: React.Dispatch<React.SetStateAction<boolean>> }) {
   function DragHandle({ id }: { id: string }) {
@@ -411,7 +412,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
       })
     }
   }
-  const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
+  const [currentTab, setCurrentTab] = useState<"table" | "grid" | "videogrid">("table");
 
   return (
     <Tabs
@@ -622,6 +623,27 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading, s
         <div className="w-full flex-1 rounded-lg ">
           <TopicGridView topics={topic as Topic[]} loading={loading} />
         </div>
+      </TabsContent>
+
+      <TabsContent
+        value="videogrid"
+        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+      >
+        <YouTubeVideoGridTab
+          videoLinks={[
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+          ]}
+          onDelete={(id) => {
+            console.log("Delete", id);
+            // Remove from DB or state
+          }}
+          onEdit={(id, newUrl) => {
+            console.log("Edit", id, newUrl);
+            // Update in DB or state
+          }}
+        />
+
       </TabsContent>
     </Tabs>
   )
