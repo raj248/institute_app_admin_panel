@@ -68,10 +68,11 @@ export default function TopicPage() {
 
   const handleMoveToTrash = async (id: string) => {
     const confirmed = await confirm({
-      title: "Delete this test paper?",
+      title: "Delete This Test Paper?",
       description: "This will move the test paper to trash. You can restore it later if needed.",
-      confirmText: "Delete",
+      confirmText: "Yes, Delete",
       cancelText: "Cancel",
+      variant: "destructive",
     });
 
     if (!confirmed) return;
@@ -93,7 +94,7 @@ export default function TopicPage() {
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
       <div className="flex justify-between items-center mx-4">
-        <h2 className="text-xl font-semibold tracking-tight">{topic?.name ?? "Loading..."}</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-center">{topic?.name ?? "Loading..."}</h2>
 
       </div>
       <Tabs

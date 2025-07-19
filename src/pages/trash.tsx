@@ -62,9 +62,9 @@ export default function Trash() {
 
   const handleRestore = async (id: string) => {
     const confirmed = await confirm({
-      title: "Restore item?",
+      title: "Restore This Item?",
       description: "This will restore the item from trash back into your system.",
-      confirmText: "Restore",
+      confirmText: "Yes, Restore",
       cancelText: "Cancel",
     });
     if (!confirmed) return;
@@ -80,6 +80,7 @@ export default function Trash() {
         "This will permanently delete the item and all its data. This action cannot be undone.",
       confirmText: "Delete Permanently",
       cancelText: "Cancel",
+      variant: "destructive",
     });
     if (!confirmed) return;
 
@@ -94,6 +95,7 @@ export default function Trash() {
         "This will permanently delete ALL trashed items and cannot be undone.",
       confirmText: "Purge All",
       cancelText: "Cancel",
+      variant: "destructive",
     });
     if (!confirmed) return;
 

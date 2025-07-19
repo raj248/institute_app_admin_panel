@@ -11,12 +11,14 @@ import {
   AlertDialogTitle,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/cn";
 
 type ConfirmOptions = {
   title?: string;
   description?: string;
   confirmText?: string;
   cancelText?: string;
+  variant?: "destructive" | "secondary";
 };
 
 type ConfirmContextType = (options: ConfirmOptions) => Promise<boolean>;
@@ -56,23 +58,40 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
     <ConfirmDialogContext.Provider value={confirm}>
       {children}
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{options.title || "Are you sure?"}</AlertDialogTitle>
+        <AlertDialogContent className="w-80 rounded-xl">
+          <AlertDialogHeader className="flex flex-col items-center text-center space-y-1 -mt-3">
+            <AlertDialogTitle className="font-medium text-sm">
+              {options.title || "Are you sure?"}
+            </AlertDialogTitle>
             {options.description && (
-              <AlertDialogDescription>{options.description}</AlertDialogDescription>
+              <AlertDialogDescription className="text-xs text-muted-foreground text-center leading-snug whitespace-pre-wrap">
+                {options.description}
+              </AlertDialogDescription>
             )}
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancel}>
-              {options.cancelText || "Cancel"}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>
-              {options.confirmText || "Delete"}
-            </AlertDialogAction>
+            <div className="flex flex-1 items-center justify-between">
+              <AlertDialogCancel
+                onClick={handleCancel}
+                className="h-8 rounded-md text-xs px-8 w-30"
+              >
+                {options.cancelText || "Cancel"}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirm}
+                className={cn(
+                  "h-8 rounded-md text-xs px-8 w-30 ",
+                  options.variant === "destructive" && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                  options.variant === "secondary" && "bg-secondary",
+                )}
+              >
+                {options.confirmText || "Yes, Delete"}
+              </AlertDialogAction>
+            </div>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
     </ConfirmDialogContext.Provider>
   );
 }

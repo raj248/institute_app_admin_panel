@@ -57,10 +57,11 @@ export default function YouTubeVideoGridTab({ videoLinks, onDelete, onEdit }: Pr
 
   const handleDelete = async (id: string) => {
     const confirmed = await confirm({
-      title: "Delete this video?",
+      title: "Delete This Video?",
       description: "This will remove the video from your list. You cannot undo this action.",
-      confirmText: "Delete",
+      confirmText: "Yes, Delete",
       cancelText: "Cancel",
+      variant: "destructive",
     });
 
     if (!confirmed) return;

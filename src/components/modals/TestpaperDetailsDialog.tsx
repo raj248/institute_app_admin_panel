@@ -62,10 +62,11 @@ export function TestpaperDetailsDialog({
 
   const handleMoveToTrash = async (mcqId: string) => {
     const confirmed = await confirm({
-      title: "Delete this question?",
+      title: "Delete This Question?",
       description: "This will move the question to trash. You can restore it later if needed.",
-      confirmText: "Delete",
+      confirmText: "Yes, Delete",
       cancelText: "Cancel",
+      variant: "destructive",
     })
 
     if (!confirmed) return

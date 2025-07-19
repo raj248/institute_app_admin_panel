@@ -20,10 +20,11 @@ export function TopicGridView({ topics, loading }: TopicGridViewProps) {
 
   const handleMoveToTrash = async (topicId: string) => {
     const confirmed = await confirm({
-      title: "Move this topic to trash?",
+      title: "Move This Topic To Trash?",
       description: "This will move the topic to trash along with its test papers and MCQs. You can restore it later if needed.",
-      confirmText: "Move to Trash",
+      confirmText: "Yes, Move to Trash",
       cancelText: "Cancel",
+      variant: "destructive",
     });
 
     if (!confirmed) return;
