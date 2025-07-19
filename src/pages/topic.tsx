@@ -20,6 +20,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { AddTestPaperDialog } from "@/components/modals/AddTestPaperDialog";
+import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -197,11 +198,25 @@ export default function TopicPage() {
             Revision Test tab (coming soon).
           </div>
         </TabsContent>
+        <TabsContent
+          value="videos"
+          className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+        >
+          <YouTubeVideoGridTab
+            videoLinks={[
+              "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+              "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+            ]}
+            onDelete={(id) => {
+              console.log("Delete", id);
+              // Remove from DB or state
+            }}
+            onEdit={(id, newUrl) => {
+              console.log("Edit", id, newUrl);
+              // Update in DB or state
+            }}
+          />
 
-        <TabsContent value="videos">
-          <div className="p-4 text-center text-muted-foreground">
-            Videos tab (coming soon).
-          </div>
         </TabsContent>
       </Tabs>
     </div>

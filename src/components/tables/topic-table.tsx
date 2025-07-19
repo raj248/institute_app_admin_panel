@@ -88,7 +88,6 @@ import { moveTopicToTrash } from "@/lib/api"
 import { useConfirm } from "@/components/modals/global-confirm-dialog"
 import { TopicGridView } from "@/components/cards/TopicGridView"
 import { cn } from "@/lib/cn"
-import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab"
 import { AddTopicDialog } from "@/components/modals/AddTopicDialog";
 import { EditTopicViewer } from "@/components/modals/EditTopicViewer";
 
@@ -334,7 +333,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
       })
     }
   }
-  const [currentTab, setCurrentTab] = useState<"table" | "grid" | "videogrid">("table");
+  const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
 
   return (
     <Tabs
@@ -346,7 +345,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
-        <Select defaultValue={currentTab} onValueChange={(value) => setCurrentTab(value as "table" | "grid" | "videogrid")}>
+        <Select defaultValue={currentTab} onValueChange={(value) => setCurrentTab(value as "table" | "grid")}>
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
             size="sm"
@@ -357,13 +356,11 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
           <SelectContent>
             <SelectItem value="table">Table</SelectItem>
             <SelectItem value="grid">Grid</SelectItem>
-            <SelectItem value="videogrid">Videos</SelectItem>
           </SelectContent>
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
           <TabsTrigger value="table">Table</TabsTrigger>
           <TabsTrigger value="grid">Grid</TabsTrigger>
-          <TabsTrigger value="videogrid">Videos</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
           {currentTab === "table" && (
@@ -549,27 +546,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         <div className="w-full flex-1 rounded-lg ">
           <TopicGridView topics={topic as Topic[]} loading={loading} />
         </div>
-      </TabsContent>
-
-      <TabsContent
-        value="videogrid"
-        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
-      >
-        <YouTubeVideoGridTab
-          videoLinks={[
-            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-            "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
-          ]}
-          onDelete={(id) => {
-            console.log("Delete", id);
-            // Remove from DB or state
-          }}
-          onEdit={(id, newUrl) => {
-            console.log("Edit", id, newUrl);
-            // Update in DB or state
-          }}
-        />
-
       </TabsContent>
     </Tabs>
   )
