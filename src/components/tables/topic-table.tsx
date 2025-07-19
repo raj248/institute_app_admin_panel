@@ -3,19 +3,9 @@
 import * as React from "react"
 import { format } from "date-fns";
 import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
   type UniqueIdentifier,
 } from "@dnd-kit/core"
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
 import {
-  arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -28,7 +18,6 @@ import {
   IconChevronsLeft,
   IconChevronsRight,
   IconDotsVertical,
-  IconGripVertical,
   IconLayoutColumns,
 } from "@tabler/icons-react"
 import {
@@ -49,7 +38,6 @@ import {
 
 import { Button } from "@/components/ui/button"
 
-import { Checkbox } from "@/components/ui/checkbox"
 
 import {
   DropdownMenu,
@@ -99,25 +87,6 @@ interface DataTableProps {
 }
 
 export function DataTable({ data: topic, setData: setTopics, loading: loading }: DataTableProps) {
-  function DragHandle({ id }: { id: string }) {
-    const { attributes, listeners } = useSortable({
-      id,
-    })
-
-    return (
-      <Button
-        {...attributes}
-        {...listeners}
-        variant="ghost"
-        size="icon"
-        className="text-muted-foreground size-7 hover:bg-transparent"
-      >
-        <IconGripVertical className="text-muted-foreground size-3" />
-        <span className="sr-only">Drag to reorder</span>
-      </Button>
-    )
-  }
-
   function DraggableRow({
     row,
     onRowClick,
@@ -182,46 +151,15 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
 
   const columns: ColumnDef<Topic_schema>[] = [
     {
-      id: "drag",
-      header: () => null,
-      cell: ({ row }) => <DragHandle id={row.original.id} />,
-    },
-    {
-      id: "select",
-      header: ({ table }) => (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
-          />
-        </div>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "name",
-      header: "Name",
+      accessorKey: "Name",
+      header: () => <span className="ml-2 font-medium">Name</span>,
       cell: ({ row }) => {
-        return <div className="font-medium">{row.original.name}</div>
+        return <div className="ml-2 font-medium">{row.original.name}</div>
       },
       enableHiding: false,
     },
     {
-      accessorKey: "description",
+      accessorKey: "Description",
       header: "Description",
       cell: ({ row }) => (
         <div
@@ -234,7 +172,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
     },
 
     {
-      accessorKey: "updatedAt",
+      accessorKey: "Last Updated",
       header: "Last Updated",
       cell: ({ row }) => {
         const dateString = row.original.updatedAt;
@@ -243,10 +181,10 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
       },
     },
     {
-      accessorKey: "testpapercount",
-      header: "Tests",
+      accessorKey: "Test Paper Count",
+      header: "# Test Papers",
       cell: ({ row }) => (
-        <div className="w-32 truncate">{row.original.testPaperCount ?? 0}</div>
+        <div className="w-32 text-center justify-center truncate">{row.original.testPaperCount ?? 0}</div>
       ),
     },
     {
@@ -286,12 +224,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
     pageIndex: 0,
     pageSize: 10,
   })
-  const sortableId = React.useId()
-  const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
-  )
+
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => topic?.map(({ id }) => id) || [],
@@ -323,16 +256,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-    if (active && over && active.id !== over.id) {
-      setTopics((data) => {
-        const oldIndex = dataIds.indexOf(active.id)
-        const newIndex = dataIds.indexOf(over.id)
-        return arrayMove(data as Topic_schema[], oldIndex, newIndex)
-      })
-    }
-  }
   const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
 
   return (
@@ -411,55 +334,48 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="overflow-hidden rounded-lg border">
-          <DndContext
-            collisionDetection={closestCenter}
-            modifiers={[restrictToVerticalAxis]}
-            onDragEnd={handleDragEnd}
-            sensors={sensors}
-            id={sortableId}
-          >
-            <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                {table.getRowModel().rows?.length ? (
-                  <SortableContext
-                    items={dataIds}
-                    strategy={verticalListSortingStrategy}
+
+          <Table >
+            <TableHeader className="bg-muted sticky top-0 z-10">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody className="**:data-[slot=table-cell]:first:w-8">
+              {table.getRowModel().rows?.length ? (
+                <SortableContext
+                  items={dataIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {table.getRowModel().rows.map((row) => (
+                    <DraggableRow key={row.id} row={row} onRowClick={handleClick} />
+                  ))}
+                </SortableContext>
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
                   >
-                    {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} onRowClick={handleClick} />
-                    ))}
-                  </SortableContext>
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </DndContext>
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
