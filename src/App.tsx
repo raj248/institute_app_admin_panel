@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import MainLayout from "@/components/layout";
+import MainLayout from "@/components/layout/layout";
 import Dashboard from "@/pages/dashboard";
 import CAInter from "@/pages/cainter";
 import CAFinal from "@/pages/cafinal";
 import Debug from "@/pages/debug";
 import Settings from "@/pages/settings";
 import Trash from "@/pages/trash";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./components/theme/theme-provider";
 import TopicPage from "./pages/topic";
 import TestPaperPage from "./pages/testpaper";
-import { ConfirmDialogProvider } from "./components/global-confirm-dialog";
+import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

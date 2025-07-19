@@ -85,12 +85,12 @@ import type { Topic, Topic_schema } from "@/types/entities"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { moveTopicToTrash } from "@/lib/api"
-import { useConfirm } from "./global-confirm-dialog"
-import { TopicGridView } from "./TopicGridView"
+import { useConfirm } from "@/components/modals/global-confirm-dialog"
+import { TopicGridView } from "@/components/cards/TopicGridView"
 import { cn } from "@/lib/cn"
-import YouTubeVideoGridTab from "./YouTubeVideoGridTab"
-import { AddTopicDialog } from "./AddTopicDialog";
-import { EditTopicViewer } from "./EditTopicViewer";
+import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab"
+import { AddTopicDialog } from "@/components/modals/AddTopicDialog";
+import { EditTopicViewer } from "@/components/modals/EditTopicViewer";
 
 interface DataTableProps {
   data: Topic_schema[],

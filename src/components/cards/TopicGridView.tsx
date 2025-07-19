@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useConfirm } from "@/components/global-confirm-dialog";
+import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import { moveTopicToTrash } from "@/lib/api";
 import type { Topic } from "@/types/entities";
 

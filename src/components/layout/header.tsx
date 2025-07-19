@@ -1,8 +1,8 @@
-import { SidebarTrigger } from './ui/sidebar'
-import { Separator } from './ui/separator'
+import { SidebarTrigger } from '../ui/sidebar'
+import { Separator } from '../ui/separator'
 import { AppBreadcrumbs } from './app-breadcrumbs'
-import { ModeToggle } from './mode-toggle'
-import { Button } from './ui/button'
+import { ModeToggle } from '../theme/mode-toggle'
+import { Button } from '../ui/button'
 
 function Header() {
   return (

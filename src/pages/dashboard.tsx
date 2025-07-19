@@ -1,4 +1,4 @@
-import { TestpaperDetailsDialog } from "@/components/TestpaperDetailsDrawer";
+import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import { getTopicsByCourseType } from "@/lib/api";
 import type { Topic_schema } from "@/types/entities";
 import { useEffect, useState } from "react";

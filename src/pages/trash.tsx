@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, RotateCcw, XCircle } from "lucide-react";
 import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById } from "@/lib/api";
-import { useConfirm } from "@/components/global-confirm-dialog";
+import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { Trash } from "@/types/entities";
 
 export default function Trash() {

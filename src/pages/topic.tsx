@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
-import { useConfirm } from "@/components/global-confirm-dialog";
+import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { TestPaper } from "@/types/entities";
-import TestPaperCard from "@/components/TestPaperCards";
-import { TestpaperDetailsDialog } from "@/components/TestpaperDetailsDrawer";
+import TestPaperCard from "@/components/cards/TestPaperCards";
+import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();

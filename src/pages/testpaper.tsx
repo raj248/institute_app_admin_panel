@@ -8,7 +8,7 @@ import { List, LayoutGrid, Trash2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTestPaperById, moveMCQToTrash } from "@/lib/api";
-import { useConfirm } from "@/components/global-confirm-dialog";
+import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { MCQ } from "@/types/entities";
 
 export default function TestPaperPage() {

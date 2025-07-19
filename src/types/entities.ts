@@ -56,6 +56,7 @@ export interface TestPaper {
   deletedAt: string | null;
   topic?: Topic;
   mcqCount?: number;
+  mcqs?: MCQ[];
 }
 
 export interface MCQ {

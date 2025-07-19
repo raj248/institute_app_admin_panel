@@ -1,10 +1,10 @@
 // src/components/layout.tsx
 
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router-dom";
-import { useTheme } from "./theme-provider";
+import { useTheme } from "../theme/theme-provider";
 import { cn } from "@/lib/cn"; // adjust path if needed
 import Header from "./header";
 
