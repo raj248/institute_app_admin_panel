@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { List, LayoutGrid, Trash2, Clock, FileText } from "lucide-react";
+import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/global-confirm-dialog";
 import type { TestPaper } from "@/types/entities";
+import TestPaperCard from "@/components/TestPaperCards";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
@@ -99,51 +97,19 @@ export default function TopicPage() {
               : "flex flex-col gap-3"
           )}
         >
-          {testPapers.map((paper) => (
-            <Card
+          {topicId && testPapers.map((paper) => (
+            <TestPaperCard
               key={paper.id}
-              className="relative transition-transform hover:scale-[1.02] hover:shadow-md border border-border/40 rounded-xl cursor-pointer"
-              onClick={() => navigate(`/${location.pathname.split("/")[1]}/${topicId}/testpaper/${paper.id}`)}
-            >
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleMoveToTrash(paper.id);
-                }}
-              >
-                <Trash2 size={16} className="text-destructive" />
-              </Button>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold truncate">{paper.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground space-y-1">
-                <div className="flex items-center gap-1">
-                  <FileText size={14} />
-                  {paper.mcqs?.length ?? 0} question{paper.mcqs?.length !== 1 ? "s" : ""}
-                </div>
-                {paper.timeLimitMinutes && (
-                  <div className="flex items-center gap-1">
-                    <Clock size={14} />
-                    {paper.timeLimitMinutes} min
-                  </div>
-                )}
-                {paper.totalMarks && (
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">Marks:</span>
-                    {paper.totalMarks}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              paper={paper}
+              topicId={topicId}
+              handleMoveToTrash={handleMoveToTrash}
+            />
           ))}
         </div>
       ) : (
         <p className="text-muted-foreground">No test papers found for this topic.</p>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }

@@ -90,7 +90,7 @@ import { TopicGridView } from "./TopicGridView"
 import { cn } from "@/lib/cn"
 import YouTubeVideoGridTab from "./YouTubeVideoGridTab"
 import { AddTopicDialog } from "./AddTopicDialog";
-import { TableCellViewer } from "./TableCellViewer";
+import { EditTopicViewer } from "./EditTopicViewer";
 
 interface DataTableProps {
   data: Topic_schema[],
@@ -266,7 +266,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}><TableCellViewer item={row.original} setTopics={setTopics} /></DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => e.stopPropagation()}><EditTopicViewer item={row.original} setTopics={setTopics} /></DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={(e) => {
               handleMoveToTrash(row.original.id)

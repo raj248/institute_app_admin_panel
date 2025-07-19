@@ -12,7 +12,7 @@ import { getTopicsByCourseType, updateTopic } from "@/lib/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { Topic_schema } from "@/types/entities";
 
-export function TableCellViewer(
+export function EditTopicViewer(
   { item, setTopics }: {
     item: Topic_schema,
     setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>
