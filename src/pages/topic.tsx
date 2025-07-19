@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,12 +11,21 @@ import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { TestPaper } from "@/types/entities";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [tab, setTab] = useState<"testpapers" | "notes" | "revision_test" | "videos">("testpapers");
 
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(null);
@@ -66,65 +77,129 @@ export default function TopicPage() {
     <div className="md:p-3 lg:p-5 space-y-4">
       <div className="flex justify-between items-center mx-4">
         <h2 className="text-xl font-semibold tracking-tight">Test Papers</h2>
-        <div className="flex gap-1">
-          <Button
-            size="icon"
-            variant={viewMode === "list" ? "default" : "secondary"}
-            onClick={() => setViewMode("list")}
-          >
-            <List size={18} />
-          </Button>
-          <Button
-            size="icon"
-            variant={viewMode === "grid" ? "default" : "secondary"}
-            onClick={() => setViewMode("grid")}
-          >
-            <LayoutGrid size={18} />
-          </Button>
-        </div>
+
       </div>
+      <Tabs
+        value={tab}
+        onValueChange={(value) => setTab(value as "testpapers" | "notes" | "revision_test" | "videos")}
+        className="w-full flex-col justify-start gap-6"
+      >
+        <div className="flex items-center justify-between px-4 lg:px-6">
+          <Label htmlFor="view-selector" className="sr-only">
+            View
+          </Label>
+          <Select defaultValue={tab} onValueChange={(value) => setTab(value as "testpapers" | "notes" | "revision_test" | "videos")}>
+            <SelectTrigger
+              className="flex w-fit md:hidden"
+              size="sm"
+              id="view-selector"
+            >
 
-      <TestpaperDetailsDialog
-        testPaperId={selectedTestPaperId}
-        open={openDetailDialog}
-        onOpenChange={setOpenDetailDialog}
-      />
-
-      {loading ? (
-        <div
-          className={cn(
-            "gap-3",
-            viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" : "space-y-3"
-          )}
-        >
-          {[...Array(4)].map((_, idx) => (
-            <Skeleton
-              key={idx}
-              className="h-24 w-full rounded-lg"
-            />
-          ))}
-        </div>
-      ) : testPapers && testPapers.length > 0 ? (
-        <div
-          className={cn(
-            viewMode === "grid"
-              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-              : "flex flex-col gap-3"
-          )}
-        >
-          {topicId && testPapers.map((paper) => (
-            <TestPaperCard
-              key={paper.id}
-              paper={paper}
+              <SelectValue placeholder="Select a view" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="testpapers">Test Papers</SelectItem>
+              <SelectItem value="notes">Notes</SelectItem>
+              <SelectItem value="revision_test">Revision Test</SelectItem>
+              <SelectItem value="videos">Videos</SelectItem>
+            </SelectContent>
+          </Select>
+          <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 md:flex lg:flex">
+            <TabsTrigger value="testpapers">Test Papers</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="revision_test">Revision Test</TabsTrigger>
+            <TabsTrigger value="videos">Video Notes</TabsTrigger>
+          </TabsList>
+          <div className="flex items-center gap-2">
+            {tab === "testpapers" && (
+              <div className="flex gap-1">
+                <Button
+                  size="icon"
+                  variant={viewMode === "list" ? "default" : "secondary"}
+                  onClick={() => setViewMode("list")}
+                >
+                  <List size={18} />
+                </Button>
+                <Button
+                  size="icon"
+                  variant={viewMode === "grid" ? "default" : "secondary"}
+                  onClick={() => setViewMode("grid")}
+                >
+                  <LayoutGrid size={18} />
+                </Button>
+              </div>
+            )}
+            {/* <AddTestPaperDialog
               topicId={topicId}
-              handleMoveToTrash={handleMoveToTrash}
-              onClick={() => handleCardClick(paper.id)}
-            />
-          ))}
+              setTopics={setTopics}
+            /> */}
+          </div>
         </div>
-      ) : (
-        <p className="text-muted-foreground">No test papers found for this topic.</p>
-      )}
+
+        <TabsContent value="testpapers">
+          <TestpaperDetailsDialog
+            testPaperId={selectedTestPaperId}
+            open={openDetailDialog}
+            onOpenChange={setOpenDetailDialog}
+          />
+
+          {loading ? (
+            <div
+              className={cn(
+                "gap-3",
+                viewMode === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                  : "space-y-3"
+              )}
+            >
+              {[...Array(4)].map((_, idx) => (
+                <Skeleton
+                  key={idx}
+                  className="h-24 w-full rounded-lg"
+                />
+              ))}
+            </div>
+          ) : testPapers && testPapers.length > 0 ? (
+            <div
+              className={cn(
+                viewMode === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                  : "flex flex-col gap-3"
+              )}
+            >
+              {topicId && testPapers.map((paper) => (
+                <TestPaperCard
+                  key={paper.id}
+                  paper={paper}
+                  topicId={topicId}
+                  handleMoveToTrash={handleMoveToTrash}
+                  onClick={() => handleCardClick(paper.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No test papers found for this topic.</p>
+          )}
+        </TabsContent>
+
+        <TabsContent value="notes">
+          <div className="p-4 text-center text-muted-foreground">
+            Notes tab (coming soon).
+          </div>
+        </TabsContent>
+
+        <TabsContent value="revision_test">
+          <div className="p-4 text-center text-muted-foreground">
+            Revision Test tab (coming soon).
+          </div>
+        </TabsContent>
+
+        <TabsContent value="videos">
+          <div className="p-4 text-center text-muted-foreground">
+            Videos tab (coming soon).
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
