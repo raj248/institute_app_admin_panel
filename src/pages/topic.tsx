@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
+import { getAllTestPapersByTopicId, getTopicById, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
-import type { TestPaper } from "@/types/entities";
+import type { TestPaper, Topic } from "@/types/entities";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import {
@@ -24,6 +24,7 @@ import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
+  const [topic, setTopic] = useState<Topic | null>(null);
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
@@ -31,6 +32,19 @@ export default function TopicPage() {
 
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(null);
+
+  const loadTopic = async () => {
+    if (!topicId) return;
+    try {
+      // Assuming you have an API call to get topic details by ID
+      // For now, let's mock it or leave it if not directly used on this page
+      const topicRes = await getTopicById(topicId);
+      setTopic(topicRes.data ?? null);
+    } catch (e) {
+      console.error(e);
+    } finally {
+    }
+  };
 
   const loadTestPapers = async () => {
     if (!topicId) return;
@@ -46,6 +60,7 @@ export default function TopicPage() {
   };
 
   useEffect(() => {
+    loadTopic();
     loadTestPapers();
   }, [topicId]);
 
@@ -78,7 +93,7 @@ export default function TopicPage() {
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
       <div className="flex justify-between items-center mx-4">
-        <h2 className="text-xl font-semibold tracking-tight">Test Papers</h2>
+        <h2 className="text-xl font-semibold tracking-tight">{topic?.name ?? "Loading..."}</h2>
 
       </div>
       <Tabs
