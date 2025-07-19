@@ -1,12 +1,12 @@
-import { DataTable } from "@/components/topic-table";
+import { TestpaperDetailsDialog } from "@/components/TestpaperDetailsDrawer";
 import { getTopicsByCourseType } from "@/lib/api";
 import type { Topic_schema } from "@/types/entities";
 import { useEffect, useState } from "react";
 
-
 export default function Dashboard() {
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     getTopicsByCourseType("CAFinal")
       .then((res) => {
@@ -18,6 +18,8 @@ export default function Dashboard() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+  loading
+  topics
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -26,7 +28,7 @@ export default function Dashboard() {
           {/* <div className="px-4 lg:px-6"> */}
           {/* <ChartAreaInteractive /> */}
           {/* </div> */}
-          {!loading && <DataTable key={"CAFinal"} data={topics ?? []} setData={setTopics} setLoading={setLoading} loading={loading} />}
+          <TestpaperDetailsDialog testPaperId={"cmd9tjs4m000d2q7vge24klcz"} open={open} onOpenChange={setOpen} />
         </div>
       </div>
     </div>

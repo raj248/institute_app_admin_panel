@@ -13,9 +13,9 @@ import type { MCQ } from "@/types/entities";
 
 export default function TestPaperPage() {
   const { testPaperId } = useParams<{ testPaperId: string }>();
-  const [mcqs, setMcqs] = useState<MCQ[] | null>(null);
-  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [loading, setLoading] = useState(true);
+  const [mcqs, setMcqs] = useState<MCQ[] | null>(null);
   useEffect(() => {
     if (!testPaperId) return;
     getTestPaperById(testPaperId)

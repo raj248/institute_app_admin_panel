@@ -13,12 +13,14 @@ interface TestPaperCardProps {
   paper: TestPaper;
   topicId: string;
   handleMoveToTrash: (id: string) => void;
+  onClick: () => void;
 }
 
-export default function TestPaperCard({ paper, topicId, handleMoveToTrash }: TestPaperCardProps) {
+export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onClick }: TestPaperCardProps) {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
+
 
   return (
     <Card
@@ -29,7 +31,8 @@ export default function TestPaperCard({ paper, topicId, handleMoveToTrash }: Tes
         rounded-xl border border-border/40 cursor-pointer
         overflow-hidden
       "
-      onClick={() => navigate(`/${location.pathname.split("/")[1]}/${topicId}/testpaper/${paper.id}`)}
+      // onClick={() => navigate(`/${location.pathname.split("/")[1]}/${topicId}/testpaper/${paper.id}`)}
+      onClick={onClick ?? (() => navigate(`/${location.pathname.split("/")[1]}/${topicId}/testpaper/${paper.id}`))} // fallback to navigate if onClick not provided
     >
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-semibold truncate">{paper.name}</CardTitle>
@@ -38,7 +41,7 @@ export default function TestPaperCard({ paper, topicId, handleMoveToTrash }: Tes
       <CardContent className="text-sm text-muted-foreground space-y-1 pb-4">
         <div className="flex items-center gap-1">
           <FileText size={14} />
-          {paper.mcqs?.length ?? 0} question{paper.mcqs?.length !== 1 ? "s" : ""}
+          {paper.mcqCount ?? 0} question{paper.mcqCount !== 1 ? "s" : ""}
         </div>
         {paper.timeLimitMinutes && (
           <div className="flex items-center gap-1">

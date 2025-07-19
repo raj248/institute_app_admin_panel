@@ -55,13 +55,15 @@ export interface TestPaper {
   updatedAt: string;
   deletedAt: string | null;
   topic?: Topic;
-  mcqs?: MCQ[];
+  mcqCount?: number;
 }
 
 export interface MCQ {
   id: string;
   question: string;
   options: Record<string, string>;
+  explanation?: string;
+  marks: number;
   correctAnswer: string;
   topicId: string;
   testPaperId: string;

@@ -8,12 +8,16 @@ import { getAllTestPapersByTopicId, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/global-confirm-dialog";
 import type { TestPaper } from "@/types/entities";
 import TestPaperCard from "@/components/TestPaperCards";
+import { TestpaperDetailsDialog } from "@/components/TestpaperDetailsDrawer";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(null);
 
   const loadTestPapers = async () => {
     if (!topicId) return;
@@ -53,6 +57,11 @@ export default function TopicPage() {
     setTestPapers((prev) => prev?.filter((t) => t.id !== id) ?? null);
   };
 
+  const handleCardClick = (id: string) => {
+    setSelectedTestPaperId(id);
+    setOpenDetailDialog(true);
+  };
+
   return (
     <div className="md:p-3 lg:p-5 space-y-4">
       <div className="flex justify-between items-center mx-4">
@@ -74,6 +83,12 @@ export default function TopicPage() {
           </Button>
         </div>
       </div>
+
+      <TestpaperDetailsDialog
+        testPaperId={selectedTestPaperId}
+        open={openDetailDialog}
+        onOpenChange={setOpenDetailDialog}
+      />
 
       {loading ? (
         <div
@@ -103,13 +118,13 @@ export default function TopicPage() {
               paper={paper}
               topicId={topicId}
               handleMoveToTrash={handleMoveToTrash}
+              onClick={() => handleCardClick(paper.id)}
             />
           ))}
         </div>
       ) : (
         <p className="text-muted-foreground">No test papers found for this topic.</p>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }

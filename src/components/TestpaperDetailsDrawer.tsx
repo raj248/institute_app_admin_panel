@@ -1,103 +1,189 @@
-import React, { useState } from "react";
+"use client"
+
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Plus, Trash2 } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import { getTestPaperById, moveMCQToTrash } from "@/lib/api"
+import type { TestPaper } from "@/types/entities"
+import { useState, useEffect } from "react"
+import { useConfirm } from "./global-confirm-dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export default function TestpaperDetailsDrawer() {
-  const [open, setOpen] = useState(true);
+interface TestPaperDetailsDialogProps {
+  testPaperId: string | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
-  const dummyTestpaper = {
-    name: "Mock Test Paper 1",
-    description: "This test paper covers core topics for revision.",
-    timeLimitMinutes: 90,
-    totalMarks: 100,
-    mcqs: [
-      {
-        id: "1",
-        question: "What is the capital of France?",
-        explanation: "The capital of France is Paris.",
-        options: { a: "Paris", b: "Lyon", c: "Marseille", d: "Nice" },
-        correctAnswer: "a",
-        marks: 1,
-      },
-      {
-        id: "2",
-        question: "What is 2 + 2?",
-        explanation: "2 + 2 equals 4.",
-        options: { a: "3", b: "4", c: "5", d: "6" },
-        correctAnswer: "b",
-        marks: 1,
-      },
-    ],
-  };
+export function TestpaperDetailsDialog({
+  testPaperId,
+  open,
+  onOpenChange,
+}: TestPaperDetailsDialogProps) {
+  const [testPaper, setTestPaper] = useState<TestPaper | null>(null)
+  const [loading, setLoading] = useState(false)
+  const confirm = useConfirm()
+
+  useEffect(() => {
+    if (!testPaperId || !open) return
+
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const res = await getTestPaperById(testPaperId)
+        if (res.success) {
+          setTestPaper(res.data ?? null)
+        } else {
+          console.error("Error fetching test paper:", res.error)
+          setTestPaper(null)
+        }
+      } catch (e) {
+        console.error(e)
+        setTestPaper(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [testPaperId, open])
+
+  const handleMoveToTrash = async (mcqId: string) => {
+    const confirmed = await confirm({
+      title: "Delete this question?",
+      description: "This will move the question to trash. You can restore it later if needed.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    })
+
+    if (!confirmed) return
+
+    const mcq = await moveMCQToTrash(mcqId)
+    if (!mcq) {
+      console.error("Failed to move MCQ to trash.")
+      alert("Failed to move MCQ to trash.")
+      return
+    }
+
+    setTestPaper((prev) =>
+      prev ? { ...prev, mcqs: prev.mcqs?.filter((q) => q.id !== mcqId) } : null
+    )
+  }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} direction="left">
-      <DrawerContent className="max-w-md">
-        <DrawerHeader>
-          <DrawerTitle>{dummyTestpaper.name}</DrawerTitle>
-          <DrawerDescription>{dummyTestpaper.description}</DrawerDescription>
-        </DrawerHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-auto max-w-[95vw] md:max-w-screen-md lg:max-w-screen-lg">
+        {loading || !testPaper ? (
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-1/3 mx-auto" />
+            <Skeleton className="h-4 w-2/3 mx-auto" />
+            <div className="flex justify-center gap-4">
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-8 w-24" />
+            </div>
+            <Skeleton className="h-64 w-full rounded-md" />
+          </div>
+        ) : (
+          <>
+            <DialogHeader className="items-center text-center">
+              <DialogTitle>{testPaper.name}</DialogTitle>
+              <DialogDescription>{testPaper.description}</DialogDescription>
+            </DialogHeader>
 
-        <div className="px-4 space-y-2">
-          <div className="text-sm text-muted-foreground">Time Limit: {dummyTestpaper.timeLimitMinutes} minutes</div>
-          <div className="text-sm text-muted-foreground">Total Marks: {dummyTestpaper.totalMarks}</div>
-        </div>
+            <div className="flex flex-wrap justify-center gap-4 text-sm mb-4">
+              {testPaper.timeLimitMinutes && (
+                <div className="bg-muted rounded-lg p-2">
+                  Time Limit: {testPaper.timeLimitMinutes} min
+                </div>
+              )}
+              {testPaper.totalMarks && (
+                <div className="bg-muted rounded-lg p-2">
+                  Total Marks: {testPaper.totalMarks}
+                </div>
+              )}
+            </div>
 
-        <div className="flex justify-end px-4 mt-4">
-          <Button size="sm">
-            <Plus size={16} className="mr-2" />
-            Add Question
-          </Button>
-        </div>
+            <div className="flex justify-between items-center">
+              <h4 className="font-semibold">Questions</h4>
+              <Button size="sm" variant="outline">
+                <Plus size={16} className="mr-1" /> Add Question
+              </Button>
+            </div>
 
-        <div className="px-4 py-4 overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-1/4">Question</TableHead>
-                <TableHead className="w-1/4">Explanation</TableHead>
-                <TableHead className="w-1/4">Options</TableHead>
-                <TableHead className="w-1/6">Correct</TableHead>
-                <TableHead className="w-1/12">Marks</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {dummyTestpaper.mcqs.map((mcq) => (
-                <TableRow key={mcq.id}>
-                  <TableCell>{mcq.question}</TableCell>
-                  <TableCell>{mcq.explanation}</TableCell>
-                  <TableCell>
-                    {Object.entries(mcq.options).map(([key, val]) => (
-                      <div key={key}>
-                        <span className="font-medium mr-1">{key.toUpperCase()}:</span>
-                        {val}
-                      </div>
-                    ))}
-                  </TableCell>
-                  <TableCell>{mcq.correctAnswer.toUpperCase()}</TableCell>
-                  <TableCell>{mcq.marks}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+            <ScrollArea className="max-h-[400px] border rounded-md">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Question</TableHead>
+                    <TableHead>Explanation</TableHead>
+                    <TableHead>Options</TableHead>
+                    <TableHead>Correct</TableHead>
+                    <TableHead>Marks</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {testPaper.mcqs?.map((mcq) => (
+                    <TableRow key={mcq.id}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <TableCell className="max-w-[200px] truncate cursor-default">
+                            {mcq.question}
+                          </TableCell>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm">
+                          {mcq.question}
+                        </TooltipContent>
+                      </Tooltip>
 
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="outline">Close</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  );
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <TableCell className="max-w-[200px] truncate cursor-default">
+                            {mcq.explanation ?? "-"}
+                          </TableCell>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm">
+                          {mcq.explanation ?? "-"}
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <TableCell>
+                        <ul className="text-xs space-y-0.5">
+                          {Object.entries(mcq.options).map(([key, value]) => (
+                            <li key={key}>
+                              <span className="font-medium">{key.toUpperCase()}:</span> {value}
+                            </li>
+                          ))}
+                        </ul>
+                      </TableCell>
+                      <TableCell>{mcq.correctAnswer.toUpperCase()}</TableCell>
+                      <TableCell>{mcq.marks ?? "-"}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleMoveToTrash(mcq.id)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
 }
