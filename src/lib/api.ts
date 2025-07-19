@@ -65,6 +65,18 @@ export async function getTestPaperById(testPaperId: string): Promise<APIResponse
   return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
 }
 
+export async function createTestPaper(data: {
+  name: string;
+  description?: string;
+  timeLimitMinutes: number;
+  topicId: string;
+}): Promise<APIResponse<TestPaper>> {
+  return safeFetch<TestPaper>(`${BASE_URL}/api/testpapers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
 
 // ------------------- MCQs --------------------
 

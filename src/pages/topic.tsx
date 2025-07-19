@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { AddTestPaperDialog } from "@/components/modals/AddTestPaperDialog";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -129,10 +130,11 @@ export default function TopicPage() {
                 </Button>
               </div>
             )}
-            {/* <AddTestPaperDialog
-              topicId={topicId}
-              setTopics={setTopics}
-            /> */}
+            <AddTestPaperDialog
+              topicId={topicId ?? ''}
+              courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
+              setTestPapers={setTestPapers}
+            />
           </div>
         </div>
 

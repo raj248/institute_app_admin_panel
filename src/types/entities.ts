@@ -59,6 +59,17 @@ export interface TestPaper {
   mcqs?: MCQ[];
 }
 
+export const testPaperSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  timeLimitMinutes: z.coerce.number().min(1, "Time limit is required"),
+  topicId: z.string().min(1, "Topic is required"),
+});
+
+
+export type TestPaperSchema = z.infer<typeof testPaperSchema>;
+
+
 export interface MCQ {
   id: string;
   question: string;
