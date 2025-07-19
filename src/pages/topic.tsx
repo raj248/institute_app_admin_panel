@@ -175,6 +175,7 @@ export default function TopicPage() {
                   key={paper.id}
                   paper={paper}
                   topicId={topicId}
+                  refreshPapers={loadTestPapers}
                   handleMoveToTrash={handleMoveToTrash}
                   onClick={() => handleCardClick(paper.id)}
                 />

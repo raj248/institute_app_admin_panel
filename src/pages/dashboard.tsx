@@ -1,4 +1,3 @@
-import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import { getTopicsByCourseType } from "@/lib/api";
 import type { Topic_schema } from "@/types/entities";
 import { useEffect, useState } from "react";
@@ -6,7 +5,6 @@ import { useEffect, useState } from "react";
 export default function Dashboard() {
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
   useEffect(() => {
     getTopicsByCourseType("CAFinal")
       .then((res) => {
@@ -28,7 +26,6 @@ export default function Dashboard() {
           {/* <div className="px-4 lg:px-6"> */}
           {/* <ChartAreaInteractive /> */}
           {/* </div> */}
-          <TestpaperDetailsDialog testPaperId={"cmd9tjs4m000d2q7vge24klcz"} open={open} onOpenChange={setOpen} />
         </div>
       </div>
     </div>

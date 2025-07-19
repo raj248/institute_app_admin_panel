@@ -5,18 +5,20 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Clock, Trash2, PenIcon } from "lucide-react";
+import { FileText, Clock, Trash2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { TestPaper } from "@/types/entities";
+import { EditTestViewer } from "../modals/EditTestViewer";
 
 interface TestPaperCardProps {
   paper: TestPaper;
   topicId: string;
+  refreshPapers: () => Promise<void>
   handleMoveToTrash: (id: string) => void;
   onClick: () => void;
 }
 
-export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onClick }: TestPaperCardProps) {
+export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onClick, refreshPapers }: TestPaperCardProps) {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,18 +64,7 @@ export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onCli
           className="flex items-center justify-between px-4 pb-4"
           onClick={(e) => e.stopPropagation()}
         >
-          <Button
-            size="sm"
-            variant="outline"
-            aria-label="Edit"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveToTrash(paper.id);
-            }}
-          >
-            <Trash2 size={16} />
-            <span className="hidden lg:inline">Edit</span>
-          </Button>
+          <EditTestViewer item={paper} refreshPapers={refreshPapers} />
           <Button
             size="sm"
             variant="destructive"
@@ -100,19 +91,8 @@ export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onCli
           "
           onClick={(e) => e.stopPropagation()}
         >
-          <Button
-            size="sm"
-            variant="outline"
-            aria-label="Edit"
-            className="cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveToTrash(paper.id);
-            }}
-          >
-            <PenIcon size={16} />
-            <span className="hidden lg:inline">Edit</span>
-          </Button>
+          <EditTestViewer item={paper} refreshPapers={refreshPapers} />
+
           <Button
             size="sm"
             variant="destructive"

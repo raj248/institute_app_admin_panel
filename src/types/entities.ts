@@ -48,7 +48,7 @@ export interface TestPaper {
   id: string;
   name: string;
   description?: string;
-  timeLimitMinutes?: string;
+  timeLimitMinutes?: number;
   totalMarks?: string
   topicId: string;
   createdAt: string;
