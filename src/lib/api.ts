@@ -1,4 +1,4 @@
-import type { Topic, TestPaper, MCQ, Trash } from "@/types/entities";
+import type { Topic, TestPaper, MCQ, Trash, QuestionSchema } from "@/types/entities";
 import type { APIResponse } from "@/types/api"
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
@@ -82,6 +82,22 @@ export async function createTestPaper(data: {
 
 export async function getMCQById(id: string): Promise<APIResponse<MCQ>> {
   return safeFetch(`${BASE_URL}/api/mcqs/${id}`);
+}
+
+export async function createQuestion(data: {
+  question: string,
+  options: object,
+  explanation: string,
+  marks: number,
+  correctAnswer: string,
+  topicId: string,
+  testPaperId: string,
+}): Promise<APIResponse<MCQ>> {
+  return safeFetch<MCQ>(`${BASE_URL}/api/mcqs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 }
 
 // ------------------- Trash --------------------

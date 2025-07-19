@@ -10,22 +10,25 @@ import {
 import { Button } from "@/components/ui/button"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Plus, Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { getTestPaperById, moveMCQToTrash } from "@/lib/api"
 import type { TestPaper } from "@/types/entities"
 import { useState, useEffect } from "react"
 import { useConfirm } from "./global-confirm-dialog"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AddQuestionsDialog } from "./AddQuestionsDialog"
 
 interface TestPaperDetailsDialogProps {
   testPaperId: string | null
+  topicId: string | null
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
 export function TestpaperDetailsDialog({
   testPaperId,
+  topicId,
   open,
   onOpenChange,
 }: TestPaperDetailsDialogProps) {
@@ -33,27 +36,26 @@ export function TestpaperDetailsDialog({
   const [loading, setLoading] = useState(false)
   const confirm = useConfirm()
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!testPaperId || !open) return
-
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        const res = await getTestPaperById(testPaperId)
-        if (res.success) {
-          setTestPaper(res.data ?? null)
-        } else {
-          console.error("Error fetching test paper:", res.error)
-          setTestPaper(null)
-        }
-      } catch (e) {
-        console.error(e)
+    setLoading(true)
+    try {
+      const res = await getTestPaperById(testPaperId)
+      if (res.success) {
+        setTestPaper(res.data ?? null)
+      } else {
+        console.error("Error fetching test paper:", res.error)
         setTestPaper(null)
-      } finally {
-        setLoading(false)
       }
+    } catch (e) {
+      console.error(e)
+      setTestPaper(null)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchData()
   }, [testPaperId, open])
 
@@ -114,9 +116,7 @@ export function TestpaperDetailsDialog({
 
             <div className="flex justify-between items-center">
               <h4 className="font-semibold">Questions</h4>
-              <Button size="sm" variant="outline">
-                <Plus size={16} className="mr-1" /> Add Question
-              </Button>
+              <AddQuestionsDialog testPaperId={testPaper.id} topicId={topicId} fetchData={fetchData} />
             </div>
 
             <ScrollArea className="max-h-[400px] border rounded-md">

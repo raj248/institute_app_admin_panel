@@ -141,6 +141,7 @@ export default function TopicPage() {
         <TabsContent value="testpapers">
           <TestpaperDetailsDialog
             testPaperId={selectedTestPaperId}
+            topicId={topicId ?? ''}
             open={openDetailDialog}
             onOpenChange={setOpenDetailDialog}
           />

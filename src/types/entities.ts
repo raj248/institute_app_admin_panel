@@ -86,6 +86,21 @@ export interface MCQ {
   testPaper?: TestPaper;
 }
 
+export const questionSchema = z.object({
+  question: z.string().min(1, "Question is required"),
+  explanation: z.string().optional(),
+  option1: z.string().min(1, "Option 1 is required"),
+  option2: z.string().min(1, "Option 2 is required"),
+  option3: z.string().min(1, "Option 3 is required"),
+  option4: z.string().min(1, "Option 4 is required"),
+  correctAnswer: z.string().min(1, "Correct Answer is required"),
+  marks: z.coerce.number().min(1, "Marks must be a number"),
+  testPaperId: z.string().min(1, "TestPaperId is required"),
+  topicId: z.string().min(1, "Topic ID is required"),
+});
+
+export type QuestionSchema = z.infer<typeof questionSchema>;
+
 export interface Trash {
   id: string;
   tableName: "Course" | "Topic" | "MCQ" | "TestPaper";
