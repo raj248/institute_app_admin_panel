@@ -116,6 +116,22 @@ export async function createQuestion(data: {
   });
 }
 
+export async function updateMCQ(
+  id: string,
+  data: Partial<{
+    question: string;
+    options: object;
+    explanation: string;
+    marks: number;
+    correctAnswer: string;
+  }>
+): Promise<APIResponse<MCQ>> {
+  return safeFetch<MCQ>(`${BASE_URL}/api/mcqs/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
 // ------------------- Trash --------------------
 
 export async function getTrashItems(): Promise<APIResponse<Trash[]>> {

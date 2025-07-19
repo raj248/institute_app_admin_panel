@@ -18,6 +18,7 @@ import { useState, useEffect } from "react"
 import { useConfirm } from "./global-confirm-dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AddQuestionsDialog } from "./AddQuestionsDialog"
+import { EditMCQViewer } from "./EditMCQViewer"
 
 interface TestPaperDetailsDialogProps {
   testPaperId: string | null
@@ -168,13 +169,16 @@ export function TestpaperDetailsDialog({
                       <TableCell>{mcq.correctAnswer.toUpperCase()}</TableCell>
                       <TableCell>{mcq.marks ?? "-"}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleMoveToTrash(mcq.id)}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                          <EditMCQViewer item={mcq} refreshMCQs={fetchData} />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleMoveToTrash(mcq.id)}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
