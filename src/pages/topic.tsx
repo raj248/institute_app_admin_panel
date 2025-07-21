@@ -24,20 +24,19 @@ import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
-  const [topic, setTopic] = useState<Topic | null>(null);
-  const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
-  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [tab, setTab] = useState<"testpapers" | "notes" | "revision_test" | "videos">("testpapers");
 
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(null);
 
+  const [topic, setTopic] = useState<Topic | null>(null);
+  const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const loadTopic = async () => {
     if (!topicId) return;
     try {
-      // Assuming you have an API call to get topic details by ID
-      // For now, let's mock it or leave it if not directly used on this page
       const topicRes = await getTopicById(topicId);
       setTopic(topicRes.data ?? null);
     } catch (e) {
