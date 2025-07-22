@@ -1,0 +1,88 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #0a0a0a;
+  /* Deep black for contrast */
+  font-family: monospace;
+  position: relative;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  color: #f0f0f0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.icon {
+  width: 3em;
+  margin-bottom: 0.5em;
+}
+
+.version {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-top: 8px;
+}
+
+/* WAVE BACKGROUND */
+
+.wave {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: linear-gradient(744deg, #4fc3f7, #0288d1 60%, #e0f7fa);
+  opacity: 0.25;
+  border-radius: 35% 65% 60% 40% / 40% 35% 65% 60%;
+  animation: wave 30s linear infinite, hueRotate 60s linear infinite;
+}
+
+.wave:nth-child(2) {
+  animation-duration: 90s;
+  animation-direction: reverse;
+  opacity: 0.18;
+}
+
+.wave:nth-child(3) {
+  animation-duration: 120s;
+  opacity: 0.12;
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(45deg) scale(1.05);
+  }
+
+  50% {
+    transform: rotate(225deg) scale(1);
+  }
+
+  100% {
+    transform: rotate(405deg) scale(1.05);
+  }
+}
+
+@keyframes hueRotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .wave {
+    width: 150%;
+    height: 150%;
+  }
+}
