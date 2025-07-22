@@ -21,6 +21,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { AddTestPaperDialog } from "@/components/modals/AddTestPaperDialog";
 import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab";
+import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
+import { AddNotesDialog } from "@/components/modals/AddNotesDialog";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -129,28 +131,38 @@ export default function TopicPage() {
           </TabsList>
           <div className="flex items-center gap-2">
             {tab === "testpapers" && (
-              <div className="flex gap-1">
-                <Button
-                  size="icon"
-                  variant={viewMode === "list" ? "default" : "secondary"}
-                  onClick={() => setViewMode("list")}
-                >
-                  <List size={18} />
-                </Button>
-                <Button
-                  size="icon"
-                  variant={viewMode === "grid" ? "default" : "secondary"}
-                  onClick={() => setViewMode("grid")}
-                >
-                  <LayoutGrid size={18} />
-                </Button>
-              </div>
+              <>
+                <div className="flex gap-1">
+                  <Button
+                    size="icon"
+                    variant={viewMode === "list" ? "default" : "secondary"}
+                    onClick={() => setViewMode("list")}
+                  >
+                    <List size={18} />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant={viewMode === "grid" ? "default" : "secondary"}
+                    onClick={() => setViewMode("grid")}
+                  >
+                    <LayoutGrid size={18} />
+                  </Button>
+                </div>
+                <AddTestPaperDialog
+                  topicId={topicId ?? ''}
+                  courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
+                  setTestPapers={setTestPapers}
+                /></>
             )}
-            <AddTestPaperDialog
-              topicId={topicId ?? ''}
-              courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
-              setTestPapers={setTestPapers}
-            />
+            {tab === "videos" && (
+              <AddVideoNoteDialog onAdd={() => alert("Video note added!")} />
+            )}
+            {tab === "notes" && (
+              <AddNotesDialog onAdd={() => alert("Video note added!")} />
+            )}
+            {tab === "revision_test" && (
+              <AddNotesDialog onAdd={() => alert("Video note added!")} />
+            )}
           </div>
         </div>
 

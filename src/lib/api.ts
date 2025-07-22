@@ -20,6 +20,10 @@ async function safeFetch<T>(url: string, options?: RequestInit): Promise<{ succe
 
 // ------------------- Courses & Topics --------------------
 
+export async function getAllTopic(): Promise<APIResponse<Topic[]>> {
+  return safeFetch(`${BASE_URL}/api/topics`);
+}
+
 export async function getTopicsByCourseType(courseType: string): Promise<APIResponse<Topic[]>> {
   return safeFetch(`${BASE_URL}/api/courses/${courseType}/topics`, { cache: "no-store" });
 }

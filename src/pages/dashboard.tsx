@@ -4,8 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getTopicsByCourseType } from "@/lib/api";
 import type { Topic_schema } from "@/types/entities";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -88,15 +88,15 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dummyData}>
+            <LineChart data={dummyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="views" fill="#5B42F3" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="downloads" fill="#AF40FF" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="tests" fill="#00DDEB" radius={[4, 4, 0, 0]} />
-            </BarChart>
+              <Line type="monotone" dataKey="views" stroke="#5B42F3" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="downloads" stroke="#AF40FF" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="tests" stroke="#00DDEB" strokeWidth={2} dot={{ r: 3 }} />
+            </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
