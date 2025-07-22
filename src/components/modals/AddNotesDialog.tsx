@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { z } from "zod";
+import { uploadNote } from "@/lib/api";
+import { toast } from "sonner";
 
 const addNoteSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -30,7 +32,15 @@ const addNoteSchema = z.object({
 
 type AddNoteSchema = z.infer<typeof addNoteSchema>;
 
-export function AddNotesDialog({ onAdd }: { onAdd: (data: any) => void }) {
+export function AddNotesDialog({
+  onAdd,
+  topicId,
+  courseType,
+}: {
+  onAdd: (data: any) => void;
+  topicId: string;
+  courseType: "CAInter" | "CAFinal";
+}) {
   const [open, setOpen] = useState(false);
 
   const {
@@ -43,21 +53,33 @@ export function AddNotesDialog({ onAdd }: { onAdd: (data: any) => void }) {
   });
 
   const onSubmit = async (data: AddNoteSchema) => {
-    const noteData = {
-      name: data.name,
-      description: data.description,
-      file: data.file[0],
-    };
-    onAdd(noteData);
-    setOpen(false);
-    reset();
+    try {
+      const result = await uploadNote({
+        name: data.name,
+        description: data.description,
+        file: data.file[0],
+        topicId,
+        courseType,
+      });
+
+      if (result.success) {
+        toast.success("Note added successfully!");
+        onAdd(result.data);
+        setOpen(false);
+        reset();
+      } else {
+        toast.error(result.error ?? "Failed to add note.");
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <IconPlus />
+          <IconPlus className="size-4" />
           <span className="hidden lg:inline">Add Note</span>
         </Button>
       </DialogTrigger>

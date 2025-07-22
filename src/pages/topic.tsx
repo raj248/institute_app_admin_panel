@@ -158,11 +158,18 @@ export default function TopicPage() {
               <AddVideoNoteDialog onAdd={() => alert("Video note added!")} />
             )}
             {tab === "notes" && (
-              <AddNotesDialog onAdd={() => alert("Video note added!")} />
+              <AddNotesDialog
+                topicId={topicId ?? ''}
+                courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
+                onAdd={() => alert("Video note added!")}
+              />
             )}
             {tab === "revision_test" && (
-              <AddNotesDialog onAdd={() => alert("Video note added!")} />
-            )}
+              <AddNotesDialog
+                topicId={topicId ?? ''}
+                courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
+                onAdd={() => alert("Video note added!")}
+              />)}
           </div>
         </div>
 

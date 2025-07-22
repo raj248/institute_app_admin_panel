@@ -101,6 +101,17 @@ export const questionSchema = z.object({
 
 export type QuestionSchema = z.infer<typeof questionSchema>;
 
+export interface Note {
+  name: string;
+  description?: string;
+  topicId: string;
+  courseType: "CAInter" | "CAFinal";
+  fileName: string;
+  fileUrl: string;
+  fileSize: number;
+  mimeType: string;
+}
+
 export interface Trash {
   id: string;
   tableName: "Course" | "Topic" | "MCQ" | "TestPaper";

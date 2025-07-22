@@ -1,4 +1,4 @@
-import type { Topic, TestPaper, MCQ, Trash } from "@/types/entities";
+import type { Topic, TestPaper, MCQ, Trash, Note } from "@/types/entities";
 import type { APIResponse } from "@/types/api"
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
@@ -152,6 +152,70 @@ export async function permanentlyDeleteTrashItem(id: string): Promise<APIRespons
 
 export async function purgeTrash(): Promise<APIResponse<string>> {
   return safeFetch(`${BASE_URL}/api/trash`, { method: "DELETE" });
+}
+
+// ------------------- Notes --------------------
+
+/**
+ * Get all notes
+ */
+export async function getAllNotes(): Promise<APIResponse<Note[]>> {
+  return safeFetch(`${BASE_URL}/api/notes`);
+}
+
+/**
+ * Get a note by its ID
+ */
+export async function getNoteById(noteId: string): Promise<APIResponse<Note>> {
+  return safeFetch(`${BASE_URL}/api/notes/${noteId}`);
+}
+
+/**
+ * Get all notes under a topic
+ */
+export async function getNotesByTopicId(topicId: string): Promise<APIResponse<Note[]>> {
+  return safeFetch(`${BASE_URL}/api/notes/topic/${topicId}`);
+}
+
+/**
+ * Upload a note (PDF) with metadata
+ */
+export async function uploadNote(data: {
+  file: File;
+  name: string;
+  description?: string;
+  topicId: string;
+  courseType: "CAInter" | "CAFinal";
+}): Promise<APIResponse<Note>> {
+  const formData = new FormData();
+  formData.append("file", data.file);
+  formData.append("name", data.name);
+  if (data.description) formData.append("description", data.description);
+  formData.append("topicId", data.topicId);
+  formData.append("courseType", data.courseType);
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/notes/upload-note`, {
+      method: "POST",
+      body: formData,
+    });
+    const result = await res.json();
+    if (!res.ok || !result.success) {
+      console.error(`API error (uploadNote):`, result.error ?? res.statusText);
+      return { success: false, error: result.error ?? res.statusText };
+    }
+    return result;
+  } catch (error) {
+    console.error(`Fetch error (uploadNote):`, error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+/**
+ * Move a note to trash
+ */
+export async function moveNoteToTrash(noteId: string): Promise<APIResponse<Note>> {
+  return safeFetch(`${BASE_URL}/api/notes/${noteId}`, { method: "DELETE" });
 }
 
 // ------------------- Move to Trash --------------------
