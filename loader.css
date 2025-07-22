@@ -10,6 +10,12 @@ body {
   position: relative;
 }
 
+.logo {
+  width: 10vw;
+  height: 10vh;
+  margin-bottom: 0.5em;
+}
+
 .content {
   position: relative;
   z-index: 10;

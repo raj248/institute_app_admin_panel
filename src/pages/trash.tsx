@@ -1,7 +1,7 @@
 // src/pages/trash.tsx
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, RotateCcw, XCircle } from "lucide-react";
 import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById } from "@/lib/api";
@@ -116,40 +116,44 @@ export default function Trash() {
       {loading ? (
         <p className="text-muted-foreground mx-4">Loading trash items...</p>
       ) : trashItems && trashItems.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-start">
           {trashItems.map((item) => (
-            <Card key={item.id} className="relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 group">
+            <Card key={item.id} className="relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 flex-1 group">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium truncate">
+                <CardTitle className="text-base font-medium break-words line-clamp-1">
                   {item.tableName}: {item.displayName}
                 </CardTitle>
-
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-1">
                 <p>
                   <strong>Trashed At:</strong> {new Date(item.trashedAt).toLocaleString()}
                 </p>
-                <p className="text-foreground mt-1">
-                  {details[item.id] ?? "Loading details..."}
-                </p>
-                <div className="flex gap-2 mt-2">
+                <div className="max-h-24 overflow-y-auto">
+                  <p className="text-foreground mt-1 break-words">
+                    {details[item.id] ?? "Loading details..."}
+                  </p>
+                </div>
+                <CardFooter className="flex justify-center gap-2 pt-2">
                   <Button
                     size="sm"
                     variant="secondary"
+                    className="flex items-center gap-1"
                     onClick={() => handleRestore(item.id)}
                   >
-                    <RotateCcw size={14} className="mr-1" />
-                    Restore
+                    <RotateCcw size={14} />
+                    <span>Restore</span>
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
+                    className="flex items-center gap-1"
                     onClick={() => handlePermanentDelete(item.id)}
                   >
-                    <XCircle size={14} className="mr-1" />
-                    Delete
+                    <XCircle size={14} />
+                    <span>Delete</span>
                   </Button>
-                </div>
+                </CardFooter>
+
               </CardContent>
             </Card>
           ))}

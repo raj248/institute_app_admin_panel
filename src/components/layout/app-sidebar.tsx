@@ -43,11 +43,11 @@ const data = {
       url: "CAFinal",
       icon: Map,
     },
-    {
-      name: "Debug",
-      url: "Debug",
-      icon: PieChart,
-    },
+    // {
+    //   name: "Debug",
+    //   url: "Debug",
+    //   icon: PieChart,
+    // },
     {
       name: "Settings",
       url: "Settings",
