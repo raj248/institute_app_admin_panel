@@ -1,94 +1,52 @@
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: #0a0a0a;
-  /* Deep black for contrast */
-  font-family: monospace;
-  position: relative;
-}
-
-.logo {
-  width: 10vw;
-  height: 10vh;
-  margin-bottom: 0.5em;
-}
-
-.content {
-  position: relative;
-  z-index: 10;
-  color: #f0f0f0;
-  text-align: center;
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  background: white;
+  /* or #fff or your background */
+  z-index: 9999;
+  transition: opacity 0.3s ease;
 }
 
-.icon {
-  width: 3em;
-  margin-bottom: 0.5em;
+.loading svg polyline {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.version {
-  font-size: 14px;
-  opacity: 0.6;
-  margin-top: 8px;
+.loading svg polyline#back {
+  fill: none;
+  stroke: #ff4d5033;
 }
 
-/* WAVE BACKGROUND */
-
-.wave {
-  position: absolute;
-  width: 150%;
-  height: 150%;
-  background: linear-gradient(744deg, #4fc3f7, #0288d1 60%, #e0f7fa);
-  opacity: 0.25;
-  border-radius: 35% 65% 60% 40% / 40% 35% 65% 60%;
-  animation: wave 30s linear infinite, hueRotate 60s linear infinite;
+.loading svg polyline#front {
+  fill: none;
+  stroke: #ff4d4f;
+  stroke-dasharray: 48, 144;
+  stroke-dashoffset: 192;
+  animation: dash_682 1.4s linear infinite;
 }
 
-.wave:nth-child(2) {
-  animation-duration: 90s;
-  animation-direction: reverse;
-  opacity: 0.18;
-}
-
-.wave:nth-child(3) {
-  animation-duration: 120s;
-  opacity: 0.12;
-}
-
-@keyframes wave {
-  0% {
-    transform: rotate(45deg) scale(1.05);
+@keyframes dash_682 {
+  72.5% {
+    opacity: 0;
   }
 
-  50% {
-    transform: rotate(225deg) scale(1);
-  }
-
-  100% {
-    transform: rotate(405deg) scale(1.05);
+  to {
+    stroke-dashoffset: 0;
   }
 }
 
-@keyframes hueRotate {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-
-  100% {
-    filter: hue-rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .wave {
-    width: 150%;
-    height: 150%;
+/* System dark mode detection */
+@media (prefers-color-scheme: dark) {
+  .loading {
+    background: #121212;
+    /* or #121212 for softer black */
   }
 }
