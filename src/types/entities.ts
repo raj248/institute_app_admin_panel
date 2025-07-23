@@ -25,9 +25,10 @@ export interface Topic {
   course?: Course;
   testPapers?: TestPaper[];
   mcqs?: MCQ[];
-  testPaperCount?: number;
   courseType: CourseType;
-
+  testPaperCount?: number;
+  noteCount?: number;
+  videoNoteCount?: number;
 }
 
 export const TopicSchema = z.object({
