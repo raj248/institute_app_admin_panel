@@ -8,7 +8,7 @@ import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, getTopicById, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
-import type { TestPaper, Topic } from "@/types/entities";
+import type { Note, TestPaper, Topic } from "@/types/entities";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import {
@@ -23,6 +23,7 @@ import { AddTestPaperDialog } from "@/components/modals/AddTestPaperDialog";
 import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab";
 import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
 import { AddNotesDialog } from "@/components/modals/AddNotesDialog";
+import TopicNotesTabContent from "@/components/tab-content/TopicNotesTabContent";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -34,6 +35,8 @@ export default function TopicPage() {
 
   const [topic, setTopic] = useState<Topic | null>(null);
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
+  const [notes, setNotes] = useState<Note[] | null>(null);
+
   const [loading, setLoading] = useState(true);
 
   const loadTopic = async () => {
@@ -161,14 +164,14 @@ export default function TopicPage() {
               <AddNotesDialog
                 topicId={topicId ?? ''}
                 courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
-                onAdd={() => alert("Video note added!")}
+                setNotes={setNotes}
               />
             )}
             {tab === "revision_test" && (
               <AddNotesDialog
                 topicId={topicId ?? ''}
                 courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
-                onAdd={() => alert("Video note added!")}
+                setNotes={setNotes}
               />)}
           </div>
         </div>
@@ -222,9 +225,11 @@ export default function TopicPage() {
         </TabsContent>
 
         <TabsContent value="notes">
-          <div className="p-4 text-center text-muted-foreground">
-            Notes tab (coming soon).
-          </div>
+          <TopicNotesTabContent
+            notes={notes}
+            setNotes={setNotes}
+            topicId={topicId ?? ''}
+          />
         </TabsContent>
 
         <TabsContent value="revision_test">
@@ -232,6 +237,7 @@ export default function TopicPage() {
             Revision Test tab (coming soon).
           </div>
         </TabsContent>
+
         <TabsContent
           value="videos"
           className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
@@ -250,7 +256,6 @@ export default function TopicPage() {
               // Update in DB or state
             }}
           />
-
         </TabsContent>
       </Tabs>
     </div>

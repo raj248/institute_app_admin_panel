@@ -102,6 +102,7 @@ export const questionSchema = z.object({
 export type QuestionSchema = z.infer<typeof questionSchema>;
 
 export interface Note {
+  id: string;
   name: string;
   description?: string;
   topicId: string;
@@ -110,6 +111,8 @@ export interface Note {
   fileUrl: string;
   fileSize: number;
   mimeType: string;
+  createdAt: string;
+  deletedAt: string | null;
 }
 
 export interface Trash {

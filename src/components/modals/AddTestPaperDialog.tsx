@@ -49,7 +49,7 @@ export function AddTestPaperDialog({
 
   const loadTopics = async () => {
     const res = await getTopicsByCourseType(courseType);
-    setTopics(res.data ?? null);
+    if (res.data) setTopics(res.data);
   };
 
   useEffect(() => {

@@ -18,8 +18,9 @@ import { Label } from "@/components/ui/label";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { z } from "zod";
-import { uploadNote } from "@/lib/api";
+import { getNotesByTopicId, uploadNote } from "@/lib/api";
 import { toast } from "sonner";
+import type { Note } from "@/types/entities";
 
 const addNoteSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -33,13 +34,13 @@ const addNoteSchema = z.object({
 type AddNoteSchema = z.infer<typeof addNoteSchema>;
 
 export function AddNotesDialog({
-  onAdd,
   topicId,
   courseType,
+  setNotes,
 }: {
-  onAdd: (data: any) => void;
   topicId: string;
   courseType: "CAInter" | "CAFinal";
+  setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -64,7 +65,8 @@ export function AddNotesDialog({
 
       if (result.success) {
         toast.success("Note added successfully!");
-        onAdd(result.data);
+        const refreshed = await getNotesByTopicId(topicId)
+        setNotes(refreshed.data ?? null);
         setOpen(false);
         reset();
       } else {
