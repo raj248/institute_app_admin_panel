@@ -6,18 +6,23 @@ import App from './App.tsx'
 const hideLoader = () => {
   const loader = document.getElementById("loader");
   const loaderCSS = document.getElementById("loader-css");
-  console.log("loader and loaderCSS : ", loader, loaderCSS)
+
   if (loader) {
     loader.style.opacity = "0";
     loader.style.pointerEvents = "none";
 
-    setTimeout(() => {
-      loader.remove();
-      loaderCSS ? loaderCSS.remove() : null;
-    }, 500); // remove from DOM for cleanliness
-    console.log("loader removed")
+    // Wait for the CSS transition to finish before removing
+    loader.addEventListener(
+      "transitionend",
+      () => {
+        loader.remove();
+        if (loaderCSS) loaderCSS.remove();
+      },
+      { once: true }
+    );
   }
 
+  console.log("Window Loaded.");
 };
 
 

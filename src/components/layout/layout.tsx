@@ -10,7 +10,6 @@ import Header from "./header";
 
 export default function MainLayout() {
   const { resolvedTheme } = useTheme();
-  console.log(resolvedTheme);
 
   return (
     <SidebarProvider

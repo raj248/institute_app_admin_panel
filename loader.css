@@ -50,3 +50,7 @@
     /* or #121212 for softer black */
   }
 }
+
+#loader {
+  transition: opacity 1s ease;
+}

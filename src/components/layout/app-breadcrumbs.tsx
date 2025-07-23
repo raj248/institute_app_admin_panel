@@ -63,7 +63,6 @@ export function AppBreadcrumbs() {
         {paths.map((path, idx) => {
           const segment = segments[idx];
           const name = dynamicNames[segment] || beautify(segment);
-          console.log("Name is: " + name)
           return segment === "testpaper" ? null : (
             <span key={path} className="flex items-center">
               <BreadcrumbItem>
