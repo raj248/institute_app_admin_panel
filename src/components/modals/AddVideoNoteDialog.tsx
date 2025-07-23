@@ -14,22 +14,31 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
 import { IconPlus } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
-import axios from "axios";
+import { toast } from "sonner";
+import { addVideoNote, getVideoNotesByTopicId } from "@/lib/api";
+import type { VideoNote } from "@/types/entities";
 
-const videoNoteSchema = z.object({
-  videoUrl: z.url({ message: "Please enter a valid YouTube URL" }),
+const addVideoNoteSchema = z.object({
+  url: z.url("Please enter a valid YouTube URL"),
 });
 
-type VideoNoteSchema = z.infer<typeof videoNoteSchema>;
+type AddVideoNoteSchema = z.infer<typeof addVideoNoteSchema>;
 
-export function AddVideoNoteDialog({ onAdd }: { onAdd: (data: any) => void }) {
+export function AddVideoNoteDialog({
+  topicId,
+  courseType,
+  setVideos,
+}: {
+  topicId: string;
+  courseType: "CAInter" | "CAFinal";
+  setVideos: React.Dispatch<React.SetStateAction<VideoNote[] | null>>;
+}) {
   const [open, setOpen] = useState(false);
-  const [videoPreview, setVideoPreview] = useState<{
+  const [preview, setPreview] = useState<{
     title: string;
-    description: string;
     thumbnail: string;
   } | null>(null);
 
@@ -39,68 +48,79 @@ export function AddVideoNoteDialog({ onAdd }: { onAdd: (data: any) => void }) {
     watch,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<VideoNoteSchema>({
-    resolver: zodResolver(videoNoteSchema),
+  } = useForm<AddVideoNoteSchema>({
+    resolver: zodResolver(addVideoNoteSchema),
   });
 
-  const videoUrl = watch("videoUrl");
+  const url = watch("url");
 
   useEffect(() => {
     const fetchPreview = async () => {
-      if (!videoUrl || !videoUrl.includes("youtube.com")) {
-        setVideoPreview(null);
+      if (!url || !url.includes("youtube.com") && !url.includes("youtu.be")) {
+        setPreview(null);
         return;
       }
       try {
-        const videoId = new URL(videoUrl).searchParams.get("v");
-        if (!videoId) return;
-        const response = await axios.get(
-          `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`
-        );
-        setVideoPreview({
-          title: response.data.title,
-          description: response.data.description,
-          thumbnail: response.data.thumbnail_url,
+        const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+        const data = await response.json();
+        setPreview({
+          title: data.title,
+          thumbnail: data.thumbnail_url,
         });
       } catch {
-        setVideoPreview(null);
+        setPreview(null);
       }
     };
     fetchPreview();
-  }, [videoUrl]);
+  }, [url]);
 
-  const onSubmit = async (data: VideoNoteSchema) => {
-    onAdd({ ...data, preview: videoPreview });
-    setOpen(false);
-    reset();
+  const onSubmit = async (data: AddVideoNoteSchema) => {
+    try {
+      const result = await addVideoNote({
+        url: data.url,
+        topicId,
+        courseType,
+      });
+
+      if (result.success) {
+        toast.success("Video note added successfully!");
+        const refreshed = await getVideoNotesByTopicId(topicId);
+        setVideos(refreshed.data ?? null);
+        setOpen(false);
+        reset();
+      } else {
+        toast.error(result.error ?? "Failed to add video note.");
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <IconPlus />
+          <IconPlus className="size-4" />
           <span className="hidden lg:inline">Add Video Note</span>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Video Note</DialogTitle>
-          <DialogDescription>Paste a YouTube link to add a video note with preview.</DialogDescription>
+          <DialogDescription>Paste a YouTube URL to add it as a video note with preview.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <Label htmlFor="videoUrl">YouTube Video URL</Label>
-            <Input id="videoUrl" {...register("videoUrl")} placeholder="https://www.youtube.com/watch?v=..." />
-            {errors.videoUrl && <p className="text-sm text-red-500">{errors.videoUrl.message}</p>}
+            <Label htmlFor="url">YouTube URL</Label>
+            <Input id="url" placeholder="https://www.youtube.com/watch?v=..." {...register("url")} />
+            {errors.url && <p className="text-sm text-red-500">{errors.url.message}</p>}
           </div>
 
-          {videoPreview && (
-            <div className="flex flex-col items-center gap-2 border rounded-md p-2">
-              <img src={videoPreview.thumbnail} alt="Thumbnail" className="w-full max-w-xs rounded" />
-              <p className="font-medium text-center">{videoPreview.title}</p>
-              <p className="text-sm text-gray-500 text-center line-clamp-3">{videoPreview.description}</p>
+          {preview && (
+            <div className="flex flex-col items-center gap-2 border rounded p-2">
+              <img src={preview.thumbnail} alt="Thumbnail" className="w-full max-w-xs rounded" />
+              <p className="font-medium text-center">{preview.title}</p>
             </div>
           )}
 

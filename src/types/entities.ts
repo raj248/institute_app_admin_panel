@@ -115,6 +115,17 @@ export interface Note {
   deletedAt: string | null;
 }
 
+// types/entities.ts
+export interface VideoNote {
+  id: string;         // UUID from your DB
+  url: string;        // YouTube URL
+  topicId: string;
+  courseType: string;
+  title?: string;     // optional if you fetch on frontend
+  thumbnail?: string; // optional if you fetch on frontend
+}
+
+
 export interface Trash {
   id: string;
   tableName: "Course" | "Topic" | "MCQ" | "TestPaper";

@@ -8,7 +8,7 @@ import { List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, getTopicById, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
-import type { Note, TestPaper, Topic } from "@/types/entities";
+import type { Note, TestPaper, Topic, VideoNote } from "@/types/entities";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import {
@@ -20,10 +20,10 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { AddTestPaperDialog } from "@/components/modals/AddTestPaperDialog";
-import YouTubeVideoGridTab from "@/components/cards/YouTubeVideoGridTab";
 import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
 import { AddNotesDialog } from "@/components/modals/AddNotesDialog";
 import TopicNotesTabContent from "@/components/tab-content/TopicNotesTabContent";
+import TopicVideosTabContent from "@/components/tab-content/TopicVideosTabContent";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -36,6 +36,7 @@ export default function TopicPage() {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [notes, setNotes] = useState<Note[] | null>(null);
+  const [videos, setVideos] = useState<VideoNote[] | null>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -158,7 +159,11 @@ export default function TopicPage() {
                 /></>
             )}
             {tab === "videos" && (
-              <AddVideoNoteDialog onAdd={() => alert("Video note added!")} />
+              <AddVideoNoteDialog
+                topicId={topicId ?? ''}
+                courseType={location.pathname.split("/")[1] as "CAInter" | "CAFinal"}
+                setVideos={setVideos}
+              />
             )}
             {tab === "notes" && (
               <AddNotesDialog
@@ -242,19 +247,10 @@ export default function TopicPage() {
           value="videos"
           className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
         >
-          <YouTubeVideoGridTab
-            videoLinks={[
-              "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-              "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
-            ]}
-            onDelete={(id) => {
-              console.log("Delete", id);
-              // Remove from DB or state
-            }}
-            onEdit={(id, newUrl) => {
-              console.log("Edit", id, newUrl);
-              // Update in DB or state
-            }}
+          <TopicVideosTabContent
+            videos={videos}
+            setVideos={setVideos}
+            topicId={topicId ?? ''}
           />
         </TabsContent>
       </Tabs>

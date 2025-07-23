@@ -1,4 +1,4 @@
-import type { Topic, TestPaper, MCQ, Trash, Note } from "@/types/entities";
+import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote } from "@/types/entities";
 import type { APIResponse } from "@/types/api"
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
@@ -136,23 +136,6 @@ export async function updateMCQ(
     body: JSON.stringify(data),
   });
 }
-// ------------------- Trash --------------------
-
-export async function getTrashItems(): Promise<APIResponse<Trash[]>> {
-  return safeFetch(`${BASE_URL}/api/trash`);
-}
-
-export async function restoreTrashItem(id: string): Promise<APIResponse<string>> {
-  return safeFetch(`${BASE_URL}/api/trash/${id}/restore`, { method: "POST" });
-}
-
-export async function permanentlyDeleteTrashItem(id: string): Promise<APIResponse<string>> {
-  return safeFetch(`${BASE_URL}/api/trash/${id}`, { method: "DELETE" });
-}
-
-export async function purgeTrash(): Promise<APIResponse<string>> {
-  return safeFetch(`${BASE_URL}/api/trash`, { method: "DELETE" });
-}
 
 // ------------------- Notes --------------------
 
@@ -211,11 +194,22 @@ export async function uploadNote(data: {
   }
 }
 
-/**
- * Move a note to trash
- */
-export async function moveNoteToTrash(noteId: string): Promise<APIResponse<Note>> {
-  return safeFetch(`${BASE_URL}/api/notes/${noteId}`, { method: "DELETE" });
+// ------------------ Video ---------------------
+
+export async function getVideoNotesByTopicId(topicId: string): Promise<APIResponse<VideoNote[]>> {
+  return safeFetch(`${BASE_URL}/api/videonotes/topic/${topicId}`);
+}
+
+export async function addVideoNote(data: {
+  url: string;
+  topicId: string;
+  courseType: "CAInter" | "CAFinal";
+}): Promise<APIResponse<VideoNote>> {
+  return safeFetch<VideoNote>(`${BASE_URL}/api/videonotes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 }
 
 // ------------------- Move to Trash --------------------
@@ -230,4 +224,30 @@ export async function moveTestPaperToTrash(testPaperId: string): Promise<APIResp
 
 export async function moveMCQToTrash(mcqId: string): Promise<APIResponse<MCQ>> {
   return safeFetch(`${BASE_URL}/api/mcqs/${mcqId}`, { method: "DELETE" });
+}
+
+export async function moveNoteToTrash(noteId: string): Promise<APIResponse<Note>> {
+  return safeFetch(`${BASE_URL}/api/notes/${noteId}`, { method: "DELETE" });
+}
+
+export async function moveVideoNoteToTrash(videoNoteId: string): Promise<APIResponse<VideoNote>> {
+  return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`, { method: "DELETE" });
+}
+
+// ------------------- Trash --------------------
+
+export async function getTrashItems(): Promise<APIResponse<Trash[]>> {
+  return safeFetch(`${BASE_URL}/api/trash`);
+}
+
+export async function restoreTrashItem(id: string): Promise<APIResponse<string>> {
+  return safeFetch(`${BASE_URL}/api/trash/${id}/restore`, { method: "POST" });
+}
+
+export async function permanentlyDeleteTrashItem(id: string): Promise<APIResponse<string>> {
+  return safeFetch(`${BASE_URL}/api/trash/${id}`, { method: "DELETE" });
+}
+
+export async function purgeTrash(): Promise<APIResponse<string>> {
+  return safeFetch(`${BASE_URL}/api/trash`, { method: "DELETE" });
 }
