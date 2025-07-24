@@ -19,6 +19,7 @@ import { useConfirm } from "./global-confirm-dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AddQuestionsDialog } from "./AddQuestionsDialog"
 import { EditMCQViewer } from "./EditMCQViewer"
+import { Badge } from "../ui/badge"
 
 interface TestPaperDetailsDialogProps {
   testPaperId: string | null
@@ -88,49 +89,58 @@ export function TestpaperDetailsDialog({
       <DialogContent className="w-auto max-w-[95vw] md:max-w-screen-md lg:max-w-screen-lg">
         {loading || !testPaper ? (
           <div className="space-y-4">
-            <Skeleton className="h-6 w-1/3 mx-auto" />
-            <Skeleton className="h-4 w-2/3 mx-auto" />
-            <div className="flex justify-center gap-4">
-              <Skeleton className="h-8 w-24" />
-              <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-5 w-1/3 mx-auto" />
+            <Skeleton className="h-3 w-2/3 mx-auto" />
+            <div className="flex justify-center gap-3">
+              <Skeleton className="h-7 w-20" />
+              <Skeleton className="h-7 w-20" />
             </div>
             <Skeleton className="h-64 w-full rounded-md" />
           </div>
         ) : (
           <>
             <DialogHeader className="items-center text-center">
-              <DialogTitle>{testPaper.name}</DialogTitle>
-              <DialogDescription>{testPaper.description}</DialogDescription>
+              <DialogTitle className="text-base font-semibold">
+                {testPaper.name}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                {testPaper.description}
+              </DialogDescription>
             </DialogHeader>
 
-            <div className="flex flex-wrap justify-center gap-4 text-sm mb-4">
+            <div className="flex flex-wrap justify-center gap-2 text-xs mb-4">
               {testPaper.timeLimitMinutes && (
-                <div className="bg-muted rounded-lg p-2">
+                <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs">
                   Time Limit: {testPaper.timeLimitMinutes} min
-                </div>
+                </Badge>
               )}
               {testPaper.totalMarks && (
-                <div className="bg-muted rounded-lg p-2">
+                <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs">
                   Total Marks: {testPaper.totalMarks}
-                </div>
+                </Badge>
               )}
             </div>
 
-            <div className="flex justify-between items-center">
-              <h4 className="font-semibold">Questions</h4>
-              <AddQuestionsDialog testPaperId={testPaper.id} topicId={topicId} fetchData={fetchData} />
+
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-sm font-medium">Questions</h4>
+              <AddQuestionsDialog
+                testPaperId={testPaper.id}
+                topicId={topicId}
+                fetchData={fetchData}
+              />
             </div>
 
             <ScrollArea className="max-h-[400px] border rounded-md">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Question</TableHead>
-                    <TableHead>Explanation</TableHead>
-                    <TableHead>Options</TableHead>
-                    <TableHead>Correct</TableHead>
-                    <TableHead>Marks</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-xs">Question</TableHead>
+                    <TableHead className="text-xs">Explanation</TableHead>
+                    <TableHead className="text-xs">Options</TableHead>
+                    <TableHead className="text-xs">Correct</TableHead>
+                    <TableHead className="text-xs">Marks</TableHead>
+                    <TableHead className="text-xs">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -138,28 +148,28 @@ export function TestpaperDetailsDialog({
                     <TableRow key={mcq.id}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <TableCell className="max-w-[200px] truncate cursor-default">
+                          <TableCell className="max-w-[180px] truncate cursor-default text-xs">
                             {mcq.question}
                           </TableCell>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-sm">
+                        <TooltipContent className="max-w-sm text-xs">
                           {mcq.question}
                         </TooltipContent>
                       </Tooltip>
 
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <TableCell className="max-w-[200px] truncate cursor-default">
+                          <TableCell className="max-w-[180px] truncate cursor-default text-xs">
                             {mcq.explanation ?? "-"}
                           </TableCell>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-sm">
+                        <TooltipContent className="max-w-sm text-xs">
                           {mcq.explanation ?? "-"}
                         </TooltipContent>
                       </Tooltip>
 
-                      <TableCell>
-                        <ul className="text-xs space-y-0.5">
+                      <TableCell className="text-xs">
+                        <ul className="space-y-0.5">
                           {Object.entries(mcq.options).map(([key, value]) => (
                             <li key={key}>
                               <span className="font-medium">{key.toUpperCase()}:</span> {value}
@@ -167,17 +177,21 @@ export function TestpaperDetailsDialog({
                           ))}
                         </ul>
                       </TableCell>
-                      <TableCell>{mcq.correctAnswer.toUpperCase()}</TableCell>
-                      <TableCell>{mcq.marks ?? "-"}</TableCell>
+                      <TableCell className="text-xs">
+                        {mcq.correctAnswer.toUpperCase()}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {mcq.marks ?? "-"}
+                      </TableCell>
                       <TableCell>
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1">
                           <EditMCQViewer item={mcq} refreshMCQs={fetchData} />
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleMoveToTrash(mcq.id)}
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </Button>
                         </div>
                       </TableCell>
@@ -190,5 +204,6 @@ export function TestpaperDetailsDialog({
         )}
       </DialogContent>
     </Dialog>
+
   )
 }

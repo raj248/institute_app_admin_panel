@@ -63,28 +63,34 @@ export function EditTopicViewer(
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >
-          <DrawerHeader className="gap-1">
-            <DrawerTitle>Edit Topic</DrawerTitle>
-            <DrawerDescription>Edit the topic details below.</DrawerDescription>
+          <DrawerHeader className="gap-1 text-center">
+            <DrawerTitle className="text-base font-semibold">Edit Topic</DrawerTitle>
+            <DrawerDescription className="text-xs text-muted-foreground">
+              Edit the topic details below.
+            </DrawerDescription>
           </DrawerHeader>
 
-          <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm max-w-lg w-full mx-auto">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="name">Name</Label>
+          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm max-w-lg w-full mx-auto">
+
+            {/* Name */}
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="name" className="text-xs">Name</Label>
               <Input
                 id="name"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
+                className="text-sm"
               />
             </div>
 
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="course">Course</Label>
+            {/* Course */}
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="course" className="text-xs">Course</Label>
               <Select
                 value={formCourseType}
                 onValueChange={(value) => setFormCourseType(value as "CAInter" | "CAFinal")}
               >
-                <SelectTrigger id="course">
+                <SelectTrigger id="course" className="text-sm">
                   <SelectValue placeholder="Select a Course" />
                 </SelectTrigger>
                 <SelectContent>
@@ -94,25 +100,31 @@ export function EditTopicViewer(
               </Select>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="description">Description</Label>
+            {/* Description */}
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="description" className="text-xs">Description</Label>
               <Textarea
                 id="description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
-                className="h-32"
+                className="h-28 text-sm"
               />
             </div>
           </div>
 
           <DrawerFooter>
-            <Button onClick={handleSubmit}>Submit</Button>
+            <Button onClick={handleSubmit} className="text-sm py-2 rounded-xl">
+              Submit
+            </Button>
             <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
+              <Button variant="outline" className="text-sm py-2 rounded-xl">
+                Close
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+
     </>
   );
 }
