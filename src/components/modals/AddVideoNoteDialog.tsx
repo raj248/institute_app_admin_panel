@@ -104,33 +104,58 @@ export function AddVideoNoteDialog({
           <span className="hidden lg:inline">Add Video Note</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add Video Note</DialogTitle>
-          <DialogDescription>Paste a YouTube URL to add it as a video note with preview.</DialogDescription>
+
+      <DialogContent className="max-w-md rounded-2xl p-4 sm:p-6">
+        <DialogHeader className="space-y-1 text-center">
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            Add Video Note
+          </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Paste a YouTube URL to add it as a video note with preview.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="url">YouTube URL</Label>
-            <Input id="url" placeholder="https://www.youtube.com/watch?v=..." {...register("url")} />
-            {errors.url && <p className="text-sm text-red-500">{errors.url.message}</p>}
-          </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
 
+          {/* YouTube URL */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="url" className="w-28 text-xs">
+              YouTube URL
+            </Label>
+            <Input
+              id="url"
+              placeholder="https://www.youtube.com/watch?v=..."
+              {...register("url")}
+              className="flex-1 text-sm"
+            />
+          </div>
+          {errors.url && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.url.message}
+            </p>
+          )}
+
+          {/* Preview */}
           {preview && (
-            <div className="flex flex-col items-center gap-2 border rounded p-2">
-              <img src={preview.thumbnail} alt="Thumbnail" className="w-full max-w-xs rounded" />
-              <p className="font-medium text-center">{preview.title}</p>
+            <div className="flex flex-col items-center gap-2 border border-muted rounded-lg p-2 mt-2">
+              <img
+                src={preview.thumbnail}
+                alt="Thumbnail"
+                className="w-full max-w-xs rounded-md shadow-sm"
+              />
+              <p className="font-medium text-sm text-center px-2">{preview.title}</p>
             </div>
           )}
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
+          {/* Submit */}
+          <DialogFooter className="mt-4">
+            <Button type="submit" disabled={isSubmitting} className="w-full text-sm py-2 rounded-xl">
               {isSubmitting ? "Adding..." : "Add Video Note"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+
   );
 }
