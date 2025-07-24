@@ -223,7 +223,7 @@ export default function TopicPage() {
 
         <TabsContent
           value="videos"
-          className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+          className="relative flex flex-col gap-4 overflow-auto"
         >
           <TopicVideosTabContent
             videos={videos}
