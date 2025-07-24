@@ -461,7 +461,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="w-full flex-1 rounded-lg ">
-          <TopicGridView topics={topic as Topic[]} loading={loading} />
+          <TopicGridView topics={topic as Topic[]} setTopics={setTopics as React.Dispatch<React.SetStateAction<Topic[] | null>>} loading={loading} />
         </div>
       </TabsContent>
     </Tabs>

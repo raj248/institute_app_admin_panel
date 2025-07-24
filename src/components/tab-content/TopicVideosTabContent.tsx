@@ -22,10 +22,7 @@ export default function TopicVideosTabContent({
   const confirm = useConfirm();
 
   const fetchVideoDetails = async (videoNotes: VideoNote[]) => {
-    if (!videoNotes || videoNotes.length === 0) {
-      setVideos([]);
-      return;
-    }
+    if (!videoNotes || videoNotes.length === 0) return [];
 
     try {
       const updated = await Promise.all(
@@ -57,13 +54,12 @@ export default function TopicVideosTabContent({
           }
         })
       );
-      setVideos(updated);
+      return updated;
     } catch (e) {
       console.error(e);
-      setVideos([]);
+      return [];
     }
   };
-
 
   const loadVideos = async () => {
     if (!topicId) return;
@@ -71,9 +67,11 @@ export default function TopicVideosTabContent({
     try {
       const res = await getVideoNotesByTopicId(topicId);
       const rawVideos = res.data ?? [];
-      setVideos(rawVideos);
+      const enrichedVideos = await fetchVideoDetails(rawVideos);
+      setVideos(enrichedVideos);
     } catch (e) {
       console.error(e);
+      setVideos([]);
     } finally {
       setLoading(false);
     }
@@ -109,9 +107,22 @@ export default function TopicVideosTabContent({
   }, [topicId]);
 
   useEffect(() => {
-    if (!videos || videos.length === 0 && !loading) return;
-    fetchVideoDetails(videos)
-  }, [videos])
+    const unenriched = videos?.filter(v => !v.title || !v.thumbnail);
+    if (!unenriched || unenriched.length === 0) return;
+
+    fetchVideoDetails(unenriched).then((enriched) => {
+      setVideos((prev) => {
+        if (!prev) return enriched;
+        // Merge enriched with existing
+        return prev.map(v => {
+          const enrichedVideo = enriched.find(e => e.id === v.id);
+          return enrichedVideo ? enrichedVideo : v;
+        });
+      });
+    });
+  }, [videos]);
+
+
 
   return (
     <div>

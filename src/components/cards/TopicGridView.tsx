@@ -12,10 +12,11 @@ import { Badge } from "../ui/badge";
 
 interface TopicGridViewProps {
   topics: Topic[] | null;
+  setTopics: React.Dispatch<React.SetStateAction<Topic[] | null>>;
   loading: boolean;
 }
 
-export function TopicGridView({ topics, loading }: TopicGridViewProps) {
+export function TopicGridView({ topics, loading, setTopics }: TopicGridViewProps) {
   const navigate = useNavigate();
   const confirm = useConfirm();
 
@@ -36,6 +37,7 @@ export function TopicGridView({ topics, loading }: TopicGridViewProps) {
       alert("Failed to move topic to trash.");
       return;
     }
+    setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
   };
 
   const handleCardClick = (topic: Topic) => {
