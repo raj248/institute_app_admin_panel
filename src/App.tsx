@@ -10,7 +10,6 @@ import Settings from "@/pages/settings";
 import Trash from "@/pages/trash";
 import { ThemeProvider } from "./components/theme/theme-provider";
 import TopicPage from "./pages/topic";
-import TestPaperPage from "./pages/testpaper";
 import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog";
 function App() {
   return (
@@ -26,8 +25,6 @@ function App() {
               <Route path="/CAFinal" element={<CAFinal />} />
               <Route path="/CAInter/:topicId" element={<TopicPage />} />
               <Route path="/CAFinal/:topicId" element={<TopicPage />} />
-              <Route path="/CAInter/:topicId/testpaper/:testPaperId" element={<TestPaperPage />} />
-              <Route path="/CAFinal/:topicId/testpaper/:testPaperId" element={<TestPaperPage />} />
               <Route path="/Debug" element={<Debug />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="/Trash" element={<Trash />} />
