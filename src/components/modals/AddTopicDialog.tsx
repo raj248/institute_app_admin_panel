@@ -66,38 +66,69 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <IconPlus />
+          <IconPlus className="size-4" />
           <span className="hidden lg:inline">Add Topic</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Topic</DialogTitle>
-          <DialogDescription>Fill the details to create a new topic.</DialogDescription>
+
+      <DialogContent className="max-w-md rounded-2xl p-4 sm:p-6">
+        <DialogHeader className="space-y-1 text-center">
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            Add New Topic
+          </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Fill the details to create a new topic.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           {/* Name */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register("name")} />
-            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="name" className="w-28 text-xs">
+              Name
+            </Label>
+            <Input
+              id="name"
+              {...register("name")}
+              placeholder="E.g., Taxation"
+              className="flex-1 text-sm"
+            />
           </div>
+          {errors.name && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.name.message}
+            </p>
+          )}
 
           {/* Description */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" {...register("description")} />
+          <div className="flex items-start gap-2">
+            <Label htmlFor="description" className="w-28 text-xs pt-2">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              {...register("description")}
+              rows={2}
+              placeholder="Brief overview of the topic"
+              className="flex-1 text-sm"
+            />
           </div>
+          {errors.description && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.description.message}
+            </p>
+          )}
 
           {/* Course Type */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="courseType">Course Type</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="courseType" className="w-28 text-xs">
+              Course Type
+            </Label>
             <Select
               defaultValue={defaultCourseType}
               onValueChange={(value) => setValue("courseType", value as "CAInter" | "CAFinal")}
             >
-              <SelectTrigger id="courseType">
+              <SelectTrigger id="courseType" className="flex-1 text-sm">
                 <SelectValue placeholder="Select Course Type" />
               </SelectTrigger>
               <SelectContent>
@@ -105,16 +136,22 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
                 <SelectItem value="CAFinal">CA-Final</SelectItem>
               </SelectContent>
             </Select>
-            {errors.courseType && <p className="text-sm text-red-500">{errors.courseType.message}</p>}
           </div>
+          {errors.courseType && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.courseType.message}
+            </p>
+          )}
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create"}
+          {/* Submit */}
+          <DialogFooter className="mt-4">
+            <Button type="submit" disabled={isSubmitting} className="w-full text-sm py-2 rounded-xl">
+              {isSubmitting ? "Creating..." : "Create Topic"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+
   );
 }
