@@ -3,13 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { List, LayoutGrid } from "lucide-react";
-import { cn } from "@/lib/cn";
 import { getAllTestPapersByTopicId, getTopicById, moveTestPaperToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { Note, TestPaper, Topic, VideoNote } from "@/types/entities";
-import TestPaperCard from "@/components/cards/TestPaperCards";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import {
   Tabs,
@@ -24,6 +21,8 @@ import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
 import { AddNotesDialog } from "@/components/modals/AddNotesDialog";
 import TopicNotesTabContent from "@/components/tab-content/TopicNotesTabContent";
 import TopicVideosTabContent from "@/components/tab-content/TopicVideosTabContent";
+import TestpaperGridView from "@/components/cards/TestPaperGridView";
+import TestpaperListView from "@/components/TestpaperListView";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -189,43 +188,24 @@ export default function TopicPage() {
             onOpenChange={setOpenDetailDialog}
           />
 
-          {loading ? (
-            <div
-              className={cn(
-                "gap-3",
-                viewMode === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-                  : "space-y-3"
-              )}
-            >
-              {[...Array(4)].map((_, idx) => (
-                <Skeleton
-                  key={idx}
-                  className="h-24 w-full rounded-lg"
-                />
-              ))}
-            </div>
-          ) : testPapers && testPapers.length > 0 ? (
-            <div
-              className={cn(
-                viewMode === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-                  : "flex flex-col gap-3"
-              )}
-            >
-              {topicId && testPapers.map((paper) => (
-                <TestPaperCard
-                  key={paper.id}
-                  paper={paper}
-                  topicId={topicId}
-                  refreshPapers={loadTestPapers}
-                  handleMoveToTrash={handleMoveToTrash}
-                  onClick={() => handleCardClick(paper.id)}
-                />
-              ))}
-            </div>
+          {viewMode === "grid" ? (
+            <TestpaperGridView
+              testPapers={testPapers ?? []}
+              topicId={topicId ?? ''}
+              loading={loading}
+              refreshPapers={loadTestPapers}
+              handleMoveToTrash={handleMoveToTrash}
+              handleCardClick={handleCardClick}
+            />
           ) : (
-            <p className="text-muted-foreground">No test papers found for this topic.</p>
+            <TestpaperListView
+              testPapers={testPapers ?? []}
+              topicId={topicId ?? ''}
+              loading={loading}
+              refreshPapers={loadTestPapers}
+              handleMoveToTrash={handleMoveToTrash}
+              handleCardClick={handleCardClick}
+            />
           )}
         </TabsContent>
 
