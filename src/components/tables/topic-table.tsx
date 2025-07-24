@@ -78,12 +78,11 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
 
   const columns = getTopicColumns(setTopics);
 
-  const [globalFilter, setGlobalFilter] = useState("");
 
 
-  const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
@@ -94,8 +93,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
   const table = useReactTable({
     data: topic || [],
     columns,
-    getRowId: (row) => row.id,
-    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -109,7 +106,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
       sorting,
       globalFilter,
       columnVisibility,
-      rowSelection,
       pagination,
     },
   })
@@ -126,12 +122,6 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
-        <Input
-          placeholder="Search name or description..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-xs bg-muted placeholder:text-muted-foreground focus:bg-muted"
-        />
 
         <Select defaultValue={currentTab} onValueChange={(value) => setCurrentTab(value as "table" | "grid")}>
           <SelectTrigger
@@ -150,6 +140,12 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
           <TabsTrigger value="table">Table</TabsTrigger>
           <TabsTrigger value="grid">Grid</TabsTrigger>
         </TabsList>
+        <Input
+          placeholder="Search name or description..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="w-full bg-muted placeholder:text-muted-foreground focus:bg-muted mx-2"
+        />
         <div className="flex items-center gap-2">
           {currentTab === "table" && (
             <DropdownMenu>

@@ -7,9 +7,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
-  type ColumnFiltersState,
   type VisibilityState,
   flexRender,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -23,11 +23,12 @@ import type { TestPaper } from "@/types/entities";
 import { getTestPaperColumns } from "@/components/table-columns/test-paper-columns";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { DraggableRow } from "@/components/tables/DraggableTestPaperRow"; // adjust import path
+import { Row } from "@/components/tables/TestPaperRow"; // adjust import path
 
 interface TestpaperListViewProps {
   testPapers: TestPaper[];
+  globalFilter: string;
+  setGlobalFilter: React.Dispatch<React.SetStateAction<string>>;
   refreshPapers: () => Promise<void>;
   handleMoveToTrash: (id: string) => void;
   handleCardClick: (id: string) => void;
@@ -35,12 +36,13 @@ interface TestpaperListViewProps {
 
 export default function TestpaperListView({
   testPapers,
+  globalFilter,
+  setGlobalFilter,
   refreshPapers,
   handleMoveToTrash,
   handleCardClick,
 }: TestpaperListViewProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
 
@@ -49,14 +51,16 @@ export default function TestpaperListView({
   const table = useReactTable({
     data: testPapers ?? [],
     columns,
-    state: { sorting, columnFilters, columnVisibility, pagination },
+    state: { sorting, globalFilter, columnVisibility, pagination },
+    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
+    getPaginationRowModel: getPaginationRowModel(),
+    globalFilterFn: "includesString",
   });
 
   return (
@@ -79,18 +83,14 @@ export default function TestpaperListView({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
-              <SortableContext
-                items={table.getRowModel().rows.map((row) => row.original.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {table.getRowModel().rows.map((row) => (
-                  <DraggableRow
-                    key={row.id}
-                    row={row}
-                    onRowClick={handleCardClick}
-                  />
-                ))}
-              </SortableContext>
+              table.getRowModel().rows.map((row, index) => (
+                <Row
+                  key={row.id}
+                  row={row}
+                  index={index}
+                  onRowClick={handleCardClick}
+                />
+              ))
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="text-center py-6">

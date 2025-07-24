@@ -23,6 +23,7 @@ export function getTestPaperColumns(
           {row.original.name}
         </div>
       ),
+      filterFn: "includesString",
     },
     {
       accessorKey: "description",
@@ -34,6 +35,7 @@ export function getTestPaperColumns(
           )}
         </div>
       ),
+      filterFn: "includesString",
     },
     {
       accessorKey: "timeLimitMinutes",
@@ -41,6 +43,7 @@ export function getTestPaperColumns(
       cell: ({ row }) => (
         <div className="text-sm">{row.original.timeLimitMinutes ?? "-"} min</div>
       ),
+      filterFn: "includesString",
     },
     {
       accessorKey: "totalMarks",
@@ -48,6 +51,7 @@ export function getTestPaperColumns(
       cell: ({ row }) => (
         <div className="text-sm">{row.original.totalMarks ?? "-"}</div>
       ),
+      filterFn: "includesString",
     },
     {
       id: "actions",

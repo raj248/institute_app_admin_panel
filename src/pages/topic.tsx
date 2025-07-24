@@ -23,6 +23,7 @@ import TopicNotesTabContent from "@/components/tab-content/TopicNotesTabContent"
 import TopicVideosTabContent from "@/components/tab-content/TopicVideosTabContent";
 import TestpaperGridView from "@/components/cards/TestPaperGridView";
 import TestpaperListView from "@/components/TestpaperListView";
+import { Input } from "@/components/ui/input";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -36,6 +37,7 @@ export default function TopicPage() {
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [videos, setVideos] = useState<VideoNote[] | null>(null);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const [loading, setLoading] = useState(true);
 
@@ -132,6 +134,12 @@ export default function TopicPage() {
             <TabsTrigger value="revision_test">Revision Test</TabsTrigger>
             <TabsTrigger value="videos">Video Notes</TabsTrigger>
           </TabsList>
+          <Input
+            placeholder="Search name or description..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="w-full bg-muted placeholder:text-muted-foreground focus:bg-muted mx-2"
+          />
           <div className="flex items-center gap-2">
             {tab === "testpapers" && (
               <>
@@ -200,6 +208,8 @@ export default function TopicPage() {
           ) : (
             <TestpaperListView
               testPapers={testPapers ?? []}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
               refreshPapers={loadTestPapers}
               handleMoveToTrash={handleMoveToTrash}
               handleCardClick={handleCardClick}
