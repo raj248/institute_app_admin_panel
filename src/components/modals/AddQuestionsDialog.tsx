@@ -75,63 +75,79 @@ export function AddQuestionsDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <IconPlus />
+          <IconPlus className="size-4" />
           <span className="hidden lg:inline">Add Question</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Question</DialogTitle>
-          <DialogDescription>Fill details to create a new question in this test paper.</DialogDescription>
+
+      <DialogContent className="max-w-sm rounded-2xl p-4 sm:p-6">
+        <DialogHeader className="items-center text-center">
+          <DialogTitle className="text-base font-semibold">Add New Question</DialogTitle>
+          <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
+            Fill details to create a new question in this test paper.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           {/* Question */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="question">Question</Label>
-            <Textarea id="question" {...register("question")} />
-            {errors.question && <p className="text-sm text-red-500">{errors.question.message}</p>}
+            <Label htmlFor="question" className="text-sm">Question</Label>
+            <Textarea
+              id="question"
+              {...register("question")}
+              className="text-sm"
+              placeholder="Type your question here"
+            />
+            {errors.question && (
+              <p className="text-xs text-red-500">{errors.question.message}</p>
+            )}
           </div>
 
-          {/* Explanation (optional) */}
+          {/* Explanation */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="explanation">Explanation (optional)</Label>
-            <Textarea id="explanation" {...register("explanation")} />
-            {errors.explanation && <p className="text-sm text-red-500">{errors.explanation.message}</p>}
+            <Label htmlFor="explanation" className="text-sm">Explanation (optional)</Label>
+            <Textarea
+              id="explanation"
+              {...register("explanation")}
+              className="text-sm"
+              placeholder="Add explanation if needed"
+            />
+            {errors.explanation && (
+              <p className="text-xs text-red-500">{errors.explanation.message}</p>
+            )}
           </div>
 
           {/* Options */}
           <div className="flex flex-col gap-1">
-            <Label>Options</Label>
+            <Label className="text-sm">Options</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div>
-                <Input id="option1" {...register("option1")} placeholder="Option A" />
-                {errors.option1 && <p className="text-sm text-red-500">{errors.option1.message}</p>}
-              </div>
-              <div>
-                <Input id="option2" {...register("option2")} placeholder="Option B" />
-                {errors.option2 && <p className="text-sm text-red-500">{errors.option2.message}</p>}
-              </div>
-              <div>
-                <Input id="option3" {...register("option3")} placeholder="Option C" />
-                {errors.option3 && <p className="text-sm text-red-500">{errors.option3.message}</p>}
-              </div>
-              <div>
-                <Input id="option4" {...register("option4")} placeholder="Option D" />
-                {errors.option4 && <p className="text-sm text-red-500">{errors.option4.message}</p>}
-              </div>
+              {["option1", "option2", "option3", "option4"].map((optionKey, index) => (
+                <div key={optionKey}>
+                  <Input
+                    id={optionKey}
+                    {...register(optionKey as "option1" | "option2" | "option3" | "option4")}
+                    placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                    className="text-sm"
+                  />
+                  {errors[optionKey as "option1" | "option2" | "option3" | "option4"]?.message && (
+                    <p className="text-xs text-red-500">
+                      {errors[optionKey as "option1" | "option2" | "option3" | "option4"]!.message}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Correct Answer */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="correctAnswer">Correct Answer</Label>
+            <Label htmlFor="correctAnswer" className="text-sm">Correct Answer</Label>
             <Select
               onValueChange={(value) => setValue("correctAnswer", value as "a" | "b" | "c" | "d")}
               value={watch("correctAnswer")}
             >
-              <SelectTrigger id="correctAnswer">
-                <SelectValue placeholder="Select correct option (a/b/c/d)" />
+              <SelectTrigger id="correctAnswer" className="text-sm">
+                <SelectValue placeholder="Select correct option" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="a">A</SelectItem>
@@ -141,35 +157,39 @@ export function AddQuestionsDialog({
               </SelectContent>
             </Select>
             {errors.correctAnswer && (
-              <p className="text-sm text-red-500">{errors.correctAnswer.message}</p>
+              <p className="text-xs text-red-500">{errors.correctAnswer.message}</p>
             )}
           </div>
 
-
           {/* Marks */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="marks">Marks</Label>
+            <Label htmlFor="marks" className="text-sm">Marks</Label>
             <Input
               id="marks"
               type="number"
               {...register("marks", { valueAsNumber: true })}
-              placeholder="1"
+              placeholder="e.g., 1"
+              className="text-sm"
             />
-            {errors.marks && <p className="text-sm text-red-500">{errors.marks.message}</p>}
+            {errors.marks && (
+              <p className="text-xs text-red-500">{errors.marks.message}</p>
+            )}
           </div>
 
-          {/* Test Paper ID (hidden, but error displayed if missing) */}
+          {/* Test Paper ID */}
           <input type="hidden" {...register("testPaperId")} />
-          {errors.testPaperId && <p className="text-sm text-red-500">{errors.testPaperId.message}</p>}
+          {errors.testPaperId && (
+            <p className="text-xs text-red-500">{errors.testPaperId.message}</p>
+          )}
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
+          <DialogFooter className="mt-2">
+            <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
               {isSubmitting ? "Adding..." : "Add Question"}
             </Button>
           </DialogFooter>
         </form>
-
       </DialogContent>
     </Dialog>
+
   );
 }

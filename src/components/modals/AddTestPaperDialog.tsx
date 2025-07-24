@@ -74,52 +74,69 @@ export function AddTestPaperDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <IconPlus />
+          <IconPlus className="size-4" />
           <span className="hidden lg:inline">Add Test Paper</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Test Paper</DialogTitle>
-          <DialogDescription>Fill details to create a new test paper.</DialogDescription>
+
+      <DialogContent className="max-w-md rounded-2xl p-4 sm:p-6">
+        <DialogHeader className="space-y-1 text-center">
+          <DialogTitle className="text-base font-semibold tracking-tight">Add New Test Paper</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Fill details to create a new test paper.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           {/* Name */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register("name")} />
-            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="name" className="w-28 text-xs">Name</Label>
+            <Input
+              id="name"
+              {...register("name")}
+              className="flex-1 text-sm"
+              placeholder="E.g., May 2025 Mock"
+            />
           </div>
+          {errors.name && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">{errors.name.message}</p>
+          )}
 
           {/* Description */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" {...register("description")} />
+          <div className="flex items-start gap-2">
+            <Label htmlFor="description" className="w-28 text-xs pt-2">Description</Label>
+            <Textarea
+              id="description"
+              {...register("description")}
+              className="flex-1 text-sm"
+              rows={2}
+              placeholder="Brief description"
+            />
           </div>
 
           {/* Time Limit */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="timeLimitMinutes">Time Limit (minutes)</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="timeLimitMinutes" className="w-28 text-xs">Time Limit</Label>
             <Input
               id="timeLimitMinutes"
               type="number"
               placeholder="120"
               {...register("timeLimitMinutes", { valueAsNumber: true })}
+              className="flex-1 text-sm"
             />
-            {errors.timeLimitMinutes && (
-              <p className="text-sm text-red-500">{errors.timeLimitMinutes.message}</p>
-            )}
           </div>
+          {errors.timeLimitMinutes && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">{errors.timeLimitMinutes.message}</p>
+          )}
 
           {/* Topic Selection */}
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="topicId">Topic</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="topicId" className="w-28 text-xs">Topic</Label>
             <Select
               value={watch("topicId")}
               onValueChange={(value) => setValue("topicId", value)}
             >
-              <SelectTrigger id="topicId">
+              <SelectTrigger id="topicId" className="flex-1 text-sm">
                 <SelectValue placeholder="Select a topic" />
               </SelectTrigger>
               <SelectContent>
@@ -130,20 +147,24 @@ export function AddTestPaperDialog({
                 ))}
               </SelectContent>
             </Select>
-            {errors.topicId && (
-              <p className="text-sm text-red-500">{errors.topicId.message}</p>
-            )}
           </div>
+          {errors.topicId && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">{errors.topicId.message}</p>
+          )}
 
-
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create"}
+          {/* Submit */}
+          <DialogFooter className="mt-4">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full text-sm py-2 rounded-xl"
+            >
+              {isSubmitting ? "Creating..." : "Create Test Paper"}
             </Button>
           </DialogFooter>
         </form>
-
       </DialogContent>
     </Dialog>
+
   );
 }
