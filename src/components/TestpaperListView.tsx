@@ -24,7 +24,7 @@ import { getTestPaperColumns } from "@/components/table-columns/test-paper-colum
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { DraggableTestPaperRow } from "@/components/tables/DraggableTestPaperRow"; // adjust import path
+import { DraggableRow } from "@/components/tables/DraggableTestPaperRow"; // adjust import path
 
 interface TestpaperListViewProps {
   testPapers: TestPaper[];
@@ -84,7 +84,7 @@ export default function TestpaperListView({
                 strategy={verticalListSortingStrategy}
               >
                 {table.getRowModel().rows.map((row) => (
-                  <DraggableTestPaperRow
+                  <DraggableRow
                     key={row.id}
                     row={row}
                     onRowClick={handleCardClick}

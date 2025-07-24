@@ -3,16 +3,16 @@ import { useSortable } from "@dnd-kit/sortable";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { flexRender, type Row } from "@tanstack/react-table";
 import { cn } from "@/lib/cn";
-import type { TestPaper } from "@/types/entities";
+import type { Topic, Topic_schema } from "@/types/entities";
 
-export function DraggableRow({
+export default function DraggableRow({
   row,
   onRowClick,
 }: {
-  row: Row<TestPaper>;
-  onRowClick: (id: string) => void;
+  row: Row<Topic_schema>;
+  onRowClick: (topic: Topic) => void;
 }) {
-  const { setNodeRef, transform, transition, isDragging } = useSortable({
+  const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
   });
 
@@ -28,7 +28,7 @@ export function DraggableRow({
         transform: CSS.Transform.toString(transform),
         transition: transition,
       }}
-      onClick={() => onRowClick(row.original.id)}
+      onClick={() => { onRowClick(row.original as Topic) }}
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>

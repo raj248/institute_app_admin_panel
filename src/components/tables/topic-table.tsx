@@ -1,27 +1,22 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns";
 import {
   type UniqueIdentifier,
 } from "@dnd-kit/core"
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
 import {
   IconChevronDown,
   IconChevronLeft,
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
-  IconDotsVertical,
   IconLayoutColumns,
 } from "@tabler/icons-react"
 import {
-  type ColumnDef,
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -30,7 +25,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type Row,
   type SortingState,
   useReactTable,
   type VisibilityState,
@@ -43,8 +37,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Label } from "@/components/ui/label"
@@ -72,12 +64,10 @@ import {
 import type { Topic, Topic_schema } from "@/types/entities"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
-import { moveTopicToTrash } from "@/lib/api"
-import { useConfirm } from "@/components/modals/global-confirm-dialog"
 import { TopicGridView } from "@/components/cards/TopicGridView"
-import { cn } from "@/lib/cn"
 import { AddTopicDialog } from "@/components/modals/AddTopicDialog";
-import { EditTopicViewer } from "@/components/modals/EditTopicViewer";
+import { getTopicColumns } from "../table-columns/topic-columns";
+import DraggableRow from "./DraggableTopicRow"
 
 interface DataTableProps {
   data: Topic_schema[],
@@ -87,135 +77,14 @@ interface DataTableProps {
 }
 
 export function DataTable({ data: topic, setData: setTopics, loading: loading }: DataTableProps) {
-  function DraggableRow({
-    row,
-    onRowClick,
-  }: {
-    row: Row<Topic_schema>;
-    onRowClick: (topic: Topic) => void;
-  }) {
-    const { transform, transition, setNodeRef, isDragging } = useSortable({
-      id: row.original.id,
-    });
-
-    return (
-      <TableRow
-        data-state={row.getIsSelected() && "selected"}
-        data-dragging={isDragging}
-        ref={setNodeRef}
-        className={cn(
-          "relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80 cursor-pointer hover:bg-muted/50 transition-colors"
-        )}
-        style={{
-          transform: CSS.Transform.toString(transform),
-          transition: transition,
-        }}
-        onClick={() => { onRowClick(row.original as Topic) }}
-      >
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-      </TableRow>
-    );
-  }
-
 
   const navigate = useNavigate();
-  const confirm = useConfirm();
-
-  const handleMoveToTrash = async (topicId: string) => {
-    const confirmed = await confirm({
-      title: "Move This Topic To Trash?",
-      description: "This will move the topic to trash along with its test papers and MCQs. You can restore it later if needed.",
-      confirmText: "Move to Trash",
-      cancelText: "Cancel",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    const topic = await moveTopicToTrash(topicId);
-    if (!topic) {
-      console.error("Failed to move topic to trash.");
-      alert("Failed to move topic to trash.");
-      return;
-    }
-
-    setTopics((prev) => prev?.filter((t) => t.id !== topicId) ?? null);
-  };
 
   const handleClick = (topic: Topic) => {
     navigate(`/CAInter/${topic.id}`);
   };
 
-  const columns: ColumnDef<Topic_schema>[] = [
-    {
-      accessorKey: "Name",
-      header: () => <span className="ml-2 font-medium">Name</span>,
-      cell: ({ row }) => {
-        return <div className="ml-2 font-medium">{row.original.name}</div>
-      },
-      enableHiding: false,
-    },
-    {
-      accessorKey: "Description",
-      header: "Description",
-      cell: ({ row }) => (
-        <div
-          className="max-w-[180px] sm:max-w-[240px] md:max-w-[300px] lg:max-w-[350px] truncate"
-          title={row.original.description ?? "No description provided."}
-        >
-          {row.original.description ?? <em className="text-muted-foreground">No description</em>}
-        </div>
-      ),
-    },
-
-    {
-      accessorKey: "Last Updated",
-      header: "Last Updated",
-      cell: ({ row }) => {
-        const dateString = row.original.updatedAt;
-        const formatted = format(new Date(dateString), "dd MMM yyyy, hh:mm a"); // Customize pattern as needed
-        return <div className="w-40 truncate">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "Test Paper Count",
-      header: "# Test Papers",
-      cell: ({ row }) => (
-        <div className="w-32 text-center justify-center truncate">{row.original.testPaperCount ?? 0}</div>
-      ),
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}><EditTopicViewer item={row.original} setTopics={setTopics} /></DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={(e) => {
-              handleMoveToTrash(row.original.id)
-              e.stopPropagation();
-            }}>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
-  ]
-
+  const columns = getTopicColumns(setTopics);
 
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
