@@ -2,13 +2,6 @@
 
 import * as React from "react"
 import {
-  type UniqueIdentifier,
-} from "@dnd-kit/core"
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import {
   IconChevronDown,
   IconChevronLeft,
   IconChevronRight,
@@ -17,11 +10,8 @@ import {
   IconLayoutColumns,
 } from "@tabler/icons-react"
 import {
-  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -67,7 +57,9 @@ import { useState } from "react"
 import { TopicGridView } from "@/components/cards/TopicGridView"
 import { AddTopicDialog } from "@/components/modals/AddTopicDialog";
 import { getTopicColumns } from "../table-columns/topic-columns";
-import DraggableRow from "./DraggableTopicRow"
+import Row from "./TopicRow"
+import { Input } from "@/components/ui/input"
+
 
 interface DataTableProps {
   data: Topic_schema[],
@@ -86,9 +78,11 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
 
   const columns = getTopicColumns(setTopics);
 
+  const [globalFilter, setGlobalFilter] = useState("");
+
+
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -96,34 +90,28 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
   })
 
 
-  const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => topic?.map(({ id }) => id) || [],
-    [topic]
-  )
 
   const table = useReactTable({
     data: topic || [],
     columns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination,
-    },
-    getRowId: (row) => row.id.toString(),
-    enableRowSelection: true,
+    getRowId: (row) => row.id,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
+    getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+    globalFilterFn: 'includesString',
+    state: {
+      sorting,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+      pagination,
+    },
   })
 
   const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
@@ -138,6 +126,13 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
+        <Input
+          placeholder="Search name or description..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="max-w-xs bg-muted placeholder:text-muted-foreground focus:bg-muted"
+        />
+
         <Select defaultValue={currentTab} onValueChange={(value) => setCurrentTab(value as "table" | "grid")}>
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
@@ -225,15 +220,10 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
               ))}
             </TableHeader>
             <TableBody className="**:data-[slot=table-cell]:first:w-8">
-              {table.getRowModel().rows?.length ? (
-                <SortableContext
-                  items={dataIds}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {table.getRowModel().rows.map((row) => (
-                    <DraggableRow key={row.id} row={row} onRowClick={handleClick} />
-                  ))}
-                </SortableContext>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row, index) => (
+                  <Row key={row.id} row={row} onRowClick={handleClick} index={index} />
+                ))
               ) : (
                 <TableRow>
                   <TableCell

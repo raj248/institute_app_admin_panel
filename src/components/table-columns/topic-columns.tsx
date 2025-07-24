@@ -38,13 +38,14 @@ export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<T
 
   const columns: ColumnDef<Topic_schema>[] = [
     {
-      accessorKey: "Name",
+      accessorKey: "name",
       header: () => <span className="ml-2 font-medium">Name</span>,
       cell: ({ row }) => <div className="ml-2 font-medium">{row.original.name}</div>,
       enableHiding: false,
+      filterFn: "includesString"
     },
     {
-      accessorKey: "Description",
+      accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
         <div
@@ -54,6 +55,7 @@ export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<T
           {row.original.description ?? <em className="text-muted-foreground">No description</em>}
         </div>
       ),
+      filterFn: "includesString"
     },
     {
       accessorKey: "Last Updated",
