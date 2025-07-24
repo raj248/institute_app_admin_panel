@@ -1,6 +1,6 @@
 // src/components/topics/TopicGridView.tsx
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Trash2 } from "lucide-react";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import { moveTopicToTrash } from "@/lib/api";
 import type { Topic } from "@/types/entities";
+import { Badge } from "../ui/badge";
 
 interface TopicGridViewProps {
   topics: Topic[] | null;
@@ -63,8 +64,9 @@ export function TopicGridView({ topics, loading }: TopicGridViewProps) {
       {topics.map((topic) => (
         <Card
           key={topic.id}
-          className="relative transition-transform hover:scale-[1.02] hover:shadow-sm border border-border/50 rounded-lg mx-4 max-w-xs min-w-[220px] flex-1 group"
+          className="relative transition hover:shadow-md border rounded-xl mx-2 sm:mx-4 max-w-xs min-w-[220px] flex-1 group bg-background hover:bg-accent/30"
         >
+          {/* Delete Button */}
           <Button
             size="icon"
             variant="ghost"
@@ -74,23 +76,31 @@ export function TopicGridView({ topics, loading }: TopicGridViewProps) {
               handleMoveToTrash(topic.id);
             }}
           >
-            <Trash2 size={16} className="text-yellow-600" />
+            <Trash2 size={16} className="text-destructive" />
           </Button>
 
-          <div onClick={() => handleCardClick(topic)} className="cursor-pointer">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-medium">{topic.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-1">
-              <div>
+          {/* Clickable Area */}
+          <div onClick={() => handleCardClick(topic)} className="cursor-pointer flex flex-col h-full justify-between p-4">
+            {/* Header */}
+            <div className="space-y-1">
+              <CardTitle className="text-sm font-semibold text-foreground text-center">
+                {topic.name}
+              </CardTitle>
+              <CardContent className="text-xs text-muted-foreground text-center">
                 {topic.description ?? <em>No description provided.</em>}
-              </div>
-              <div>
-                {topic.testPaperCount ?? 0} Test Paper{(topic.testPaperCount ?? 0) !== 1 ? "s" : ""}
-              </div>
-            </CardContent>
+              </CardContent>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-3 flex justify-center">
+              <Badge variant="secondary" className="text-[10px] rounded-full px-2 py-0.5">
+                {topic.testPaperCount ?? 0} Test Paper
+                {(topic.testPaperCount ?? 0) !== 1 ? "s" : ""}
+              </Badge>
+            </div>
           </div>
         </Card>
+
       ))}
     </div>
   );
