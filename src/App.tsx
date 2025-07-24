@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "@/components/layout/layout";
 // import Dashboard from "@/pages/dashboard";
@@ -11,7 +12,6 @@ import { ThemeProvider } from "./components/theme/theme-provider";
 import TopicPage from "./pages/topic";
 import TestPaperPage from "./pages/testpaper";
 import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog";
-import React from "react";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

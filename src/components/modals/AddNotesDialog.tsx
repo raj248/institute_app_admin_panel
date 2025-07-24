@@ -85,39 +85,70 @@ export function AddNotesDialog({
           <span className="hidden lg:inline">Add Note</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Note</DialogTitle>
-          <DialogDescription>Fill details and upload a PDF to add new notes.</DialogDescription>
+
+      <DialogContent className="max-w-sm rounded-2xl p-4 sm:p-6">
+        <DialogHeader className="items-center text-center">
+          <DialogTitle className="text-base font-semibold">Add New Note</DialogTitle>
+          <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
+            Fill details and upload a PDF to add new notes.
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register("name")} />
-            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+          {/* Name Row */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="name" className="text-sm w-24">
+              Name
+            </Label>
+            <Input
+              id="name"
+              {...register("name")}
+              className="text-sm flex-1"
+              placeholder="Enter note name"
+            />
+          </div>
+          {errors.name && (
+            <p className="text-xs text-red-500 ml-24 -mt-2">{errors.name.message}</p>
+          )}
+
+          {/* Description Row */}
+          <div className="flex items-start gap-2">
+            <Label htmlFor="description" className="text-sm w-24 pt-2">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              {...register("description")}
+              className="text-sm flex-1 min-h-[80px]"
+              placeholder="Short description (optional)"
+            />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" {...register("description")} />
+          {/* File Row */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="file" className="text-sm w-24">
+              Upload PDF
+            </Label>
+            <Input
+              id="file"
+              type="file"
+              accept="application/pdf"
+              {...register("file")}
+              className="text-sm flex-1"
+            />
           </div>
+          {errors.file && "message" in errors.file && typeof errors.file.message === "string" && (
+            <p className="text-xs text-red-500 ml-24 -mt-2">{errors.file.message}</p>
+          )}
 
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="file">Upload PDF</Label>
-            <Input id="file" type="file" accept="application/pdf" {...register("file")} />
-            {errors.file && "message" in errors.file && typeof errors.file.message === "string" && (
-              <p className="text-sm text-red-500">{errors.file.message}</p>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
+          <DialogFooter className="mt-2">
+            <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
               {isSubmitting ? "Adding..." : "Add Note"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+
   );
 }
