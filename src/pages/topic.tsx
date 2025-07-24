@@ -200,8 +200,6 @@ export default function TopicPage() {
           ) : (
             <TestpaperListView
               testPapers={testPapers ?? []}
-              topicId={topicId ?? ''}
-              loading={loading}
               refreshPapers={loadTestPapers}
               handleMoveToTrash={handleMoveToTrash}
               handleCardClick={handleCardClick}
