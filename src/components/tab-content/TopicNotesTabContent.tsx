@@ -79,7 +79,7 @@ export default function TopicNotesTabContent({
   return (
     <div className="space-y-4">
       {loading ? (
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {Array.from({ length: 4 }).map((_, idx) => (
             <Skeleton key={idx} className="h-24 w-72 rounded-lg" />
           ))}
@@ -94,7 +94,7 @@ export default function TopicNotesTabContent({
                 <h3 className="text-sm font-semibold text-muted-foreground">
                   {typeLabels[type as Note["type"]]}
                 </h3>
-                <div className="flex flex-wrap gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {group.map((note) => (
                     <NoteCard
                       key={note.id}
@@ -108,7 +108,7 @@ export default function TopicNotesTabContent({
             );
           })
         ) : (
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
             {filteredNotes.map((note) => (
               <NoteCard
                 key={note.id}

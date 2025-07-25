@@ -147,7 +147,7 @@ export default function TopicVideosTabContent({
             const group = filteredVideos.filter((v) => v.type === type);
             if (group.length === 0) return null;
             return (
-              <div key={type} className="space-y-2">
+              <div key={type} className="space-y-2 mx-2">
                 <h3 className="text-sm font-semibold text-muted-foreground">
                   {typeLabels[type as VideoNote["type"]]}
                 </h3>
@@ -165,7 +165,7 @@ export default function TopicVideosTabContent({
             );
           })
         ) : (
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4  mx-2">
             {filteredVideos.map((video) => (
               <VideoCard
                 key={video.id}
