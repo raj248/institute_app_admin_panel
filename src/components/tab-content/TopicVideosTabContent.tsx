@@ -11,12 +11,21 @@ interface TopicVideosTabContentProps {
   videos: VideoNote[] | null;
   setVideos: React.Dispatch<React.SetStateAction<VideoNote[] | null>>;
   topicId: string;
+  filterType: VideoNote["type"] | "all";
 }
+
+const typeLabels: Record<VideoNote["type"], string> = {
+  mtp: "MTP",
+  rtp: "RTP",
+  revision: "Revision",
+  other: "Other",
+};
 
 export default function TopicVideosTabContent({
   videos,
   setVideos,
   topicId,
+  filterType,
 }: TopicVideosTabContentProps) {
   const [loading, setLoading] = useState(true);
   const confirm = useConfirm();
@@ -113,7 +122,6 @@ export default function TopicVideosTabContent({
     fetchVideoDetails(unenriched).then((enriched) => {
       setVideos((prev) => {
         if (!prev) return enriched;
-        // Merge enriched with existing
         return prev.map(v => {
           const enrichedVideo = enriched.find(e => e.id === v.id);
           return enrichedVideo ? enrichedVideo : v;
@@ -122,27 +130,52 @@ export default function TopicVideosTabContent({
     });
   }, [videos]);
 
-
+  const filteredVideos =
+    filterType === "all" ? videos ?? [] : (videos ?? []).filter((v) => v.type === filterType);
 
   return (
-    <div>
+    <div className="space-y-4">
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="flex flex-wrap gap-4 justify-center">
           {Array.from({ length: 4 }).map((_, idx) => (
-            <Skeleton key={idx} className="h-40 w-full rounded-lg" />
+            <Skeleton key={idx} className="h-40 w-72 rounded-lg" />
           ))}
         </div>
-      ) : videos && videos.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {videos.map((video) => (
-            <VideoCard
-              key={video.id}
-              video={video}
-              onDelete={() => handleMoveToTrash(video.id)}
-              onClick={() => handleViewVideo(video)}
-            />
-          ))}
-        </div>
+      ) : filteredVideos.length > 0 ? (
+        filterType === "all" ? (
+          ["mtp", "rtp", "revision", "other"].map((type) => {
+            const group = filteredVideos.filter((v) => v.type === type);
+            if (group.length === 0) return null;
+            return (
+              <div key={type} className="space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground">
+                  {typeLabels[type as VideoNote["type"]]}
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                  {group.map((video) => (
+                    <VideoCard
+                      key={video.id}
+                      video={video}
+                      onDelete={() => handleMoveToTrash(video.id)}
+                      onClick={() => handleViewVideo(video)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="flex flex-wrap gap-4">
+            {filteredVideos.map((video) => (
+              <VideoCard
+                key={video.id}
+                video={video}
+                onDelete={() => handleMoveToTrash(video.id)}
+                onClick={() => handleViewVideo(video)}
+              />
+            ))}
+          </div>
+        )
       ) : (
         <p className="text-center text-muted-foreground">No video notes found for this topic.</p>
       )}

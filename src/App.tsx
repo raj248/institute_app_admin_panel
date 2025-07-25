@@ -11,6 +11,7 @@ import Trash from "@/pages/trash";
 import { ThemeProvider } from "./components/theme/theme-provider";
 import TopicPage from "./pages/topic";
 import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog";
+import NewlyAdded from "./pages/newly-added";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -21,6 +22,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/newlyadded" element={<NewlyAdded />} />
               <Route path="/CAInter" element={<CAInter />} />
               <Route path="/CAFinal" element={<CAFinal />} />
               <Route path="/CAInter/:topicId" element={<TopicPage />} />

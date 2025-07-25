@@ -11,12 +11,20 @@ interface TopicNotesTabContentProps {
   notes: Note[] | null;
   setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>;
   topicId: string;
+  filterType: Note["type"] | "all";
 }
+
+const typeLabels: Record<Note["type"], string> = {
+  mtp: "MTP",
+  rtp: "RTP",
+  other: "Other",
+};
 
 export default function TopicNotesTabContent({
   notes,
   setNotes,
   topicId,
+  filterType,
 }: TopicNotesTabContentProps) {
   const [loading, setLoading] = useState(true);
   const confirm = useConfirm();
@@ -26,9 +34,10 @@ export default function TopicNotesTabContent({
     setLoading(true);
     try {
       const res = await getNotesByTopicId(topicId);
-      setNotes(res.data ?? null);
+      setNotes(res.data ?? []);
     } catch (e) {
       console.error(e);
+      setNotes([]);
     } finally {
       setLoading(false);
     }
@@ -38,7 +47,6 @@ export default function TopicNotesTabContent({
     const url = `${import.meta.env.VITE_SERVER_URL}${note.fileUrl}`;
     window.open(url, "_blank");
   };
-
 
   const handleMoveToTrash = async (id: string) => {
     const confirmed = await confirm({
@@ -65,25 +73,52 @@ export default function TopicNotesTabContent({
     loadNotes();
   }, [topicId]);
 
+  const filteredNotes =
+    filterType === "all" ? notes ?? [] : (notes ?? []).filter((n) => n.type === filterType);
+
   return (
-    <div>
+    <div className="space-y-4">
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="flex flex-wrap gap-4 justify-center">
           {Array.from({ length: 4 }).map((_, idx) => (
-            <Skeleton key={idx} className="h-24 w-full rounded-lg" />
+            <Skeleton key={idx} className="h-24 w-72 rounded-lg" />
           ))}
         </div>
-      ) : notes && notes.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {notes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onDelete={() => handleMoveToTrash(note.id)}
-              onClick={() => handleViewNote(note)}
-            />
-          ))}
-        </div>
+      ) : filteredNotes.length > 0 ? (
+        filterType === "all" ? (
+          ["mtp", "rtp", "other"].map((type) => {
+            const group = filteredNotes.filter((n) => n.type === type);
+            if (group.length === 0) return null;
+            return (
+              <div key={type} className="space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground">
+                  {typeLabels[type as Note["type"]]}
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                  {group.map((note) => (
+                    <NoteCard
+                      key={note.id}
+                      note={note}
+                      onDelete={() => handleMoveToTrash(note.id)}
+                      onClick={() => handleViewNote(note)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="flex flex-wrap gap-4">
+            {filteredNotes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                onDelete={() => handleMoveToTrash(note.id)}
+                onClick={() => handleViewNote(note)}
+              />
+            ))}
+          </div>
+        )
       ) : (
         <p className="text-center text-muted-foreground">No notes found for this topic.</p>
       )}

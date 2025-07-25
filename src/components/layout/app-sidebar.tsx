@@ -34,6 +34,11 @@ const data = {
       icon: Frame,
     },
     {
+      name: "Latest Content",
+      url: "/newlyadded",
+      icon: Map,
+    },
+    {
       name: "CA-Inter",
       url: "CAInter",
       icon: PieChart,

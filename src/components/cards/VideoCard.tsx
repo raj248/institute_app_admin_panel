@@ -22,16 +22,17 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
   };
 
   return (
-    <Card className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 cursor-pointer">
-      <CardContent className="p-0">
+    <Card className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150">
+      <CardContent className="p-0 flex flex-col">
         {video.thumbnail && (
           <img
             src={video.thumbnail}
             alt={video.title ?? "Video Thumbnail"}
-            className="w-full h-48 object-cover"
+            className="w-full h-48 object-cover cursor-pointer"
+            onClick={onClick}
           />
         )}
-        <div className="p-3 flex flex-col gap-1">
+        <div className="p-3 flex flex-col gap-1 flex-1">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-medium line-clamp-2">{video.title ?? "Untitled Video"}</h3>
             <Badge
@@ -43,12 +44,20 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
           <p className="text-xs text-muted-foreground break-all">
             {video.url}
           </p>
-          <div className="flex justify-between">
-            <Button size="sm" onClick={onClick}>Watch</Button>
-            <Button size="icon" variant="ghost" onClick={onDelete}>
-              <Trash2 size={16} />
-            </Button>
-          </div>
+        </div>
+
+        {/* Delete button bottom center */}
+        <div className="w-full flex justify-center pb-2">
+          <Button
+            size="sm"
+            variant="destructive"
+            aria-label="Delete"
+            className="cursor-pointer"
+            onClick={onDelete}
+          >
+            <Trash2 size={16} />
+            <span className="hidden lg:inline">Delete</span>
+          </Button>
         </div>
       </CardContent>
     </Card>
