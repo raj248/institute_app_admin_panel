@@ -1,7 +1,3 @@
-// components/tables/topic-columns.tsx
-
-"use client"
-
 import { format } from "date-fns";
 import { IconDotsVertical } from "@tabler/icons-react";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -40,71 +36,78 @@ export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<T
     {
       accessorKey: "name",
       header: () => <span className="ml-2 font-medium">Name</span>,
-      cell: ({ row }) => <div className="ml-2 font-medium">{row.original.name}</div>,
+      cell: ({ row }) => <div className="ml-2 font-medium truncate max-w-[240px]">{row.original.name}</div>,
       enableHiding: false,
-      filterFn: "includesString"
+      filterFn: "includesString",
+      size: 250,
     },
     {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
         <div
-          className="max-w-[180px] sm:max-w-[240px] md:max-w-[300px] lg:max-w-[350px] truncate"
+          className="truncate"
           title={row.original.description ?? "No description provided."}
         >
           {row.original.description ?? <em className="text-muted-foreground">No description</em>}
         </div>
       ),
-      filterFn: "includesString"
+      filterFn: "includesString",
+      size: 300,
     },
     {
       accessorKey: "Last Updated",
-      header: "Last Updated",
+      header: () => <div className="text-center">Last Updated</div>,
       cell: ({ row }) => {
         const dateString = row.original.updatedAt;
         const formatted = format(new Date(dateString), "dd MMM yyyy, hh:mm a");
-        return <div className="w-40 truncate">{formatted}</div>;
+        return <div className="text-sm text-center truncate">{formatted}</div>;
       },
+      // size: 80,
     },
     {
       accessorKey: "Test Paper Count",
-      header: "# Test Papers",
+      header: () => <div className="text-center"># Test Papers</div>,
       cell: ({ row }) => (
-        <div className="w-32 text-center justify-center truncate">{row.original.testPaperCount ?? 0}</div>
+        <div className="text-sm text-center">{row.original.testPaperCount ?? 0}</div>
       ),
+      // size: 10,
     },
     {
       id: "actions",
+      header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-              <EditTopicViewer item={row.original} setTopics={setTopics} />
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={(e) => {
-                handleMoveToTrash(row.original.id);
-                e.stopPropagation();
-              }}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex justify-end pr-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+              >
+                <IconDotsVertical className="size-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem>View</DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                <EditTopicViewer item={row.original} setTopics={setTopics} />
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveToTrash(row.original.id);
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
+      // size: 60,
     },
   ];
 

@@ -23,9 +23,11 @@ import { PenIcon } from "lucide-react";
 export function EditTestViewer({
   item,
   refreshPapers,
+  trigger,
 }: {
   item: TestPaper;
   refreshPapers: () => Promise<void>;
+  trigger?: (props: { open: () => void }) => React.ReactNode;
 }) {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
@@ -54,18 +56,20 @@ export function EditTestViewer({
 
   return (
     <>
-      <Button
-        variant="outline"
-        // className="text-foreground w-full justify-start px-0"
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(true);
-        }}
-      >
-        <PenIcon />
-        <span className="hidden lg:inline">Edit</span>
-
-      </Button>
+      {trigger ? (
+        trigger({ open: () => setOpen(true) })
+      ) : (
+        <Button
+          variant="outline"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(true);
+          }}
+        >
+          <PenIcon className="mr-2 size-4" />
+          <span>Edit</span>
+        </Button>
+      )}
 
       <Drawer
         direction={isMobile ? "bottom" : "right"}

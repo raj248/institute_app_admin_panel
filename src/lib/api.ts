@@ -1,4 +1,4 @@
-import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote } from "@/types/entities";
+import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote, NewlyAdded } from "@/types/entities";
 import type { APIResponse } from "@/types/api"
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
@@ -235,6 +235,37 @@ export async function moveNoteToTrash(noteId: string): Promise<APIResponse<Note>
 
 export async function moveVideoNoteToTrash(videoNoteId: string): Promise<APIResponse<VideoNote>> {
   return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`, { method: "DELETE" });
+}
+
+// ------------------- Newly Added --------------------
+
+/**
+ * Get all newly added items
+ */
+export async function getNewlyAddedItems(): Promise<APIResponse<NewlyAdded[]>> {
+  return safeFetch(`${BASE_URL}/api/newlyadded`);
+}
+
+/**
+ * Add an item to newly added
+ * @param tableName - "MCQ" | "TestPaper" | "Note" | "VideoNote"
+ * @param entityId - ID of the entity to mark as newly added
+ */
+export async function addNewlyAddedItem(tableName: "MCQ" | "TestPaper" | "Note" | "VideoNote", entityId: string): Promise<APIResponse<NewlyAdded>> {
+  return safeFetch<NewlyAdded>(`${BASE_URL}/api/newlyadded`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tableName, entityId }),
+  });
+}
+
+/**
+ * Remove an item from newly added by its ID
+ */
+export async function removeNewlyAddedItem(id: string): Promise<APIResponse<string>> {
+  return safeFetch(`${BASE_URL}/api/newlyadded/${id}`, {
+    method: "DELETE",
+  });
 }
 
 // ------------------- Trash --------------------

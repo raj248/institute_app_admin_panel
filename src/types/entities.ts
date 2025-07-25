@@ -47,6 +47,7 @@ export type Topic_schema = z.infer<typeof TopicSchema>;
 
 export interface TestPaper {
   id: string;
+  newlyAddedId: string | null;
   name: string;
   description?: string;
   timeLimitMinutes?: number;
@@ -128,6 +129,12 @@ export interface VideoNote {
   thumbnail?: string; // optional if you fetch on frontend
 }
 
+export interface NewlyAdded {
+  id: string;
+  tableName: "MCQ" | "TestPaper" | "Note" | "VideoNote";
+  entityId: string;
+  addedAt: string;
+}
 
 export interface Trash {
   id: string;
