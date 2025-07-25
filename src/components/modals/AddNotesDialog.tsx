@@ -21,7 +21,15 @@ import { z } from "zod";
 import { getNotesByTopicId, uploadNote } from "@/lib/api";
 import { toast } from "sonner";
 import type { Note } from "@/types/entities";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
+// ✅ Extend schema with type
 const addNoteSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
@@ -29,6 +37,7 @@ const addNoteSchema = z.object({
     .any()
     .refine((file) => file?.length === 1, "PDF file is required")
     .refine((file) => file?.[0]?.type === "application/pdf", "Only PDF files are allowed"),
+  type: z.enum(["mtp", "rtp", "other"]),
 });
 
 type AddNoteSchema = z.infer<typeof addNoteSchema>;
@@ -49,8 +58,12 @@ export function AddNotesDialog({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<AddNoteSchema>({
     resolver: zodResolver(addNoteSchema),
+    defaultValues: {
+      type: "other",
+    },
   });
 
   const onSubmit = async (data: AddNoteSchema) => {
@@ -61,6 +74,7 @@ export function AddNotesDialog({
         file: data.file[0],
         topicId,
         courseType,
+        type: data.type,
       });
 
       if (result.success) {
@@ -95,7 +109,7 @@ export function AddNotesDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-          {/* Name Row */}
+          {/* Name */}
           <div className="flex items-center gap-2">
             <Label htmlFor="name" className="text-sm w-24">
               Name
@@ -111,7 +125,7 @@ export function AddNotesDialog({
             <p className="text-xs text-red-500 ml-24 -mt-2">{errors.name.message}</p>
           )}
 
-          {/* Description Row */}
+          {/* Description */}
           <div className="flex items-start gap-2">
             <Label htmlFor="description" className="text-sm w-24 pt-2">
               Description
@@ -124,7 +138,30 @@ export function AddNotesDialog({
             />
           </div>
 
-          {/* File Row */}
+          {/* Type */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="type" className="text-sm w-24">
+              Type
+            </Label>
+            <Select
+              defaultValue="other"
+              onValueChange={(value) => setValue("type", value as "mtp" | "rtp" | "other")}
+            >
+              <SelectTrigger id="type" className="flex-1 text-sm">
+                <SelectValue placeholder="Select Note Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mtp">MTP</SelectItem>
+                <SelectItem value="rtp">RTP</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {errors.type && (
+            <p className="text-xs text-red-500 ml-24 -mt-2">{errors.type.message}</p>
+          )}
+
+          {/* File */}
           <div className="flex items-center gap-2">
             <Label htmlFor="file" className="text-sm w-24">
               Upload PDF
@@ -149,6 +186,5 @@ export function AddNotesDialog({
         </form>
       </DialogContent>
     </Dialog>
-
   );
 }

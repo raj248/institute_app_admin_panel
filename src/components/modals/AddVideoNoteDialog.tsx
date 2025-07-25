@@ -20,9 +20,18 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { addVideoNote, getVideoNotesByTopicId } from "@/lib/api";
 import type { VideoNote } from "@/types/entities";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
+// ✅ Extend schema to include type
 const addVideoNoteSchema = z.object({
   url: z.url("Please enter a valid YouTube URL"),
+  type: z.enum(["mtp", "rtp", "revision", "other"]),
 });
 
 type AddVideoNoteSchema = z.infer<typeof addVideoNoteSchema>;
@@ -48,15 +57,19 @@ export function AddVideoNoteDialog({
     watch,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<AddVideoNoteSchema>({
     resolver: zodResolver(addVideoNoteSchema),
+    defaultValues: {
+      type: "other",
+    },
   });
 
   const url = watch("url");
 
   useEffect(() => {
     const fetchPreview = async () => {
-      if (!url || !url.includes("youtube.com") && !url.includes("youtu.be")) {
+      if (!url || (!url.includes("youtube.com") && !url.includes("youtu.be"))) {
         setPreview(null);
         return;
       }
@@ -80,6 +93,7 @@ export function AddVideoNoteDialog({
         url: data.url,
         topicId,
         courseType,
+        type: data.type,
       });
 
       if (result.success) {
@@ -111,7 +125,7 @@ export function AddVideoNoteDialog({
             Add Video Note
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Paste a YouTube URL to add it as a video note with preview.
+            Paste a YouTube URL and select type to add it as a video note with preview.
           </DialogDescription>
         </DialogHeader>
 
@@ -132,6 +146,32 @@ export function AddVideoNoteDialog({
           {errors.url && (
             <p className="text-xs text-red-500 pl-28 -mt-1">
               {errors.url.message}
+            </p>
+          )}
+
+          {/* Video Type */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="type" className="w-28 text-xs">
+              Video Type
+            </Label>
+            <Select
+              defaultValue="other"
+              onValueChange={(value) => setValue("type", value as "mtp" | "rtp" | "revision" | "other")}
+            >
+              <SelectTrigger id="type" className="flex-1 text-sm">
+                <SelectValue placeholder="Select Video Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mtp">MTP</SelectItem>
+                <SelectItem value="rtp">RTP</SelectItem>
+                <SelectItem value="revision">Revision</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {errors.type && (
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.type.message}
             </p>
           )}
 
@@ -156,6 +196,5 @@ export function AddVideoNoteDialog({
         </form>
       </DialogContent>
     </Dialog>
-
   );
 }

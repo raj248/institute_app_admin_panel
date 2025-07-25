@@ -167,12 +167,14 @@ export async function uploadNote(data: {
   file: File;
   name: string;
   description?: string;
+  type: "rtp" | "mtp" | "other"
   topicId: string;
   courseType: "CAInter" | "CAFinal";
 }): Promise<APIResponse<Note>> {
   const formData = new FormData();
   formData.append("file", data.file);
   formData.append("name", data.name);
+  if (data.type) formData.append("type", data.type);
   if (data.description) formData.append("description", data.description);
   formData.append("topicId", data.topicId);
   formData.append("courseType", data.courseType);
@@ -202,6 +204,7 @@ export async function getVideoNotesByTopicId(topicId: string): Promise<APIRespon
 
 export async function addVideoNote(data: {
   url: string;
+  type: "rtp" | "mtp" | "revision" | "other"
   topicId: string;
   courseType: "CAInter" | "CAFinal";
 }): Promise<APIResponse<VideoNote>> {
