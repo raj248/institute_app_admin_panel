@@ -106,6 +106,7 @@ export interface Note {
   id: string;
   name: string;
   description?: string;
+  type: "rtp" | "mtp" | "other";
   topicId: string;
   courseType: "CAInter" | "CAFinal";
   fileName: string;
@@ -120,6 +121,7 @@ export interface Note {
 export interface VideoNote {
   id: string;         // UUID from your DB
   url: string;        // YouTube URL
+  type: "rtp" | "mtp" | "revision" | "other";
   topicId: string;
   courseType: string;
   title?: string;     // optional if you fetch on frontend

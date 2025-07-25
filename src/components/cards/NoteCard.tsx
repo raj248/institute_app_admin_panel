@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Trash2, Eye } from "lucide-react";
 import type { Note } from "@/types/entities";
 import { format } from "date-fns";
@@ -13,10 +14,24 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
+  // Color map for clarity
+  const typeColors: Record<Note["type"], string> = {
+    mtp: "bg-blue-100 text-blue-800",
+    rtp: "bg-green-100 text-green-800",
+    other: "bg-gray-100 text-gray-800",
+  };
+
   return (
     <Card className="hover:shadow transition-shadow">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base line-clamp-1">{note.name}</CardTitle>
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base line-clamp-1">{note.name}</CardTitle>
+          <Badge
+            className={`text-xs px-2 py-0.5 rounded ${typeColors[note.type]}`}
+          >
+            {note.type.toUpperCase()}
+          </Badge>
+        </div>
         {note.description && (
           <CardDescription className="text-sm text-muted-foreground line-clamp-2">
             {note.description}
