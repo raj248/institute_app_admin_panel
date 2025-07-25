@@ -3,12 +3,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { VideoNote } from "@/types/entities";
+import { Button } from "../ui/button";
+import { Trash2 } from "lucide-react";
 
 interface VideoCardProps {
   video: VideoNote;
+  onDelete: () => void;
+  onClick: () => void;
 }
 
-export default function VideoCard({ video }: VideoCardProps) {
+export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
   // Color map for badge clarity
   const typeColors: Record<VideoNote["type"], string> = {
     mtp: "bg-blue-100 text-blue-800",
@@ -39,6 +43,12 @@ export default function VideoCard({ video }: VideoCardProps) {
           <p className="text-xs text-muted-foreground break-all">
             {video.url}
           </p>
+          <div className="flex justify-between">
+            <Button size="sm" onClick={onClick}>Watch</Button>
+            <Button size="icon" variant="ghost" onClick={onDelete}>
+              <Trash2 size={16} />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
