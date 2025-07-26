@@ -211,7 +211,7 @@ export async function getVideoNoteById(videoNoteId: string): Promise<APIResponse
 
 export async function addVideoNote(data: {
   url: string;
-  name: string | undefined;
+  name: string;
   type: "rtp" | "mtp" | "revision" | "other"
   topicId: string;
   courseType: "CAInter" | "CAFinal";

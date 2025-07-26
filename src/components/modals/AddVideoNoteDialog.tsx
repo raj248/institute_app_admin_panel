@@ -91,7 +91,7 @@ export function AddVideoNoteDialog({
     try {
       const result = await addVideoNote({
         url: data.url,
-        name: preview?.title,
+        name: preview?.title || '',
         topicId,
         courseType,
         type: data.type,
