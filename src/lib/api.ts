@@ -202,6 +202,13 @@ export async function getVideoNotesByTopicId(topicId: string): Promise<APIRespon
   return safeFetch(`${BASE_URL}/api/videonotes/topic/${topicId}`);
 }
 
+/**
+ * Get a video by its ID
+ */
+export async function getVideoNoteById(videoNoteId: string): Promise<APIResponse<Note>> {
+  return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`);
+}
+
 export async function addVideoNote(data: {
   url: string;
   type: "rtp" | "mtp" | "revision" | "other"
