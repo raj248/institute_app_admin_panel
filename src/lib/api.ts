@@ -211,6 +211,7 @@ export async function getVideoNoteById(videoNoteId: string): Promise<APIResponse
 
 export async function addVideoNote(data: {
   url: string;
+  name: string | undefined;
   type: "rtp" | "mtp" | "revision" | "other"
   topicId: string;
   courseType: "CAInter" | "CAFinal";
@@ -291,4 +292,10 @@ export async function permanentlyDeleteTrashItem(id: string): Promise<APIRespons
 
 export async function purgeTrash(): Promise<APIResponse<string>> {
   return safeFetch(`${BASE_URL}/api/trash`, { method: "DELETE" });
+}
+
+// ------------------- Search --------------------
+
+export async function searchAll(query: string) {
+  return safeFetch(`${BASE_URL}/api/search?query=${encodeURIComponent(query)}`);
 }

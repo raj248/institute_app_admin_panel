@@ -124,6 +124,7 @@ export interface VideoNote {
   id: string;         // UUID from your DB
   newlyAddedId: string | null;
   url: string;        // YouTube URL
+  name: string | undefined;       // Title of the video
   type: "rtp" | "mtp" | "revision" | "other";
   topicId: string;
   courseType: string;

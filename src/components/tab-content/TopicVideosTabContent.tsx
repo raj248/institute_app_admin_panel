@@ -71,20 +71,21 @@ export default function TopicVideosTabContent({
   };
 
   const loadVideos = async () => {
-    if (!topicId) return;
-    setLoading(true);
+    if (!topicId || videos !== null) return;
     try {
       const res = await getVideoNotesByTopicId(topicId);
       const rawVideos = res.data ?? [];
-      const enrichedVideos = await fetchVideoDetails(rawVideos);
-      setVideos(enrichedVideos);
+      setVideos(rawVideos); // show immediately
+      setLoading(false);
     } catch (e) {
       console.error(e);
       setVideos([]);
-    } finally {
-      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadVideos();
+  }, [topicId]);
 
   const handleViewVideo = (video: VideoNote) => {
     window.open(video.url, "_blank");
@@ -112,21 +113,13 @@ export default function TopicVideosTabContent({
   };
 
   useEffect(() => {
-    loadVideos();
-  }, [topicId]);
-
-  useEffect(() => {
-    const unenriched = videos?.filter(v => !v.title || !v.thumbnail);
+    const unenriched = videos?.filter((v) => !v.title || !v.thumbnail);
     if (!unenriched || unenriched.length === 0) return;
 
     fetchVideoDetails(unenriched).then((enriched) => {
-      setVideos((prev) => {
-        if (!prev) return enriched;
-        return prev.map(v => {
-          const enrichedVideo = enriched.find(e => e.id === v.id);
-          return enrichedVideo ? enrichedVideo : v;
-        });
-      });
+      setVideos((prev) =>
+        prev?.map((v) => enriched.find((e) => e.id === v.id) ?? v) ?? null
+      );
     });
   }, [videos]);
 
