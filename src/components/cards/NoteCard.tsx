@@ -15,7 +15,7 @@ import { useConfirm } from "../modals/global-confirm-dialog";
 interface NoteCardProps {
   note: Note;
   onDelete?: () => void;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 
@@ -48,6 +48,11 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
       return;
     }
     onDelete?.();
+  };
+
+  const handleViewNote = (note: Note) => {
+    const url = `${import.meta.env.VITE_SERVER_URL}${note.fileUrl}`;
+    window.open(url, "_blank");
   };
 
   const toggleNewlyAdded = async (e: React.MouseEvent) => {
@@ -84,7 +89,7 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
         rounded-xl border border-border/40 cursor-pointer
         overflow-hidden
       "
-      onClick={onClick}
+      onClick={() => { onClick?.(); handleViewNote(note) }}
     >
       <CardContent className="space-y-1 pb-4">
         <div className="flex flex-col flex-1">

@@ -41,10 +41,6 @@ export default function TopicNotesTabContent({
     }
   };
 
-  const handleViewNote = (note: Note) => {
-    const url = `${import.meta.env.VITE_SERVER_URL}${note.fileUrl}`;
-    window.open(url, "_blank");
-  };
 
   useEffect(() => {
     loadNotes();
@@ -77,7 +73,7 @@ export default function TopicNotesTabContent({
                       key={note.id}
                       note={note}
                       onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
-                      onClick={() => handleViewNote(note)}
+                      onClick={() => { }}
                     />
                   ))}
                 </div>
@@ -91,7 +87,7 @@ export default function TopicNotesTabContent({
                 key={note.id}
                 note={note}
                 onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
-                onClick={() => handleViewNote(note)}
+                onClick={() => { }}
               />
             ))}
           </div>

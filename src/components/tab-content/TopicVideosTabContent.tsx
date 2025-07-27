@@ -85,10 +85,6 @@ export default function TopicVideosTabContent({
     loadVideos();
   }, [topicId]);
 
-  const handleViewVideo = (video: VideoNote) => {
-    window.open(video.url, "_blank");
-  };
-
   useEffect(() => {
     const unenriched = videos?.filter((v) => !v.title || !v.thumbnail);
     if (!unenriched || unenriched.length === 0) return;
@@ -127,7 +123,7 @@ export default function TopicVideosTabContent({
                       key={video.id}
                       video={video}
                       onDelete={() => setVideos((prev) => prev?.filter((v) => v.id !== video.id) ?? null)}
-                      onClick={() => handleViewVideo(video)}
+                      onClick={() => { }}
                     />
                   ))}
                 </div>
@@ -141,7 +137,7 @@ export default function TopicVideosTabContent({
                 key={video.id}
                 video={video}
                 onDelete={() => setVideos((prev) => prev?.filter((v) => v.id !== video.id) ?? null)}
-                onClick={() => handleViewVideo(video)}
+                onClick={() => { }}
               />
             ))}
           </div>

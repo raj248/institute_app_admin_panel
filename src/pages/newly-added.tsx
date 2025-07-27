@@ -10,8 +10,8 @@ import { toast } from "sonner";
 import NoteCard from "@/components/cards/NoteCard";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import VideoCard from "@/components/cards/VideoCard";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 
 type LoadedNewItem =
   | { type: "Note"; expiry: string; newly: NewlyAdded; data: Note }
@@ -22,7 +22,10 @@ type LoadedNewItem =
 export default function NewlyAdded() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<LoadedNewItem[]>([]);
-  const navigate = useNavigate();
+
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(null);
+  const [topicId, setTopicId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -119,14 +122,6 @@ export default function NewlyAdded() {
               {filtered.map((item) => {
                 const { data, newly, expiry } = item;
 
-                const onClick = () => {
-                  switch (type) {
-                    case "Note": navigate(`/notes/${data.id}`); break;
-                    case "TestPaper": navigate(`/testpaper/${data.id}`); break;
-                    case "VideoNote": navigate(`/videos/${data.id}`); break;
-                  }
-                };
-
                 const expiryBadge = (
                   <p className="text-xs text-muted-foreground mt-1">
                     Expires on: {format(new Date(expiry), "PPP")}
@@ -138,7 +133,7 @@ export default function NewlyAdded() {
                     <div key={newly.id}>
                       <NoteCard
                         note={{ ...data as Note, newlyAddedId: newly.id }}
-                        onClick={onClick}
+                        onClick={() => { }}
                         onDelete={() => {
                           removeNewlyAddedItem(newly.id)
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
@@ -154,8 +149,12 @@ export default function NewlyAdded() {
                     <div key={newly.id}>
                       <TestPaperCard
                         paper={{ ...data as TestPaper, newlyAddedId: newly.id }}
-                        topicId="-"
-                        onClick={onClick}
+                        topicId={(data as TestPaper).topicId}
+                        onClick={() => {
+                          setSelectedTestPaperId((data as TestPaper).id);
+                          setTopicId((data as TestPaper).topicId);
+                          setOpenDetailDialog(true);
+                        }}
                         onDelete={() => {
                           removeNewlyAddedItem(newly.id)
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
@@ -172,7 +171,7 @@ export default function NewlyAdded() {
                     <div key={newly.id}>
                       <VideoCard
                         video={{ ...data as VideoNote, newlyAddedId: newly.id }}
-                        onClick={onClick}
+                        onClick={() => { window.open((data as VideoNote).url, "_blank"); }}
                         onDelete={() => {
                           removeNewlyAddedItem(newly.id)
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
@@ -185,6 +184,12 @@ export default function NewlyAdded() {
 
                 return null;
               })}
+              <TestpaperDetailsDialog
+                testPaperId={selectedTestPaperId}
+                topicId={topicId ?? ''}
+                open={openDetailDialog}
+                onOpenChange={setOpenDetailDialog}
+              />
             </div>
           </div>
         );

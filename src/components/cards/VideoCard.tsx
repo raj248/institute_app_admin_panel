@@ -13,7 +13,7 @@ import { useConfirm } from "../modals/global-confirm-dialog";
 interface VideoCardProps {
   video: VideoNote;
   onDelete?: () => void;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
@@ -46,6 +46,9 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
       return;
     }
     onDelete?.();
+  };
+  const handleViewVideo = (video: VideoNote) => {
+    window.open(video.url, "_blank");
   };
   const toggleNewlyAdded = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -80,7 +83,7 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
         rounded-xl overflow-hidden shadow-sm hover:shadow-md
         transition-transform duration-150 cursor-pointer
       "
-      onClick={onClick}
+      onClick={() => { onClick?.(); handleViewVideo(video) }}
     >
       <CardContent className="p-0 flex flex-col">
         {video.thumbnail && (
