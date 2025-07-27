@@ -3,7 +3,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MoreVertical } from "lucide-react";
+import { Calendar, MinusCircle, MoreVertical, PlusCircle, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import type { Note } from "@/types/entities";
 import { useState } from "react";
@@ -101,7 +101,17 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
             }}
             disabled={loading}
           >
-            {newlyAddedId ? "Unmark Newly Added" : "Mark as Newly Added"}
+            {newlyAddedId ? (
+              <>
+                <MinusCircle className="mr-2 size-4" />
+                <span>Unmark Newly Added</span>
+              </>
+            ) : (
+              <>
+                <PlusCircle className="mr-2 size-4" />
+                <span>Mark as Newly Added</span>
+              </>
+            )}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={(e) => {
@@ -110,7 +120,8 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
             }}
             variant="destructive"
           >
-            Delete
+            <Trash2 className="mr-2 size-4 text-destructive" />
+            <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

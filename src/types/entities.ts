@@ -56,6 +56,7 @@ export interface TestPaper {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  publishedAt: string | null;
   topic?: Topic;
   mcqCount?: number;
   mcqs?: MCQ[];
@@ -130,6 +131,8 @@ export interface VideoNote {
   courseType: string;
   title?: string;     // optional if you fetch on frontend
   thumbnail?: string; // optional if you fetch on frontend
+  createdAt: string;
+  deletedAt: string | null;
 }
 
 export interface NewlyAdded {

@@ -62,7 +62,8 @@ export async function updateTopic(
 // ------------------- Test Papers --------------------
 
 export async function getAllTestPapersByTopicId(topicId: string): Promise<APIResponse<TestPaper[]>> {
-  return safeFetch(`${BASE_URL}/api/topics/${topicId}/testpapers`);
+  const params = new URLSearchParams({ type: 'all' });
+  return safeFetch(`${BASE_URL}/api/topics/${topicId}/testpapers?${params.toString()}`);
 }
 
 export async function getTestPaperById(testPaperId: string): Promise<APIResponse<TestPaper>> {

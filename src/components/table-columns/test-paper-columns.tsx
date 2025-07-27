@@ -125,6 +125,7 @@ export function getTestPaperColumns(
                     e.stopPropagation();
                     handleMoveToTrash(testPaper.id);
                   }}
+                  variant="destructive"
                 >
                   <Trash2 className="mr-2 size-4 text-destructive" />
                   <span>Move to Trash</span>

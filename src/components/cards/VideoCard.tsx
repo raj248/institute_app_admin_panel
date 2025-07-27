@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { VideoNote } from "@/types/entities";
 import { Button } from "../ui/button";
-import { MoreVertical } from "lucide-react";
+import { MinusCircle, MoreVertical, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
 import {
   addNewlyAddedItem,
@@ -121,7 +121,17 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
             }}
             disabled={loading}
           >
-            {newlyAddedId ? "Unmark Newly Added" : "Mark as Newly Added"}
+            {newlyAddedId ? (
+              <>
+                <MinusCircle className="mr-2 size-4" />
+                <span>Unmark Newly Added</span>
+              </>
+            ) : (
+              <>
+                <PlusCircle className="mr-2 size-4" />
+                <span>Mark as Newly Added</span>
+              </>
+            )}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={(e) => {
@@ -130,7 +140,8 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
             }}
             variant="destructive"
           >
-            Delete
+            <Trash2 className="mr-2 size-4 text-destructive" />
+            <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

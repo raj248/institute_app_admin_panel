@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Clock, MoreVertical } from "lucide-react";
+import { Calendar, FileText, Clock, MoreVertical, PenIcon, Trash2, MinusCircle, PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import type { TestPaper } from "@/types/entities";
@@ -114,7 +114,17 @@ export default function TestPaperCard({
                 }}
                 disabled={loading}
               >
-                {newlyAddedId ? "Unmark Newly Added" : "Mark as Newly Added"}
+                {newlyAddedId ? (
+                  <>
+                    <MinusCircle className="mr-2 size-4" />
+                    <span>Unmark Newly Added</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 size-4" />
+                    <span>Mark as Newly Added</span>
+                  </>
+                )}
               </DropdownMenuItem>
 
               {/* Edit option inside dropdown (optional if card already opens editor) */}
@@ -124,7 +134,8 @@ export default function TestPaperCard({
                   open();
                 }}
               >
-                Edit
+                <PenIcon className="mr-2 size-4" />
+                <span>Edit</span>
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -134,7 +145,8 @@ export default function TestPaperCard({
                 }}
                 variant="destructive"
               >
-                Delete
+                <Trash2 className="mr-2 size-4 text-destructive" />
+                <span>Delete</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
