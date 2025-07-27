@@ -2,10 +2,9 @@
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Clock, MoreVertical, PenIcon } from "lucide-react";
+import { Calendar, FileText, Clock, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import type { TestPaper } from "@/types/entities";
 import {
   addNewlyAddedItem,
@@ -38,7 +37,7 @@ export default function TestPaperCard({
   refreshPapers,
 }: TestPaperCardProps) {
   const confirm = useConfirm();
-
+  topicId
   const [loading, setLoading] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<string | null>(paper.newlyAddedId);
 
