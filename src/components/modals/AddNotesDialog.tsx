@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { z } from "zod";
-import { getNotesByTopicId, uploadNote } from "@/lib/api";
+import { addNewlyAddedItem, getNotesByTopicId, uploadNote } from "@/lib/api";
 import { toast } from "sonner";
 import type { Note } from "@/types/entities";
 import {
@@ -28,6 +28,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 // ✅ Extend schema with type
 const addNoteSchema = z.object({
@@ -52,6 +53,7 @@ export function AddNotesDialog({
   setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>,
 }) {
   const [open, setOpen] = useState(false);
+  const [markAsNew, setMarkAsNew] = useState(false);
 
   const {
     register,
@@ -78,10 +80,14 @@ export function AddNotesDialog({
       });
 
       if (result.success) {
+        if (markAsNew && result.data) {
+          await addNewlyAddedItem("Note", result.data.id);
+        }
         toast.success("Note added successfully!");
         const refreshed = await getNotesByTopicId(topicId)
         setNotes(refreshed.data ?? null);
         setOpen(false);
+        setMarkAsNew(false); // reset switch
         reset();
       } else {
         toast.error(result.error ?? "Failed to add note.");
@@ -177,6 +183,13 @@ export function AddNotesDialog({
           {errors.file && "message" in errors.file && typeof errors.file.message === "string" && (
             <p className="text-xs text-red-500 ml-24 -mt-2">{errors.file.message}</p>
           )}
+
+          <div className="flex items-center gap-2">
+            <Label htmlFor="markNew" className="w-28 text-xs">
+              Mark as New
+            </Label>
+            <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+          </div>
 
           <DialogFooter className="mt-2">
             <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
