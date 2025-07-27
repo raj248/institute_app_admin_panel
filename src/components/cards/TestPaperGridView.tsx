@@ -10,6 +10,7 @@ interface TestpaperGridViewProps {
   testPapers: TestPaper[];
   topicId: string;
   loading: boolean;
+  globalFilter: string;
   refreshPapers: () => Promise<void>;
   setPapers: React.Dispatch<React.SetStateAction<TestPaper[] | null>>;
   handleCardClick: (id: string) => void;
@@ -19,6 +20,7 @@ export default function TestpaperGridView({
   testPapers,
   topicId,
   loading,
+  globalFilter,
   refreshPapers,
   setPapers,
   handleCardClick,
@@ -39,16 +41,20 @@ export default function TestpaperGridView({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {testPapers.map((paper) => (
-        <TestPaperCard
-          key={paper.id}
-          paper={paper}
-          topicId={topicId}
-          refreshPapers={refreshPapers}
-          onDelete={() => setPapers((prev) => prev?.filter((p) => p.id !== paper.id) ?? null)}
-          onClick={() => handleCardClick(paper.id)}
-        />
-      ))}
+      {testPapers
+        .filter((paper) =>
+          paper.name.toLowerCase().includes(globalFilter.toLowerCase())
+        )
+        .map((paper) => (
+          <TestPaperCard
+            key={paper.id}
+            paper={paper}
+            topicId={topicId}
+            refreshPapers={refreshPapers}
+            onDelete={() => setPapers((prev) => prev?.filter((p) => p.id !== paper.id) ?? null)}
+            onClick={() => handleCardClick(paper.id)}
+          />
+        ))}
     </div>
   );
 }

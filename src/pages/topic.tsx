@@ -198,6 +198,7 @@ export default function TopicPage() {
               testPapers={testPapers ?? []}
               topicId={topicId ?? ''}
               loading={loading}
+              globalFilter={globalFilter}
               refreshPapers={loadTestPapers}
               setPapers={setTestPapers}
               handleCardClick={handleCardClick}
