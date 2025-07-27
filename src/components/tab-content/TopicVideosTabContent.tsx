@@ -10,6 +10,7 @@ interface TopicVideosTabContentProps {
   videos: VideoNote[] | null;
   setVideos: React.Dispatch<React.SetStateAction<VideoNote[] | null>>;
   topicId: string;
+  globalFilter: string;
   filterType: VideoNote["type"] | "all";
 }
 
@@ -24,6 +25,7 @@ export default function TopicVideosTabContent({
   videos,
   setVideos,
   topicId,
+  globalFilter,
   filterType,
 }: TopicVideosTabContentProps) {
   const [loading, setLoading] = useState(true);
@@ -96,8 +98,11 @@ export default function TopicVideosTabContent({
     });
   }, [videos]);
 
-  const filteredVideos =
-    filterType === "all" ? videos ?? [] : (videos ?? []).filter((v) => v.type === filterType);
+  const lowerFilter = globalFilter.trim().toLowerCase();
+
+  const filteredVideos = (videos ?? [])
+    .filter((v) => filterType === "all" || v.type === filterType)
+    .filter((v) => v.title?.toLowerCase().includes(lowerFilter));
 
   return (
     <div className="space-y-4">

@@ -233,6 +233,7 @@ export default function TopicPage() {
             videos={videos}
             setVideos={setVideos}
             topicId={topicId ?? ''}
+            globalFilter={globalFilter}
             filterType={videoFilterType}
           />
         </TabsContent>
