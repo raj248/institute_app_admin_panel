@@ -8,8 +8,9 @@ import NoteCard from "@/components/cards/NoteCard";
 
 interface TopicNotesTabContentProps {
   notes: Note[] | null;
-  setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>;
   topicId: string;
+  setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>;
+  globalFilter: string;
   filterType: Note["type"] | "all";
 }
 
@@ -23,6 +24,7 @@ export default function TopicNotesTabContent({
   notes,
   setNotes,
   topicId,
+  globalFilter,
   filterType,
 }: TopicNotesTabContentProps) {
   const [loading, setLoading] = useState(true);
@@ -46,8 +48,11 @@ export default function TopicNotesTabContent({
     loadNotes();
   }, [topicId]);
 
-  const filteredNotes =
-    filterType === "all" ? notes ?? [] : (notes ?? []).filter((n) => n.type === filterType);
+  const lowerFilter = globalFilter.trim().toLowerCase();
+
+  const filteredNotes = (notes ?? [])
+    .filter((n) => filterType === "all" || n.type === filterType)
+    .filter((n) => n.name.toLowerCase().includes(lowerFilter));
 
   return (
     <div className="space-y-4">

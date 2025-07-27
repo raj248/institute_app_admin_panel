@@ -220,6 +220,7 @@ export default function TopicPage() {
             notes={notes}
             setNotes={setNotes}
             topicId={topicId ?? ''}
+            globalFilter={globalFilter}
             filterType={noteFilterType}
           />
         </TabsContent>
