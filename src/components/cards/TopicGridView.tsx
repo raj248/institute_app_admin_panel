@@ -62,11 +62,11 @@ export function TopicGridView({ topics, loading, setTopics }: TopicGridViewProps
   }
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3 my-4">
       {topics.map((topic) => (
         <Card
           key={topic.id}
-          className="relative transition hover:shadow-md border rounded-xl mx-2 sm:mx-4 max-w-xs min-w-[220px] flex-1 group bg-background hover:bg-accent/30"
+          className="relative transition hover:shadow-md hover:shadow-primary/40 border rounded-xl mx-2 sm:mx-4 max-w-xs min-w-[220px] flex-1 group bg-background hover:bg-accent/30"
         >
           {/* Delete Button */}
           <Button
@@ -102,7 +102,6 @@ export function TopicGridView({ topics, loading, setTopics }: TopicGridViewProps
             </div>
           </div>
         </Card>
-
       ))}
     </div>
   );

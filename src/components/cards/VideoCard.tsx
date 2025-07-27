@@ -4,11 +4,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { VideoNote } from "@/types/entities";
 import { Button } from "../ui/button";
-import { Trash2, PlusCircle, MinusCircle } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { useState } from "react";
-import { addNewlyAddedItem, moveVideoNoteToTrash, removeNewlyAddedItem } from "@/lib/api";
+import {
+  addNewlyAddedItem,
+  moveVideoNoteToTrash,
+  removeNewlyAddedItem,
+} from "@/lib/api";
 import { toast } from "sonner";
 import { useConfirm } from "../modals/global-confirm-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 interface VideoCardProps {
   video: VideoNote;
@@ -42,16 +52,18 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
     const res = await moveVideoNoteToTrash(id);
     if (!res.success) {
       console.error("Failed to move video note to trash.");
-      alert("Failed to move video note to trash.");
+      toast.error("Failed to move video note to trash.");
       return;
     }
+
     onDelete?.();
   };
+
   const handleViewVideo = (video: VideoNote) => {
     window.open(video.url, "_blank");
   };
-  const toggleNewlyAdded = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+
+  const toggleNewlyAdded = async () => {
     setLoading(true);
     try {
       if (!newlyAddedId) {
@@ -80,11 +92,49 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
       className="
         relative group
         hover:scale-[1.02]
-        rounded-xl overflow-hidden shadow-sm hover:shadow-md
+        rounded-xl overflow-hidden shadow-sm
+        hover:shadow-md hover:shadow-primary/40
         transition-transform duration-150 cursor-pointer
+        bg-background hover:bg-accent/30
       "
-      onClick={() => { onClick?.(); handleViewVideo(video) }}
+      onClick={() => {
+        onClick?.();
+        handleViewVideo(video);
+      }}
     >
+      {/* Dropdown menu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+          >
+            <MoreVertical size={16} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleNewlyAdded();
+            }}
+            disabled={loading}
+          >
+            {newlyAddedId ? "Unmark Newly Added" : "Mark as Newly Added"}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleMoveToTrash(video.id);
+            }}
+            variant="destructive"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <CardContent className="p-0 flex flex-col">
         {video.thumbnail && (
           <img
@@ -95,60 +145,14 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
         )}
         <div className="p-3 flex flex-col gap-1 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-medium line-clamp-2">{video.title ?? "Untitled Video"}</h3>
-            <Badge
-              className={`text-xs px-2 py-0.5 rounded ${typeColors[video.type]}`}
-            >
+            <h3 className="text-sm font-medium line-clamp-2">
+              {video.title ?? "Untitled Video"}
+            </h3>
+            <Badge className={`text-xs px-2 py-0.5 rounded ${typeColors[video.type]}`}>
               {video.type.toUpperCase()}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground break-all">
-            {video.url}
-          </p>
-        </div>
-
-        {/* Action Buttons Slide Up on Hover */}
-        <div
-          className="
-            absolute bottom-0 left-0 w-full
-            bg-background/80
-            flex justify-center gap-2 p-2
-            translate-y-full opacity-0
-            group-hover:translate-y-0 group-hover:opacity-100
-            transition-all duration-200 ease-in-out
-            rounded-b-xl
-          "
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button
-            size="sm"
-            variant={newlyAddedId ? "secondary" : "outline"}
-            disabled={loading}
-            onClick={toggleNewlyAdded}
-          >
-            {newlyAddedId ? (
-              <>
-                <MinusCircle size={16} className="mr-1" />
-                <span className="hidden lg:inline">Unmark</span>
-              </>
-            ) : (
-              <>
-                <PlusCircle size={16} className="mr-1" />
-                <span className="hidden lg:inline">Mark</span>
-              </>
-            )}
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            aria-label="Delete"
-            onClick={() => {
-              handleMoveToTrash(video.id);
-            }}
-          >
-            <Trash2 size={16} />
-            <span className="hidden lg:inline">Delete</span>
-          </Button>
+          <p className="text-xs text-muted-foreground break-all">{video.url}</p>
         </div>
       </CardContent>
     </Card>

@@ -1,16 +1,16 @@
 "use client";
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Calendar, PlusCircle, MinusCircle } from "lucide-react";
+import { Calendar, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import type { Note } from "@/types/entities";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { addNewlyAddedItem, moveNoteToTrash, removeNewlyAddedItem } from "@/lib/api";
 import { toast } from "sonner";
 import { useConfirm } from "../modals/global-confirm-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface NoteCardProps {
   note: Note;
@@ -18,14 +18,12 @@ interface NoteCardProps {
   onClick?: () => void;
 }
 
-
 export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
   const typeColors: Record<Note["type"], string> = {
     mtp: "bg-blue-100 text-blue-800",
     rtp: "bg-green-100 text-green-800",
     other: "bg-gray-100 text-gray-800",
   };
-  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<string | null>(note.newlyAddedId);
   const confirm = useConfirm();
@@ -55,8 +53,7 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
     window.open(url, "_blank");
   };
 
-  const toggleNewlyAdded = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleNewlyAdded = async () => {
     setLoading(true);
     try {
       if (!newlyAddedId) {
@@ -83,116 +80,64 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
   return (
     <Card
       key={note.id}
-      className="
-        relative group
-        hover:scale-[1.02] transition-transform hover:shadow-md
-        rounded-xl border border-border/40 cursor-pointer
-        overflow-hidden
-      "
-      onClick={() => { onClick?.(); handleViewNote(note) }}
+      className="relative transition hover:shadow-md hover:shadow-primary/40 border rounded-xl mx-2 sm:mx-4 max-w-xs min-w-[220px] flex-1 group bg-background hover:bg-accent/30"
     >
-      <CardContent className="space-y-1 pb-4">
-        <div className="flex flex-col flex-1">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-medium line-clamp-2">{note.name ?? "Untitled Note"}</h3>
-            <Badge
-              className={`text-xs px-2 py-0.5 rounded ${typeColors[note.type]}`}
-            >
-              {note.type.toUpperCase()}
-            </Badge>
-          </div>
-          <p className="text-xs text-muted-foreground break-all">
-            {note.description ?? <em>No description</em>}
-          </p>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Calendar size={14} />
-            {format(new Date(note.createdAt), "dd MMM yyyy")}
-          </div>
-        </div>
-      </CardContent>
+      {/* Dropdown Menu */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+          >
+            <MoreVertical size={16} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleNewlyAdded();
+            }}
+            disabled={loading}
+          >
+            {newlyAddedId ? "Unmark Newly Added" : "Mark as Newly Added"}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleMoveToTrash(note.id);
+            }}
+            variant="destructive"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {isMobile ? (
-        <CardFooter
-          className="flex items-center justify-between px-4 pb-4"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button
-            size="sm"
-            variant={newlyAddedId ? "secondary" : "outline"}
-            disabled={loading}
-            onClick={toggleNewlyAdded}
-          >
-            {newlyAddedId ? (
-              <>
-                <MinusCircle size={16} className="mr-1" />
-                <span className="hidden lg:inline">Unmark</span>
-              </>
-            ) : (
-              <>
-                <PlusCircle size={16} className="mr-1" />
-                <span className="hidden lg:inline">Mark</span>
-              </>
-            )}
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            aria-label="Delete"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveToTrash(note.id);
-            }}
-          >
-            <Trash2 size={16} />
-            <span className="hidden lg:inline">Delete</span>
-          </Button>
-        </CardFooter>
-      ) : (
-        <div
-          className="
-            absolute bottom-0 left-0 w-full
-            bg-background/80
-            flex justify-between items-center gap-2 p-2
-            translate-y-full opacity-0
-            group-hover:translate-y-0 group-hover:opacity-100
-            transition-all duration-200 ease-in-out
-            rounded-b-xl
-          "
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button
-            size="sm"
-            variant={newlyAddedId ? "secondary" : "outline"}
-            disabled={loading}
-            onClick={toggleNewlyAdded}
-          >
-            {newlyAddedId ? (
-              <>
-                <MinusCircle size={16} className="mr-1" />
-                <span className="hidden lg:inline">Unmark</span>
-              </>
-            ) : (
-              <>
-                <PlusCircle size={16} className="mr-1" />
-                <span className="hidden lg:inline">Mark</span>
-              </>
-            )}
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            aria-label="Delete"
-            className="cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveToTrash(note.id);
-            }}
-          >
-            <Trash2 size={16} />
-            <span className="hidden lg:inline">Delete</span>
-          </Button>
+      {/* Clickable Card Area */}
+      <div onClick={() => { onClick?.(); handleViewNote(note) }} className="cursor-pointer flex flex-col h-full justify-between p-4">
+        <div className="space-y-1 text-center">
+          <CardTitle className="text-sm font-semibold text-foreground">
+            {note.name ?? "Untitled Note"}
+          </CardTitle>
+          <CardContent className="text-xs text-muted-foreground">
+            {note.description ?? <em>No description</em>}
+          </CardContent>
         </div>
-      )}
+
+        <div className="mt-3 flex justify-center">
+          <Badge className={`text-[10px] rounded-full px-2 py-0.5 ${typeColors[note.type]}`}>
+            {note.type.toUpperCase()}
+          </Badge>
+        </div>
+
+        <div className="mt-2 flex justify-center gap-1 text-xs text-muted-foreground">
+          <Calendar size={14} />
+          {format(new Date(note.createdAt), "dd MMM yyyy")}
+        </div>
+      </div>
     </Card>
+
   );
 }

@@ -117,7 +117,7 @@ export default function TopicVideosTabContent({
                 <h3 className="text-sm font-semibold text-muted-foreground">
                   {typeLabels[type as VideoNote["type"]]}
                 </h3>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap my-4 gap-4">
                   {group.map((video) => (
                     <VideoCard
                       key={video.id}
@@ -131,7 +131,7 @@ export default function TopicVideosTabContent({
             );
           })
         ) : (
-          <div className="flex flex-wrap gap-4  mx-2">
+          <div className="flex flex-wrap gap-4 my-4 mx-2">
             {filteredVideos.map((video) => (
               <VideoCard
                 key={video.id}

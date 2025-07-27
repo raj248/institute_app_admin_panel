@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
-  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [tab, setTab] = useState<"testpapers" | "notes" | "revision_test" | "videos">("testpapers");
 
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
