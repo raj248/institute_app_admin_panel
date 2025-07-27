@@ -4,13 +4,14 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import type { TestPaper } from "@/types/entities";
+import type React from "react";
 
 interface TestpaperGridViewProps {
   testPapers: TestPaper[];
   topicId: string;
   loading: boolean;
   refreshPapers: () => Promise<void>;
-  handleMoveToTrash: (id: string) => void;
+  setPapers: React.Dispatch<React.SetStateAction<TestPaper[] | null>>;
   handleCardClick: (id: string) => void;
 }
 
@@ -19,7 +20,7 @@ export default function TestpaperGridView({
   topicId,
   loading,
   refreshPapers,
-  handleMoveToTrash,
+  setPapers,
   handleCardClick,
 }: TestpaperGridViewProps) {
   if (loading) {
@@ -44,7 +45,7 @@ export default function TestpaperGridView({
           paper={paper}
           topicId={topicId}
           refreshPapers={refreshPapers}
-          handleMoveToTrash={handleMoveToTrash}
+          onDelete={() => setPapers((prev) => prev?.filter((p) => p.id !== paper.id) ?? null)}
           onClick={() => handleCardClick(paper.id)}
         />
       ))}

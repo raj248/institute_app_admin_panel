@@ -11,6 +11,7 @@ import NoteCard from "@/components/cards/NoteCard";
 import TestPaperCard from "@/components/cards/TestPaperCards";
 import VideoCard from "@/components/cards/VideoCard";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 
 type LoadedNewItem =
   | { type: "Note"; expiry: string; newly: NewlyAdded; data: Note }
@@ -128,7 +129,7 @@ export default function NewlyAdded() {
 
                 const expiryBadge = (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Expires on: {expiry}
+                    Expires on: {format(new Date(expiry), "PPP")}
                   </p>
                 );
 
@@ -151,10 +152,10 @@ export default function NewlyAdded() {
                   return (
                     <div key={newly.id}>
                       <TestPaperCard
-                        paper={data as TestPaper}
+                        paper={{ ...data as TestPaper, newlyAddedId: newly.id }}
                         topicId="-"
                         onClick={onClick}
-                        handleMoveToTrash={() =>
+                        onDelete={() =>
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
                         }
                         refreshPapers={async () => { }}

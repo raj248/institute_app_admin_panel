@@ -5,23 +5,78 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Clock, Trash2 } from "lucide-react";
+import { FileText, Clock, Trash2, MinusCircle, PlusCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { TestPaper } from "@/types/entities";
 import { EditTestViewer } from "../modals/EditTestViewer";
+import { addNewlyAddedItem, moveTestPaperToTrash, removeNewlyAddedItem } from "@/lib/api";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useConfirm } from "../modals/global-confirm-dialog";
 
 interface TestPaperCardProps {
   paper: TestPaper;
   topicId: string;
   refreshPapers: () => Promise<void>
-  handleMoveToTrash: (id: string) => void;
+  onDelete?: () => void;
   onClick: () => void;
 }
 
-export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onClick, refreshPapers }: TestPaperCardProps) {
+export default function TestPaperCard({ paper, topicId, onDelete, onClick, refreshPapers }: TestPaperCardProps) {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
+  const confirm = useConfirm();
+
+
+  const handleMoveToTrash = async (id: string) => {
+    const confirmed = await confirm({
+      title: "Delete This Test Paper?",
+      description: "This will move the test paper to trash. You can restore it later if needed.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    const test = await moveTestPaperToTrash(id);
+    if (!test) {
+      console.error("Failed to move test paper to trash.");
+      alert("Failed to move test paper to trash.");
+      return;
+    }
+    onDelete?.();
+  };
+
+  const [loading, setLoading] = useState(false);
+  console.log("Newly Added ID: ", paper.newlyAddedId)
+  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(paper.newlyAddedId);
+
+  const toggleNewlyAdded = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoading(true);
+    try {
+      if (!newlyAddedId) {
+        const res = await addNewlyAddedItem("TestPaper", paper.id);
+        if (res.success && res.data) {
+          setNewlyAddedId(res.data.id);
+          toast.success("Marked as newly added");
+        }
+      } else {
+        const res = await removeNewlyAddedItem(newlyAddedId);
+        if (res.success) {
+          setNewlyAddedId(null);
+          toast.success("Unmarked as newly added");
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to toggle newly added");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -92,6 +147,25 @@ export default function TestPaperCard({ paper, topicId, handleMoveToTrash, onCli
           onClick={(e) => e.stopPropagation()}
         >
           <EditTestViewer item={paper} refreshPapers={refreshPapers} />
+
+          <Button
+            size="sm"
+            variant={newlyAddedId ? "secondary" : "outline"}
+            disabled={loading}
+            onClick={toggleNewlyAdded}
+          >
+            {newlyAddedId ? (
+              <>
+                <MinusCircle size={16} className="mr-1" />
+                <span className="hidden lg:inline">Unmark</span>
+              </>
+            ) : (
+              <>
+                <PlusCircle size={16} className="mr-1" />
+                <span className="hidden lg:inline">Mark</span>
+              </>
+            )}
+          </Button>
 
           <Button
             size="sm"

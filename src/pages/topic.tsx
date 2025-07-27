@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { List, LayoutGrid } from "lucide-react";
-import { getAllTestPapersByTopicId, getTopicById, moveTestPaperToTrash } from "@/lib/api";
-import { useConfirm } from "@/components/modals/global-confirm-dialog";
+import { getAllTestPapersByTopicId, getTopicById } from "@/lib/api";
 import type { Note, TestPaper, Topic, VideoNote } from "@/types/entities";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import {
@@ -71,28 +70,6 @@ export default function TopicPage() {
     loadTopic();
     loadTestPapers();
   }, [topicId]);
-
-  const confirm = useConfirm();
-
-  const handleMoveToTrash = async (id: string) => {
-    const confirmed = await confirm({
-      title: "Delete This Test Paper?",
-      description: "This will move the test paper to trash. You can restore it later if needed.",
-      confirmText: "Yes, Delete",
-      cancelText: "Cancel",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    const test = await moveTestPaperToTrash(id);
-    if (!test) {
-      console.error("Failed to move test paper to trash.");
-      alert("Failed to move test paper to trash.");
-      return;
-    }
-    setTestPapers((prev) => prev?.filter((t) => t.id !== id) ?? null);
-  };
 
   const handleCardClick = (id: string) => {
     setSelectedTestPaperId(id);
@@ -222,7 +199,7 @@ export default function TopicPage() {
               topicId={topicId ?? ''}
               loading={loading}
               refreshPapers={loadTestPapers}
-              handleMoveToTrash={handleMoveToTrash}
+              setPapers={setTestPapers}
               handleCardClick={handleCardClick}
             />
           ) : (
@@ -231,7 +208,7 @@ export default function TopicPage() {
               globalFilter={globalFilter}
               setGlobalFilter={setGlobalFilter}
               refreshPapers={loadTestPapers}
-              handleMoveToTrash={handleMoveToTrash}
+              setPapers={setTestPapers}
               handleCardClick={handleCardClick}
             />
           )}

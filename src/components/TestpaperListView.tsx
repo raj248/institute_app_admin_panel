@@ -28,25 +28,28 @@ import { Row } from "@/components/tables/TestPaperRow"; // adjust import path
 interface TestpaperListViewProps {
   testPapers: TestPaper[];
   globalFilter: string;
+  setPapers: React.Dispatch<React.SetStateAction<TestPaper[] | null>>;
   setGlobalFilter: React.Dispatch<React.SetStateAction<string>>;
   refreshPapers: () => Promise<void>;
-  handleMoveToTrash: (id: string) => void;
   handleCardClick: (id: string) => void;
 }
 
 export default function TestpaperListView({
   testPapers,
   globalFilter,
+  setPapers,
   setGlobalFilter,
   refreshPapers,
-  handleMoveToTrash,
   handleCardClick,
 }: TestpaperListViewProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
 
-  const columns = getTestPaperColumns(handleCardClick, refreshPapers, handleMoveToTrash);
+  const columns = getTestPaperColumns(
+    handleCardClick,
+    refreshPapers,
+    (id: string) => setPapers((prev) => prev?.filter((p) => p.id !== id) ?? null));
 
   const table = useReactTable({
     data: testPapers ?? [],
