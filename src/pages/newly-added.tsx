@@ -106,9 +106,9 @@ export default function NewlyAdded() {
 
   return (
     <div className="px-4 py-6 space-y-6">
-      <div className="flex justify-between items-center mx-4">
-        <h2 className="text-xl font-semibold tracking-tight">Newly Added</h2>
-      </div>
+      {/* <div className="flex justify-between items-center mx-4">
+        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">Newly Added</h2>
+      </div> */}
 
       {["Note", "TestPaper", "VideoNote"].map((type) => {
         const filtered = items.filter((item) => item.type === type);

@@ -54,6 +54,7 @@ export function AppBreadcrumbs() {
     if (segment === "CAFinal") return "CA Final";
     if (segment === "topic") return "Topic";
     if (segment === "testpaper") return "Test Paper";
+    if (segment === "newlyadded") return "Newly Added";
     return segment;
   };
 
