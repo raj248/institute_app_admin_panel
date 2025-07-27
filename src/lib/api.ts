@@ -205,7 +205,7 @@ export async function getVideoNotesByTopicId(topicId: string): Promise<APIRespon
 /**
  * Get a video by its ID
  */
-export async function getVideoNoteById(videoNoteId: string): Promise<APIResponse<Note>> {
+export async function getVideoNoteById(videoNoteId: string): Promise<APIResponse<VideoNote>> {
   return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`);
 }
 

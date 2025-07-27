@@ -137,6 +137,8 @@ export interface NewlyAdded {
   tableName: "MCQ" | "TestPaper" | "Note" | "VideoNote";
   entityId: string;
   addedAt: string;
+  displayName: string;
+  expiresAt: string | null;
 }
 
 export interface Trash {
