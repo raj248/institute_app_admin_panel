@@ -8,14 +8,16 @@ import { format } from "date-fns";
 import type { Note } from "@/types/entities";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
-import { addNewlyAddedItem, removeNewlyAddedItem } from "@/lib/api";
+import { addNewlyAddedItem, moveNoteToTrash, removeNewlyAddedItem } from "@/lib/api";
 import { toast } from "sonner";
+import { useConfirm } from "../modals/global-confirm-dialog";
 
 interface NoteCardProps {
   note: Note;
-  onDelete: () => void;
+  onDelete?: () => void;
   onClick: () => void;
 }
+
 
 export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
   const typeColors: Record<Note["type"], string> = {
@@ -26,6 +28,27 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
   const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<string | null>(note.newlyAddedId);
+  const confirm = useConfirm();
+
+  const handleMoveToTrash = async (id: string) => {
+    const confirmed = await confirm({
+      title: "Delete This Note?",
+      description: "This will move the note to trash. You can restore it later if needed.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    const res = await moveNoteToTrash(id);
+    if (!res.success) {
+      console.error("Failed to move note to trash.");
+      alert("Failed to move note to trash.");
+      return;
+    }
+    onDelete?.();
+  };
 
   const toggleNewlyAdded = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -112,7 +135,7 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
             aria-label="Delete"
             onClick={(e) => {
               e.stopPropagation();
-              onDelete();
+              handleMoveToTrash(note.id);
             }}
           >
             <Trash2 size={16} />
@@ -157,7 +180,7 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
             className="cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
-              onDelete();
+              handleMoveToTrash(note.id);
             }}
           >
             <Trash2 size={16} />

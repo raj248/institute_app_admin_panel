@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useConfirm } from "@/components/modals/global-confirm-dialog";
-import { getNotesByTopicId, moveNoteToTrash } from "@/lib/api";
+import { getNotesByTopicId } from "@/lib/api";
 import type { Note } from "@/types/entities";
 import NoteCard from "@/components/cards/NoteCard";
 
@@ -27,7 +26,6 @@ export default function TopicNotesTabContent({
   filterType,
 }: TopicNotesTabContentProps) {
   const [loading, setLoading] = useState(true);
-  const confirm = useConfirm();
 
   const loadNotes = async () => {
     if (!topicId) return;
@@ -46,27 +44,6 @@ export default function TopicNotesTabContent({
   const handleViewNote = (note: Note) => {
     const url = `${import.meta.env.VITE_SERVER_URL}${note.fileUrl}`;
     window.open(url, "_blank");
-  };
-
-  const handleMoveToTrash = async (id: string) => {
-    const confirmed = await confirm({
-      title: "Delete This Note?",
-      description: "This will move the note to trash. You can restore it later if needed.",
-      confirmText: "Yes, Delete",
-      cancelText: "Cancel",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    const res = await moveNoteToTrash(id);
-    if (!res.success) {
-      console.error("Failed to move note to trash.");
-      alert("Failed to move note to trash.");
-      return;
-    }
-
-    setNotes((prev) => prev?.filter((note) => note.id !== id) ?? null);
   };
 
   useEffect(() => {
@@ -99,7 +76,7 @@ export default function TopicNotesTabContent({
                     <NoteCard
                       key={note.id}
                       note={note}
-                      onDelete={() => handleMoveToTrash(note.id)}
+                      onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
                       onClick={() => handleViewNote(note)}
                     />
                   ))}
@@ -113,7 +90,7 @@ export default function TopicNotesTabContent({
               <NoteCard
                 key={note.id}
                 note={note}
-                onDelete={() => handleMoveToTrash(note.id)}
+                onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
                 onClick={() => handleViewNote(note)}
               />
             ))}
