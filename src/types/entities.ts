@@ -143,7 +143,7 @@ export interface NewlyAdded {
 
 export interface Trash {
   id: string;
-  tableName: "Course" | "Topic" | "MCQ" | "TestPaper";
+  tableName: "Course" | "Topic" | "MCQ" | "TestPaper" | "Note" | "VideoNote";
   entityId: string;
   trashedAt: string;
   purgeAfter: string | null;

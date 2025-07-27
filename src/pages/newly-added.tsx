@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getNewlyAddedItems, getNoteById, getTestPaperById, getVideoNoteById } from "@/lib/api";
+import { getNewlyAddedItems, getNoteById, getTestPaperById, getVideoNoteById, removeNewlyAddedItem } from "@/lib/api";
 import type { NewlyAdded, Note, TestPaper, VideoNote } from "@/types/entities";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -139,9 +139,10 @@ export default function NewlyAdded() {
                       <NoteCard
                         note={{ ...data as Note, newlyAddedId: newly.id }}
                         onClick={onClick}
-                        onDelete={() =>
+                        onDelete={() => {
+                          removeNewlyAddedItem(newly.id)
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
-                        }
+                        }}
                       />
                       {expiryBadge}
                     </div>
@@ -155,9 +156,10 @@ export default function NewlyAdded() {
                         paper={{ ...data as TestPaper, newlyAddedId: newly.id }}
                         topicId="-"
                         onClick={onClick}
-                        onDelete={() =>
+                        onDelete={() => {
+                          removeNewlyAddedItem(newly.id)
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
-                        }
+                        }}
                         refreshPapers={async () => { }}
                       />
                       {expiryBadge}
@@ -171,9 +173,10 @@ export default function NewlyAdded() {
                       <VideoCard
                         video={{ ...data as VideoNote, newlyAddedId: newly.id }}
                         onClick={onClick}
-                        onDelete={() =>
+                        onDelete={() => {
+                          removeNewlyAddedItem(newly.id)
                           setItems((prev) => prev.filter((i) => i.newly.id !== newly.id))
-                        }
+                        }}
                       />
                       {expiryBadge}
                     </div>

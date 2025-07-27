@@ -6,12 +6,13 @@ import type { VideoNote } from "@/types/entities";
 import { Button } from "../ui/button";
 import { Trash2, PlusCircle, MinusCircle } from "lucide-react";
 import { useState } from "react";
-import { addNewlyAddedItem, removeNewlyAddedItem } from "@/lib/api";
+import { addNewlyAddedItem, moveVideoNoteToTrash, removeNewlyAddedItem } from "@/lib/api";
 import { toast } from "sonner";
+import { useConfirm } from "../modals/global-confirm-dialog";
 
 interface VideoCardProps {
   video: VideoNote;
-  onDelete: () => void;
+  onDelete?: () => void;
   onClick: () => void;
 }
 
@@ -25,7 +26,27 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
 
   const [loading, setLoading] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<string | null>(video.newlyAddedId);
+  const confirm = useConfirm();
 
+  const handleMoveToTrash = async (id: string) => {
+    const confirmed = await confirm({
+      title: "Delete This Video Note?",
+      description: "This will move the video note to trash. You can restore it later if needed.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    const res = await moveVideoNoteToTrash(id);
+    if (!res.success) {
+      console.error("Failed to move video note to trash.");
+      alert("Failed to move video note to trash.");
+      return;
+    }
+    onDelete?.();
+  };
   const toggleNewlyAdded = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setLoading(true);
@@ -118,7 +139,9 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
             size="sm"
             variant="destructive"
             aria-label="Delete"
-            onClick={onDelete}
+            onClick={() => {
+              handleMoveToTrash(video.id);
+            }}
           >
             <Trash2 size={16} />
             <span className="hidden lg:inline">Delete</span>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, RotateCcw, XCircle } from "lucide-react";
-import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById } from "@/lib/api";
+import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById, getNoteById, getVideoNoteById } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { Trash } from "@/types/entities";
 
@@ -45,6 +45,12 @@ export default function Trash() {
         } else if (item.tableName === "MCQ") {
           const mcq = await getMCQById(item.entityId);
           if (mcq) detailMap[item.id] = mcq.data?.question || "No question.";
+        } else if (item.tableName === "Note") {
+          const note = await getNoteById(item.entityId);
+          if (note) detailMap[item.id] = note.data?.name || "No Note Title.";
+        } else if (item.tableName === "VideoNote") {
+          const video = await getVideoNoteById(item.entityId);
+          if (video) detailMap[item.id] = video.data?.name || "No Title.";
         } else {
           detailMap[item.id] = "No details available.";
         }
@@ -56,8 +62,6 @@ export default function Trash() {
     setDetails(detailMap);
   };
 
-
-  // inside your component:
   const confirm = useConfirm();
 
   const handleRestore = async (id: string) => {

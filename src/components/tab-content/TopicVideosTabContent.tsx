@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useConfirm } from "@/components/modals/global-confirm-dialog";
-import { getVideoNotesByTopicId, moveVideoNoteToTrash } from "@/lib/api";
+import { getVideoNotesByTopicId } from "@/lib/api";
 import type { VideoNote } from "@/types/entities";
 import VideoCard from "@/components/cards/VideoCard";
 
@@ -28,7 +27,6 @@ export default function TopicVideosTabContent({
   filterType,
 }: TopicVideosTabContentProps) {
   const [loading, setLoading] = useState(true);
-  const confirm = useConfirm();
 
   const fetchVideoDetails = async (videoNotes: VideoNote[]) => {
     if (!videoNotes || videoNotes.length === 0) return [];
@@ -91,27 +89,6 @@ export default function TopicVideosTabContent({
     window.open(video.url, "_blank");
   };
 
-  const handleMoveToTrash = async (id: string) => {
-    const confirmed = await confirm({
-      title: "Delete This Video Note?",
-      description: "This will move the video note to trash. You can restore it later if needed.",
-      confirmText: "Yes, Delete",
-      cancelText: "Cancel",
-      variant: "destructive",
-    });
-
-    if (!confirmed) return;
-
-    const res = await moveVideoNoteToTrash(id);
-    if (!res.success) {
-      console.error("Failed to move video note to trash.");
-      alert("Failed to move video note to trash.");
-      return;
-    }
-
-    setVideos((prev) => prev?.filter((video) => video.id !== id) ?? null);
-  };
-
   useEffect(() => {
     const unenriched = videos?.filter((v) => !v.title || !v.thumbnail);
     if (!unenriched || unenriched.length === 0) return;
@@ -149,7 +126,7 @@ export default function TopicVideosTabContent({
                     <VideoCard
                       key={video.id}
                       video={video}
-                      onDelete={() => handleMoveToTrash(video.id)}
+                      onDelete={() => setVideos((prev) => prev?.filter((v) => v.id !== video.id) ?? null)}
                       onClick={() => handleViewVideo(video)}
                     />
                   ))}
@@ -163,7 +140,7 @@ export default function TopicVideosTabContent({
               <VideoCard
                 key={video.id}
                 video={video}
-                onDelete={() => handleMoveToTrash(video.id)}
+                onDelete={() => setVideos((prev) => prev?.filter((v) => v.id !== video.id) ?? null)}
                 onClick={() => handleViewVideo(video)}
               />
             ))}
