@@ -18,7 +18,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { addVideoNote, getVideoNotesByTopicId } from "@/lib/api";
+import { addNewlyAddedItem, addVideoNote, getVideoNotesByTopicId } from "@/lib/api";
 import type { VideoNote } from "@/types/entities";
 import {
   Select,
@@ -27,6 +27,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 // ✅ Extend schema to include type
 const addVideoNoteSchema = z.object({
@@ -50,6 +51,8 @@ export function AddVideoNoteDialog({
     title: string;
     thumbnail: string;
   } | null>(null);
+
+  const [markAsNew, setMarkAsNew] = useState(false);
 
   const {
     register,
@@ -98,11 +101,16 @@ export function AddVideoNoteDialog({
       });
 
       if (result.success) {
+        if (markAsNew && result.data) {
+          await addNewlyAddedItem("VideoNote", result.data.id);
+        }
+
         toast.success("Video note added successfully!");
         const refreshed = await getVideoNotesByTopicId(topicId);
         setVideos(refreshed.data ?? null);
         setOpen(false);
         reset();
+        setMarkAsNew(false); // reset switch
       } else {
         toast.error(result.error ?? "Failed to add video note.");
       }
@@ -110,6 +118,7 @@ export function AddVideoNoteDialog({
       toast.error((error as Error).message);
     }
   };
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -187,6 +196,13 @@ export function AddVideoNoteDialog({
               <p className="font-medium text-sm text-center px-2">{preview.title}</p>
             </div>
           )}
+
+          <div className="flex items-center gap-2">
+            <Label htmlFor="markNew" className="w-28 text-xs">
+              Mark as New
+            </Label>
+            <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+          </div>
 
           {/* Submit */}
           <DialogFooter className="mt-4">
