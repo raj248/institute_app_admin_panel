@@ -10,6 +10,7 @@ import {
   addNewlyAddedItem,
   moveTestPaperToTrash,
   removeNewlyAddedItem,
+  toggleTestPaperPublish,
 } from "@/lib/api";
 import { toast } from "sonner";
 import { useConfirm } from "../modals/global-confirm-dialog";
@@ -86,6 +87,27 @@ export default function TestPaperCard({
     }
   };
 
+  const [publishing, setPublishing] = useState(false);
+
+  const handleTogglePublish = async () => {
+    setPublishing(true);
+    try {
+      const res = await toggleTestPaperPublish(paper.id);
+      if (res.success) {
+        toast.success(`Test paper ${paper.publishedAt ? "unpublished" : "published"} successfully`);
+        // await refreshPapers(); // Refresh state
+        paper.publishedAt = res.data?.publishedAt as null | string
+      } else {
+        toast.error("Failed to toggle publish status");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Error occurred while toggling publish");
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <EditTestViewer
       item={paper}
@@ -107,6 +129,26 @@ export default function TestPaperCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTogglePublish();
+                }}
+                disabled={publishing}
+              >
+                {paper.publishedAt ? (
+                  <>
+                    <MinusCircle className="mr-2 size-4" />
+                    <span>Unpublish</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 size-4" />
+                    <span>Publish</span>
+                  </>
+                )}
+              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation();
@@ -181,6 +223,12 @@ export default function TestPaperCard({
                     {paper.totalMarks}
                   </div>
                 )}
+                {paper.publishedAt && (
+                  <div className="absolute top-2 left-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-md">
+                    Published
+                  </div>
+                )}
+
               </CardContent>
             </div>
 

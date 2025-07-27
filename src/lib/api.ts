@@ -70,6 +70,12 @@ export async function getTestPaperById(testPaperId: string): Promise<APIResponse
   return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
 }
 
+export async function toggleTestPaperPublish(id: string): Promise<APIResponse<TestPaper>> {
+  return safeFetch<TestPaper>(`${BASE_URL}/api/testpapers/test/${id}/toggle-publish`, {
+    method: "PATCH",
+  });
+}
+
 export async function createTestPaper(data: {
   name: string;
   description?: string;
