@@ -9,6 +9,7 @@ import { addNewlyAddedItem, removeNewlyAddedItem } from "@/lib/api";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { IconDotsVertical } from "@tabler/icons-react";
+import { toggleTestPaperPublish } from "@/lib/api";
 
 export function getTestPaperColumns(
   handleCardClick: (id: string) => void,
@@ -60,6 +61,50 @@ export function getTestPaperColumns(
         <div className="text-sm text-right">{row.original.totalMarks ?? "-"}</div>
       ),
       enableResizing: false,
+    },
+    {
+      id: "publish",
+      header: "Publish",
+      size: 80,
+      enableResizing: false,
+      cell: ({ row }) => {
+        const testPaper = row.original;
+        const [loading, setLoading] = useState(false);
+        const isPublished = !!testPaper.publishedAt;
+
+        const handleToggle = async () => {
+          setLoading(true);
+          try {
+            const res = await toggleTestPaperPublish(testPaper.id);
+            if (res.success) {
+              await refreshPapers();
+            }
+          } catch (err) {
+            console.error("Toggle publish failed:", err);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        return (
+          <Button
+            size="sm"
+            variant="outline"
+            className={`text-xs cursor-pointer 
+              ${isPublished
+                ? "text-blue-600 border-blue-600 hover:bg-blue-100"
+                : "text-green-600 border-green-600 hover:bg-green-100"
+              }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggle();
+            }}
+            disabled={loading}
+          >
+            {isPublished ? "Unpublish" : "Publish"}
+          </Button>
+        );
+      },
     },
     {
       id: "actions",
