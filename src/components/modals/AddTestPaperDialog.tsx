@@ -17,9 +17,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { createTestPaper, getAllTestPapersByTopicId, getTopicsByCourseType } from "@/lib/api";
+import { addNewlyAddedItem, createTestPaper, getAllTestPapersByTopicId, getTopicsByCourseType } from "@/lib/api";
 import { IconPlus } from "@tabler/icons-react";
 import { testPaperSchema, type TestPaper, type TestPaperSchema, type Topic_schema } from "@/types/entities";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 export function AddTestPaperDialog({
   topicId,
@@ -32,6 +34,7 @@ export function AddTestPaperDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
+  const [markAsNew, setMarkAsNew] = useState(false);
 
   const {
     register,
@@ -60,13 +63,17 @@ export function AddTestPaperDialog({
 
     const res = await createTestPaper(data);
     if (res.success) {
-      setOpen(false);
-      reset();
-      // Refresh test papers after adding
+      if (markAsNew && res.data) {
+        await addNewlyAddedItem("TestPaper", res.data.id);
+      }
+      toast.success("Test Paper added successfully!");
       const refreshed = await getAllTestPapersByTopicId(topicId);
       setTestPapers(refreshed.data ?? null);
+      setOpen(false);
+      reset();
+      setMarkAsNew(false); // reset switch
     } else {
-      alert(res.error);
+      toast.error(res.error);
     }
   };
 
@@ -151,6 +158,13 @@ export function AddTestPaperDialog({
           {errors.topicId && (
             <p className="text-xs text-red-500 pl-28 -mt-1">{errors.topicId.message}</p>
           )}
+
+          <div className="flex items-center gap-2">
+            <Label htmlFor="markNew" className="w-28 text-xs">
+              Mark as New
+            </Label>
+            <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+          </div>
 
           {/* Submit */}
           <DialogFooter className="mt-4">
