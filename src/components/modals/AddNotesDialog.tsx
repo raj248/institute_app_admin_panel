@@ -54,6 +54,7 @@ export function AddNotesDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [markAsNew, setMarkAsNew] = useState(false);
+  const [notify, setNotify] = useState(false);
 
   const {
     register,
@@ -77,6 +78,7 @@ export function AddNotesDialog({
         topicId,
         courseType,
         type: data.type,
+        notify,
       });
 
       if (result.success) {
@@ -189,6 +191,13 @@ export function AddNotesDialog({
               Mark as New
             </Label>
             <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Label htmlFor="notify" className="w-28 text-xs">
+              Send Notification?
+            </Label>
+            <Switch id="notify" checked={notify} onCheckedChange={setNotify} />
           </div>
 
           <DialogFooter className="mt-2">

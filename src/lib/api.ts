@@ -177,6 +177,7 @@ export async function uploadNote(data: {
   type: "rtp" | "mtp" | "other"
   topicId: string;
   courseType: "CAInter" | "CAFinal";
+  notify: boolean;
 }): Promise<APIResponse<Note>> {
   const formData = new FormData();
   formData.append("file", data.file);
@@ -185,6 +186,8 @@ export async function uploadNote(data: {
   if (data.description) formData.append("description", data.description);
   formData.append("topicId", data.topicId);
   formData.append("courseType", data.courseType);
+  formData.append("notify", data.notify.toString());
+
 
   try {
     const res = await fetch(`${BASE_URL}/api/notes/upload-note`, {
@@ -222,12 +225,31 @@ export async function addVideoNote(data: {
   type: "rtp" | "mtp" | "revision" | "other"
   topicId: string;
   courseType: "CAInter" | "CAFinal";
+  notify: boolean;
 }): Promise<APIResponse<VideoNote>> {
-  return safeFetch<VideoNote>(`${BASE_URL}/api/videonotes`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  const formData = new FormData();
+  formData.append("url", data.url);
+  formData.append("name", data.name);
+  if (data.type) formData.append("type", data.type);
+  formData.append("topicId", data.topicId);
+  formData.append("courseType", data.courseType);
+  formData.append("notify", data.notify.toString());
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/videonotes/`, {
+      method: "POST",
+      body: formData,
+    });
+    const result = await res.json();
+    if (!res.ok || !result.success) {
+      console.error(`API error (videoNote):`, result.error ?? res.statusText);
+      return { success: false, error: result.error ?? res.statusText };
+    }
+    return result;
+  } catch (error) {
+    console.error(`Fetch error (videoNote):`, error);
+    return { success: false, error: (error as Error).message };
+  }
 }
 
 // ------------------- Move to Trash --------------------
