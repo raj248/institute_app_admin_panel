@@ -25,7 +25,8 @@ export async function getAllTopic(): Promise<APIResponse<Topic[]>> {
 }
 
 export async function getTopicsByCourseType(courseType: string): Promise<APIResponse<Topic[]>> {
-  return safeFetch(`${BASE_URL}/api/courses/${courseType}/topics`, { cache: "no-store" });
+  const params = new URLSearchParams({ type: 'all' });
+  return safeFetch(`${BASE_URL}/api/courses/${courseType}/topics?${params.toString()}`, { cache: "no-store" });
 }
 
 export async function getTopicById(topicId: string): Promise<APIResponse<Topic>> {
