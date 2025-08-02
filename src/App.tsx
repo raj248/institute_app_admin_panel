@@ -12,24 +12,31 @@ import { ThemeProvider } from "./components/theme/theme-provider";
 import TopicPage from "./pages/topic";
 import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog";
 import NewlyAdded from "./pages/newly-added";
+import Login from "./pages/login";
+import ProtectedRoute from "./components/routes/ProtectedRoute";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <ConfirmDialogProvider>
         <BrowserRouter>
           <Routes>
-            {/* Layout Route */}
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/newlyadded" element={<NewlyAdded />} />
-              <Route path="/CAInter" element={<CAInter />} />
-              <Route path="/CAFinal" element={<CAFinal />} />
-              <Route path="/CAInter/:topicId" element={<TopicPage />} />
-              <Route path="/CAFinal/:topicId" element={<TopicPage />} />
-              <Route path="/Debug" element={<Debug />} />
-              <Route path="/Settings" element={<Settings />} />
-              <Route path="/Trash" element={<Trash />} />
+            {/* Public */}
+            <Route path="/login" element={<Login />} />
+
+            {/* Protected */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/newlyadded" element={<NewlyAdded />} />
+                <Route path="/CAInter" element={<CAInter />} />
+                <Route path="/CAFinal" element={<CAFinal />} />
+                <Route path="/CAInter/:topicId" element={<TopicPage />} />
+                <Route path="/CAFinal/:topicId" element={<TopicPage />} />
+                <Route path="/Debug" element={<Debug />} />
+                <Route path="/Settings" element={<Settings />} />
+                <Route path="/Trash" element={<Trash />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>
