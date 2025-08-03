@@ -28,7 +28,7 @@ export default function TopicVideosTabContent({
   globalFilter,
   filterType,
 }: TopicVideosTabContentProps) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchVideoDetails = async (videoNotes: VideoNote[]) => {
     if (!videoNotes || videoNotes.length === 0) return [];
@@ -72,14 +72,18 @@ export default function TopicVideosTabContent({
 
   const loadVideos = async () => {
     if (!topicId || videos !== null) return;
+    setLoading(true);
     try {
       const res = await getVideoNotesByTopicId(topicId);
-      const rawVideos = res.data ?? [];
+      const rawVideos = res.data;
+      if (!rawVideos) return;
       setVideos(rawVideos); // show immediately
       setLoading(false);
     } catch (e) {
       console.error(e);
       setVideos([]);
+    } finally {
+      setLoading(false);
     }
   };
 

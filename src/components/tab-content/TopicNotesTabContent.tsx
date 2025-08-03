@@ -27,17 +27,18 @@ export default function TopicNotesTabContent({
   globalFilter,
   filterType,
 }: TopicNotesTabContentProps) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadNotes = async () => {
     if (!topicId) return;
     setLoading(true);
     try {
       const res = await getNotesByTopicId(topicId);
-      setNotes(res.data ?? []);
+      if (!res.data) return;
+      setNotes(res.data);
+      setLoading(false);
     } catch (e) {
       console.error(e);
-      setNotes([]);
     } finally {
       setLoading(false);
     }
