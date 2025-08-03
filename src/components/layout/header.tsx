@@ -3,6 +3,7 @@ import { Separator } from '../ui/separator'
 import { AppBreadcrumbs } from './app-breadcrumbs'
 import { ModeToggle } from '../theme/mode-toggle'
 import { Button } from '../ui/button'
+import { logoutAdmin } from '@/lib/api'
 
 function Header() {
   return (
@@ -19,12 +20,21 @@ function Header() {
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <a
-              href="https://github.com/raj248"
+              href="https://github.com/raj248/institute_app"
               rel="noopener noreferrer"
               target="_blank"
               className="dark:text-foreground"
             >
               GitHub
+            </a>
+          </Button>
+          <Button variant="outline" asChild size="sm" className="hidden sm:flex cursor-pointer"
+            onClick={logoutAdmin}
+          >
+            <a
+              className="dark:text-foreground"
+            >
+              Logout
             </a>
           </Button>
         </div>

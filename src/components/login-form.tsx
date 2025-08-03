@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginAdmin } from "@/lib/api";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
@@ -22,25 +23,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     e.preventDefault();
     setError("");
 
-    try {
-      const res = await fetch("http://localhost:3000/api/admin/login", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const response = await loginAdmin(email, password);
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Login failed");
-      }
-
-      const data = await res.json();
-      localStorage.setItem("admin_token", data.token);
-      navigate("/dashboard");
-    } catch (err: any) {
-      setError(err.message);
+    if (!response.success) {
+      setError(response.error || "Login failed");
+      return;
     }
+
+    localStorage.setItem("admin_token", "true");
+    navigate("/dashboard");
   };
 
   return (

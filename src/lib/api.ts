@@ -32,6 +32,29 @@ export async function safeFetch<T>(
   }
 }
 
+// ---------------- Admin Auth ------------------
+
+export async function loginAdmin(email: string, password: string): Promise<APIResponse<null>> {
+  return safeFetch(`${BASE_URL}/api/admin/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", // make sure cookie is set
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function checkAdminSession(): Promise<APIResponse<{ isAdmin: boolean }>> {
+  return safeFetch(`${BASE_URL}/api/admin/check`, {
+    method: "GET",
+  });
+}
+
+export async function logoutAdmin(): Promise<APIResponse<null>> {
+  return safeFetch(`${BASE_URL}/api/admin/logout`, {
+    method: "POST",
+  });
+}
+
 // ------------------- Courses & Topics --------------------
 
 export async function getAllTopic(): Promise<APIResponse<Topic[]>> {
