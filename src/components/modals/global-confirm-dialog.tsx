@@ -21,7 +21,7 @@ type ConfirmOptions = {
   variant?: "destructive" | "secondary";
 };
 
-type ConfirmContextType = (options: ConfirmOptions) => Promise<boolean>;
+export type ConfirmContextType = (options: ConfirmOptions) => Promise<boolean>;
 
 const ConfirmDialogContext = createContext<ConfirmContextType | null>(null);
 

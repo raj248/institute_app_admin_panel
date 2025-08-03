@@ -5,17 +5,39 @@ import type { TestPaper } from "@/types/entities";
 import { Button } from "@/components/ui/button";
 import { MinusCircle, PenIcon, PlusCircle, Trash2 } from "lucide-react";
 import { EditTestViewer } from "@/components/modals/EditTestViewer";
-import { addNewlyAddedItem, removeNewlyAddedItem } from "@/lib/api";
+import { addNewlyAddedItem, moveTestPaperToTrash, removeNewlyAddedItem } from "@/lib/api";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { toggleTestPaperPublish } from "@/lib/api";
+import type { ConfirmContextType } from "../modals/global-confirm-dialog";
 
 export function getTestPaperColumns(
   handleCardClick: (id: string) => void,
   refreshPapers: () => Promise<void>,
-  handleMoveToTrash: (id: string) => void
+  confirm: ConfirmContextType,
+  OnDelete?: (id: string) => void,
 ): ColumnDef<TestPaper>[] {
+
+  const handleMoveToTrash = async (id: string) => {
+    const confirmed = await confirm({
+      title: "Delete This Note?",
+      description: "This will move the note to trash. You can restore it later if needed.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+      variant: "destructive",
+    });
+
+    if (!confirmed) return;
+
+    const res = await moveTestPaperToTrash(id);
+    if (!res.success) {
+      console.error("Failed to move note to trash.");
+      alert("Failed to move note to trash.");
+      return;
+    }
+    OnDelete?.(id);
+  };
   return [
     {
       accessorKey: "name",
@@ -168,7 +190,7 @@ export function getTestPaperColumns(
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleMoveToTrash(testPaper.id);
+                    handleMoveToTrash(testPaper.id)
                   }}
                   variant="destructive"
                 >

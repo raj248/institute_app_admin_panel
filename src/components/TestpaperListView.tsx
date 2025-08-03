@@ -24,6 +24,7 @@ import { getTestPaperColumns } from "@/components/table-columns/test-paper-colum
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Row } from "@/components/tables/TestPaperRow"; // adjust import path
+import { useConfirm } from "./modals/global-confirm-dialog";
 
 interface TestpaperListViewProps {
   testPapers: TestPaper[];
@@ -42,6 +43,8 @@ export default function TestpaperListView({
   refreshPapers,
   handleCardClick,
 }: TestpaperListViewProps) {
+  const confirm = useConfirm();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
@@ -49,7 +52,9 @@ export default function TestpaperListView({
   const columns = getTestPaperColumns(
     handleCardClick,
     refreshPapers,
-    (id: string) => setPapers((prev) => prev?.filter((p) => p.id !== id) ?? null));
+    confirm,
+    (id: string) => setPapers((prev) => prev?.filter((p) => p.id !== id) ?? null)
+  );
 
   const table = useReactTable({
     data: testPapers ?? [],
