@@ -104,6 +104,16 @@ export default function NewlyAdded() {
     );
   }
 
+  // ✅ Show a fallback if there are no items at all
+  if (!loading && items.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[60vh] text-muted-foreground">
+        <p className="text-lg">No newly added content yet.</p>
+        <p className="text-sm">Check back later when new notes, test papers, or videos are added.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 py-6 space-y-6">
       {/* <div className="flex justify-between items-center mx-4">
