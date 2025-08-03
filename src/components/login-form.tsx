@@ -60,12 +60,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
+                  {/* <a
                     href="#"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
-                  </a>
+                  </a> */}
                 </div>
                 <Input
                   id="password"
@@ -82,17 +82,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <Button type="button" variant="outline" className="w-full">
+                {/* <Button type="button" variant="outline" className="w-full">
                   Login with Google
-                </Button>
+                </Button> */}
               </div>
             </div>
-            <div className="mt-4 text-center text-sm">
+            {/* <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
               <a href="#" className="underline underline-offset-4">
                 Sign up
               </a>
-            </div>
+            </div> */}
           </form>
         </CardContent>
       </Card>

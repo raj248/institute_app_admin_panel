@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "@/components/layout/layout";
 // import Dashboard from "@/pages/dashboard";
 const Dashboard = React.lazy(() => import("@/pages/dashboard"));
@@ -13,20 +13,17 @@ import TopicPage from "./pages/topic";
 import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog";
 import NewlyAdded from "./pages/newly-added";
 import Login from "./pages/login";
-import ProtectedRoute from "./components/routes/ProtectedRoute";
+import { AuthProvider } from "./context/auth-context";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <ConfirmDialogProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public */}
-            <Route path="/login" element={<Login />} />
+      <AuthProvider>
+        <ConfirmDialogProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Login />} />
 
-            {/* Protected */}
-            <Route element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/newlyadded" element={<NewlyAdded />} />
                 <Route path="/CAInter" element={<CAInter />} />
@@ -37,10 +34,10 @@ function App() {
                 <Route path="/Settings" element={<Settings />} />
                 <Route path="/Trash" element={<Trash />} />
               </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </ConfirmDialogProvider>
+            </Routes>
+          </BrowserRouter>
+        </ConfirmDialogProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

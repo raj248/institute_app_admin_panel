@@ -12,6 +12,7 @@ import TestPaperCard from "@/components/cards/TestPaperCards";
 import VideoCard from "@/components/cards/VideoCard";
 import { format } from "date-fns";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 type LoadedNewItem =
   | { type: "Note"; expiry: string; newly: NewlyAdded; data: Note }
@@ -27,6 +28,7 @@ export default function NewlyAdded() {
   const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(null);
   const [topicId, setTopicId] = useState<string | null>(null);
 
+  useProtectAdminRoute();
   useEffect(() => {
     (async () => {
       try {

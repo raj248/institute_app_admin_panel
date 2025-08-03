@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function Settings() {
   const [autoPublish, setAutoPublish] = useState(false);
@@ -18,6 +19,7 @@ export default function Settings() {
     alert("Settings saved (dummy)");
   };
 
+  useProtectAdminRoute();
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-4">
       <Card>

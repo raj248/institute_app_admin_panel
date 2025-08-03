@@ -1,14 +1,14 @@
-import { LoginForm } from "@/components/login-form"
-import { isAuthenticated } from "@/lib/auth";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/context/auth-context";
+import { LoginForm } from "@/components/login-form";
 
 export default function Login() {
-  const navigate = useNavigate();
+  const { isAdmin, loading } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated()) navigate("/dashboard");
-  }, []);
+  if (loading) return null; // or a spinner if desired
+
+  console.warn("[isadmin]", isAdmin ?? "false")
+  if (isAdmin) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -16,5 +16,5 @@ export default function Login() {
         <LoginForm />
       </div>
     </div>
-  )
+  );
 }

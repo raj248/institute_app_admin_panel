@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { getTopicsByCourseType } from "@/lib/api";
 import type { Topic_schema } from "@/types/entities";
 import { DataTable } from "@/components/tables/topic-table";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function CAFinal() {
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
   const [loading, setLoading] = useState(true);
-
+  useProtectAdminRoute();
   useEffect(() => {
     getTopicsByCourseType("CAFinal")
       .then((res) => {

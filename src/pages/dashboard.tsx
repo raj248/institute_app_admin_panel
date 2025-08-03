@@ -12,11 +12,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function Dashboard() {
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
   const [loading, setLoading] = useState(true);
 
+  useProtectAdminRoute();
   useEffect(() => {
     getTopicsByCourseType("CAFinal")
       .then((res) => {

@@ -7,12 +7,14 @@ import { Trash2, RotateCcw, XCircle } from "lucide-react";
 import { getTrashItems, permanentlyDeleteTrashItem, purgeTrash, restoreTrashItem, getTopicById, getTestPaperById, getMCQById, getNoteById, getVideoNoteById } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
 import type { Trash } from "@/types/entities";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function Trash() {
   const [trashItems, setTrashItems] = useState<Trash[] | null>(null);
   const [details, setDetails] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
+  useProtectAdminRoute();
   useEffect(() => {
     loadTrashItems();
   }, []);

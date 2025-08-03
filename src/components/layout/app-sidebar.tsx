@@ -30,7 +30,7 @@ const data = {
   navigation: [
     {
       name: "Dashboard",
-      url: "/",
+      url: "/dashboard",
       icon: Frame,
     },
     {

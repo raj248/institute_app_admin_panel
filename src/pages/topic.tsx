@@ -23,6 +23,7 @@ import TopicVideosTabContent from "@/components/tab-content/TopicVideosTabConten
 import TestpaperGridView from "@/components/cards/TestPaperGridView";
 import TestpaperListView from "@/components/TestpaperListView";
 import { Input } from "@/components/ui/input";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
@@ -66,6 +67,7 @@ export default function TopicPage() {
     }
   };
 
+  useProtectAdminRoute();
   useEffect(() => {
     loadTopic();
     loadTestPapers();

@@ -13,12 +13,6 @@ export async function safeFetch<T>(
       credentials: "include", // ⬅ ensures cookies are sent
     });
 
-    if (res.status === 401 || res.status === 403) {
-      // 👇 Redirect on unauthorized
-      window.location.href = "/"; // or navigate("/login") if inside component
-      return { success: false, error: "Unauthorized" };
-    }
-
     const result = await res.json();
 
     if (!res.ok || !result.success) {
@@ -46,12 +40,14 @@ export async function loginAdmin(email: string, password: string): Promise<APIRe
 export async function checkAdminSession(): Promise<APIResponse<{ isAdmin: boolean }>> {
   return safeFetch(`${BASE_URL}/api/admin/check`, {
     method: "GET",
+    credentials: "include", // make sure cookie is set
   });
 }
 
 export async function logoutAdmin(): Promise<APIResponse<null>> {
   return safeFetch(`${BASE_URL}/api/admin/logout`, {
     method: "POST",
+    credentials: "include", // make sure cookie is set
   });
 }
 
