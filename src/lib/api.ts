@@ -3,18 +3,32 @@ import type { APIResponse } from "@/types/api"
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
-async function safeFetch<T>(url: string, options?: RequestInit): Promise<{ success: boolean; error?: string; data?: T }> {
+export async function safeFetch<T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<{ success: boolean; data?: T; error?: string }> {
   try {
-    const res = await fetch(url, options);
+    const res = await fetch(url, {
+      ...options,
+      credentials: "include", // ⬅ ensures cookies are sent
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      // 👇 Redirect on unauthorized
+      window.location.href = "/"; // or navigate("/login") if inside component
+      return { success: false, error: "Unauthorized" };
+    }
+
     const result = await res.json();
+
     if (!res.ok || !result.success) {
-      console.error(`API error (${url}):`, result.error ?? res.statusText);
       return { success: false, error: result.error ?? res.statusText };
     }
-    return result;
-  } catch (error) {
-    console.error(`Fetch error (${url}):`, error);
-    return { success: false, error: (error as Error).message };
+
+    return { success: true, data: result.data };
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    return { success: false, error: (err as Error).message };
   }
 }
 
@@ -194,7 +208,9 @@ export async function uploadNote(data: {
     const res = await fetch(`${BASE_URL}/api/notes/upload-note`, {
       method: "POST",
       body: formData,
+      credentials: "include", // 👈 ADD THIS
     });
+
     const result = await res.json();
     if (!res.ok || !result.success) {
       console.error(`API error (uploadNote):`, result.error ?? res.statusText);
@@ -240,6 +256,7 @@ export async function addVideoNote(data: {
     const res = await fetch(`${BASE_URL}/api/videonotes/`, {
       method: "POST",
       body: formData,
+      credentials: "include", // 👈 ADD THIS
     });
     const result = await res.json();
     if (!res.ok || !result.success) {

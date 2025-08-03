@@ -25,6 +25,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     try {
       const res = await fetch("http://localhost:3000/api/admin/login", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
