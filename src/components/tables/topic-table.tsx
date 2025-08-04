@@ -73,7 +73,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
   const navigate = useNavigate();
 
   const handleClick = (topic: Topic) => {
-    navigate(`/CAInter/${topic.id}`);
+    navigate(`/${topic.courseType}/${topic.id}`);
   };
 
   const columns = getTopicColumns(setTopics);
