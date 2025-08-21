@@ -5,24 +5,34 @@ import type { TestPaper } from "@/types/entities";
 import { Button } from "@/components/ui/button";
 import { MinusCircle, PenIcon, PlusCircle, Trash2 } from "lucide-react";
 import { EditTestViewer } from "@/components/modals/EditTestViewer";
-import { addNewlyAddedItem, moveTestPaperToTrash, removeNewlyAddedItem } from "@/lib/api";
+import {
+  addNewlyAddedItem,
+  moveTestPaperToTrash,
+  removeNewlyAddedItem,
+} from "@/lib/api";
 import { useState } from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { toggleTestPaperPublish } from "@/lib/api";
 import type { ConfirmContextType } from "../modals/global-confirm-dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export function getTestPaperColumns(
   handleCardClick: (id: string) => void,
   refreshPapers: () => Promise<void>,
   confirm: ConfirmContextType,
-  OnDelete?: (id: string) => void,
+  OnDelete?: (id: string) => void
 ): ColumnDef<TestPaper>[] {
-
   const handleMoveToTrash = async (id: string) => {
     const confirmed = await confirm({
       title: "Delete This Note?",
-      description: "This will move the note to trash. You can restore it later if needed.",
+      description:
+        "This will move the note to trash. You can restore it later if needed.",
       confirmText: "Yes, Delete",
       cancelText: "Cancel",
       variant: "destructive",
@@ -71,7 +81,9 @@ export function getTestPaperColumns(
       header: () => <div className="text-right">Time</div>,
       size: 80,
       cell: ({ row }) => (
-        <div className="text-sm text-right">{row.original.timeLimitMinutes ?? "-"} min</div>
+        <div className="text-sm text-right">
+          {row.original.timeLimitMinutes ?? "-"} min
+        </div>
       ),
       enableResizing: false,
     },
@@ -80,13 +92,15 @@ export function getTestPaperColumns(
       header: () => <div className="text-right">Marks</div>,
       size: 70,
       cell: ({ row }) => (
-        <div className="text-sm text-right">{row.original.totalMarks ?? "-"}</div>
+        <div className="text-sm text-right">
+          {row.original.totalMarks ?? "-"}
+        </div>
       ),
       enableResizing: false,
     },
     {
       id: "publish",
-      header: "Publish",
+      header: "Status",
       size: 80,
       enableResizing: false,
       cell: ({ row }) => {
@@ -109,22 +123,29 @@ export function getTestPaperColumns(
         };
 
         return (
-          <Button
-            size="sm"
-            variant="outline"
-            className={`text-xs cursor-pointer 
-              ${isPublished
-                ? "text-blue-600 border-blue-600 hover:bg-blue-100"
-                : "text-green-600 border-green-600 hover:bg-green-100"
-              }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleToggle();
-            }}
-            disabled={loading}
-          >
-            {isPublished ? "Unpublish" : "Publish"}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className={`text-xs cursor-pointer 
+                ${isPublished
+                    ? "text-blue-600 border-blue-600 hover:bg-blue-100"
+                    : "text-green-600 border-green-600 hover:bg-green-100"
+                  }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggle();
+                }}
+                disabled={loading}
+              >
+                {isPublished ? "Published" : "Not Published"}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>{isPublished ? "Click to unpublish" : "Click to publish"}</p>
+            </TooltipContent>
+          </Tooltip>
         );
       },
     },
@@ -136,7 +157,9 @@ export function getTestPaperColumns(
       cell: ({ row }) => {
         const testPaper = row.original;
         const [loading, setLoading] = useState(false);
-        const [newlyAddedId, setNewlyAddedId] = useState<string | null>(testPaper.newlyAddedId);
+        const [newlyAddedId, setNewlyAddedId] = useState<string | null>(
+          testPaper.newlyAddedId
+        );
 
         const toggleNewlyAdded = async () => {
           setLoading(true);
@@ -161,7 +184,7 @@ export function getTestPaperColumns(
 
         return (
           <div
-            className="flex justify-end items-center"
+            className="flex justify-end items-center cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >
             <DropdownMenu>
@@ -190,7 +213,7 @@ export function getTestPaperColumns(
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleMoveToTrash(testPaper.id)
+                    handleMoveToTrash(testPaper.id);
                   }}
                   variant="destructive"
                 >
@@ -224,4 +247,3 @@ export function getTestPaperColumns(
     },
   ];
 }
-
