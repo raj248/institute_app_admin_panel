@@ -15,11 +15,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { addNewlyAddedItem, createTestPaper, getAllTestPapersByTopicId, getTopicsByCourseType } from "@/lib/api";
+import {
+  addNewlyAddedItem,
+  createTestPaper,
+  getAllTestPapersByTopicId,
+  getTopicsByCourseType,
+} from "@/lib/api";
 import { IconPlus } from "@tabler/icons-react";
-import { testPaperSchema, type TestPaper, type TestPaperSchema, type Topic_schema } from "@/types/entities";
+import {
+  testPaperSchema,
+  type TestPaper,
+  type TestPaperSchema,
+  type Topic_schema,
+} from "@/types/entities";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
@@ -28,9 +44,9 @@ export function AddTestPaperDialog({
   courseType,
   setTestPapers,
 }: {
-  topicId: string,
-  courseType: "CAInter" | "CAFinal",
-  setTestPapers: React.Dispatch<React.SetStateAction<TestPaper[] | null>>,
+  topicId: string;
+  courseType: "CAInter" | "CAFinal";
+  setTestPapers: React.Dispatch<React.SetStateAction<TestPaper[] | null>>;
 }) {
   const [open, setOpen] = useState(false);
   const [topics, setTopics] = useState<Topic_schema[] | null>(null);
@@ -60,7 +76,6 @@ export function AddTestPaperDialog({
   }, [open]);
 
   const onSubmit = async (data: TestPaperSchema) => {
-
     const res = await createTestPaper(data);
     if (res.success) {
       if (markAsNew && res.data) {
@@ -88,16 +103,23 @@ export function AddTestPaperDialog({
 
       <DialogContent className="max-w-md rounded-2xl p-4 sm:p-6">
         <DialogHeader className="space-y-1 text-center">
-          <DialogTitle className="text-base font-semibold tracking-tight">Add New Test Paper</DialogTitle>
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            Add New Test Paper
+          </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             Fill details to create a new test paper.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex w-[95%] flex-col gap-3"
+        >
           {/* Name */}
           <div className="flex items-center gap-2">
-            <Label htmlFor="name" className="w-28 text-xs">Name</Label>
+            <Label htmlFor="name" className="w-28 text-xs">
+              Name
+            </Label>
             <Input
               id="name"
               {...register("name")}
@@ -106,12 +128,16 @@ export function AddTestPaperDialog({
             />
           </div>
           {errors.name && (
-            <p className="text-xs text-red-500 pl-28 -mt-1">{errors.name.message}</p>
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.name.message}
+            </p>
           )}
 
           {/* Description */}
           <div className="flex items-start gap-2">
-            <Label htmlFor="description" className="w-28 text-xs pt-2">Description</Label>
+            <Label htmlFor="description" className="w-28 text-xs pt-2">
+              Description
+            </Label>
             <Textarea
               id="description"
               {...register("description")}
@@ -123,7 +149,9 @@ export function AddTestPaperDialog({
 
           {/* Time Limit */}
           <div className="flex items-center gap-2">
-            <Label htmlFor="timeLimitMinutes" className="w-28 text-xs">Time Limit</Label>
+            <Label htmlFor="timeLimitMinutes" className="w-28 text-xs">
+              Time Limit
+            </Label>
             <Input
               id="timeLimitMinutes"
               type="number"
@@ -133,12 +161,16 @@ export function AddTestPaperDialog({
             />
           </div>
           {errors.timeLimitMinutes && (
-            <p className="text-xs text-red-500 pl-28 -mt-1">{errors.timeLimitMinutes.message}</p>
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.timeLimitMinutes.message}
+            </p>
           )}
 
           {/* Topic Selection */}
           <div className="flex items-center gap-2">
-            <Label htmlFor="topicId" className="w-28 text-xs">Topic</Label>
+            <Label htmlFor="topicId" className="w-28 text-xs">
+              Topic
+            </Label>
             <Select
               value={watch("topicId")}
               onValueChange={(value) => setValue("topicId", value)}
@@ -156,14 +188,20 @@ export function AddTestPaperDialog({
             </Select>
           </div>
           {errors.topicId && (
-            <p className="text-xs text-red-500 pl-28 -mt-1">{errors.topicId.message}</p>
+            <p className="text-xs text-red-500 pl-28 -mt-1">
+              {errors.topicId.message}
+            </p>
           )}
 
           <div className="flex items-center gap-2">
             <Label htmlFor="markNew" className="w-28 text-xs">
               Mark as New
             </Label>
-            <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+            <Switch
+              id="markNew"
+              checked={markAsNew}
+              onCheckedChange={setMarkAsNew}
+            />
           </div>
 
           {/* Submit */}
@@ -179,6 +217,5 @@ export function AddTestPaperDialog({
         </form>
       </DialogContent>
     </Dialog>
-
   );
 }

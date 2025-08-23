@@ -16,7 +16,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { getTestPaperById, moveMCQToTrash } from "@/lib/api";
@@ -146,7 +146,7 @@ export function TestpaperDetailsDialog({
 
             <ScrollArea className="max-h-[400px] border rounded-md">
               <div className="w-full overflow-x-auto">
-                <Table>
+                <Table className="w[90%] mx-auto">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Question</TableHead>
@@ -162,7 +162,7 @@ export function TestpaperDetailsDialog({
                       <TableRow key={mcq.id}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <TableCell className="max-w-[180px] truncate cursor-default text-xs">
+                            <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
                               {mcq.question}
                             </TableCell>
                           </TooltipTrigger>
@@ -173,7 +173,7 @@ export function TestpaperDetailsDialog({
 
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <TableCell className="max-w-[180px] truncate cursor-default text-xs">
+                            <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
                               {mcq.explanation ?? "-"}
                             </TableCell>
                           </TooltipTrigger>
@@ -217,6 +217,7 @@ export function TestpaperDetailsDialog({
                   </TableBody>
                 </Table>
               </div>
+              <ScrollBar orientation="horizontal" className="h-2" />
             </ScrollArea>
           </>
         )}
