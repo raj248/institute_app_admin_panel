@@ -24,17 +24,6 @@ export default function Dashboard() {
     return <div className="p-6">Loading stats...</div>
   }
 
-  // Example weekly data (replace with backend growth data later)
-  const weeklyUsers = [
-    { name: "Mon", users: 40 },
-    { name: "Tue", users: 60 },
-    { name: "Wed", users: 80 },
-    { name: "Thu", users: 50 },
-    { name: "Fri", users: 90 },
-    { name: "Sat", users: 120 },
-    { name: "Sun", users: 70 },
-  ]
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -63,38 +52,42 @@ export default function Dashboard() {
           <CardTitle>User Growth & Tests (Weekly)</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={
-                stats
-                  ? stats.graph.registrationsByWeek.map((r, i) => ({
-                    name: r.week, // e.g., "2025-34"
-                    registrations: r.count,
-                    tests: stats.graph.testsTakenByWeek[i]?.count ?? 0,
-                  }))
-                  : []
-              }
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="registrations"
-                stroke="#2563eb"
-                strokeWidth={2}
-                name="User Registrations"
-              />
-              <Line
-                type="monotone"
-                dataKey="tests"
-                stroke="#16a34a"
-                strokeWidth={2}
-                name="Tests Taken"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {stats &&
+            (stats.graph.registrationsByWeek.length > 0 ||
+              stats.graph.testsTakenByWeek.length > 0) ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={stats.graph.registrationsByWeek.map((r, i) => ({
+                  name: r.week, // e.g., "2025-34"
+                  registrations: r.count,
+                  tests: stats.graph.testsTakenByWeek[i]?.count ?? 0,
+                }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="registrations"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                  name="User Registrations"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="tests"
+                  stroke="#16a34a"
+                  strokeWidth={2}
+                  name="Tests Taken"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-center text-muted-foreground py-12">
+              No activity recorded in the past weeks.
+            </p>
+          )}
         </CardContent>
       </Card>
 
