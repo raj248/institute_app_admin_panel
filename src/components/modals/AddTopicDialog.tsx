@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+// import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { createTopic, getTopicsByCourseType } from "@/lib/api"; // defined below
 import { IconPlus } from "@tabler/icons-react";
@@ -40,7 +40,7 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
   const {
     register,
     handleSubmit,
-    setValue,
+    // setValue,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<TopicSchema>({

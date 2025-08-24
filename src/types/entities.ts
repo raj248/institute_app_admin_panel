@@ -161,4 +161,7 @@ export interface Stats {
   userCount: number;
   topicCount: number;
   courseCount: number;
+  totalTestsTaken: number;
+  testsTakenThisWeek: number;
+  registeredUsersThisWeek: number;
 }
