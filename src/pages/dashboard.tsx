@@ -60,20 +60,44 @@ export default function Dashboard() {
       {/* User Growth Graph */}
       <Card>
         <CardHeader>
-          <CardTitle>User Growth (Weekly)</CardTitle>
+          <CardTitle>User Growth & Tests (Weekly)</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={weeklyUsers}>
+            <LineChart
+              data={
+                stats
+                  ? stats.graph.registrationsByWeek.map((r, i) => ({
+                    name: r.week, // e.g., "2025-34"
+                    registrations: r.count,
+                    tests: stats.graph.testsTakenByWeek[i]?.count ?? 0,
+                  }))
+                  : []
+              }
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="users" stroke="#2563eb" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="registrations"
+                stroke="#2563eb"
+                strokeWidth={2}
+                name="User Registrations"
+              />
+              <Line
+                type="monotone"
+                dataKey="tests"
+                stroke="#16a34a"
+                strokeWidth={2}
+                name="Tests Taken"
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
     </div>
   )
 }

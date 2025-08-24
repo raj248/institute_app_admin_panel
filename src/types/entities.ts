@@ -164,4 +164,8 @@ export interface Stats {
   totalTestsTaken: number;
   testsTakenThisWeek: number;
   registeredUsersThisWeek: number;
+  graph: {
+    registrationsByWeek: { week: string; count: number }[];
+    testsTakenByWeek: { week: string; count: number }[];
+  }
 }
