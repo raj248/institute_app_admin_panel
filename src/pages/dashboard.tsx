@@ -41,21 +41,13 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {loading ? (
           Array.from({ length: 4 }).map((_, idx) => (
             <Skeleton key={idx} className="h-24 w-full rounded-xl" />
           ))
         ) : (
           <>
-            <Card>
-              <CardHeader>
-                <CardTitle>Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats?.noteCount ?? 0}</p>
-              </CardContent>
-            </Card>
             <Card>
               <CardHeader>
                 <CardTitle>Test Papers</CardTitle>
