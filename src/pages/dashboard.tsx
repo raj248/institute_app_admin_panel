@@ -1,115 +1,80 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getAllStats } from "@/lib/api";
-import type { Stats } from "@/types/entities";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Users, FileText, BarChart } from "lucide-react"
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
+import ExportUsersButton from "@/components/ExportUserButton"
+
+const data = [
+  { name: "Mon", users: 40 },
+  { name: "Tue", users: 60 },
+  { name: "Wed", users: 80 },
+  { name: "Thu", users: 50 },
+  { name: "Fri", users: 90 },
+  { name: "Sat", users: 120 },
+  { name: "Sun", users: 70 },
+]
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useProtectAdminRoute();
-  useEffect(() => {
-    getAllStats()
-      .then((res) => {
-        const result = res.data;
-        setStats(result ?? null)
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  const dummyData = [
-    { name: "Mon", views: 120, downloads: 30, tests: 12 },
-    { name: "Tue", views: 200, downloads: 50, tests: 20 },
-    { name: "Wed", views: 150, downloads: 40, tests: 15 },
-    { name: "Thu", views: 220, downloads: 60, tests: 25 },
-    { name: "Fri", views: 300, downloads: 80, tests: 35 },
-    { name: "Sat", views: 180, downloads: 45, tests: 18 },
-    { name: "Sun", views: 250, downloads: 70, tests: 28 },
-  ];
-
   return (
-    <div className="flex flex-col gap-4 p-4 md:p-6">
-      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, idx) => (
-            <Skeleton key={idx} className="h-24 w-full rounded-xl" />
-          ))
-        ) : (
-          <>
-            <Card>
-              <CardHeader>
-                <CardTitle>Test Papers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats?.testPaperCount}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Questions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats?.mcqCount}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Video Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats?.videoNoteCount}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats?.noteCount}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Users</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{stats?.userCount}</p>
-              </CardContent>
-            </Card>
-          </>
-        )}
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <ExportUsersButton />
       </div>
 
-      <Card className="mt-4">
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">12,345</div>
+            <p className="text-xs text-muted-foreground">+200 this week</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium">Total Quizzes</CardTitle>
+            <FileText className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">678</div>
+            <p className="text-xs text-muted-foreground">+12 this week</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-medium">Engagement</CardTitle>
+            <BarChart className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">74%</div>
+            <p className="text-xs text-muted-foreground">steady</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Graph Section */}
+      <Card>
         <CardHeader>
-          <CardTitle>Weekly Engagement</CardTitle>
+          <CardTitle>User Growth (Weekly)</CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={dummyData}>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="views" stroke="#5B42F3" strokeWidth={2} dot={{ r: 3 }} />
-              <Line type="monotone" dataKey="downloads" stroke="#AF40FF" strokeWidth={2} dot={{ r: 3 }} />
-              <Line type="monotone" dataKey="tests" stroke="#00DDEB" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="users" stroke="#2563eb" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

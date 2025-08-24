@@ -120,7 +120,7 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
           )}
 
           {/* Course Type */}
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <Label htmlFor="courseType" className="w-28 text-xs">
               Course Type
             </Label>
@@ -141,7 +141,7 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
             <p className="text-xs text-red-500 pl-28 -mt-1">
               {errors.courseType.message}
             </p>
-          )}
+          )} */}
 
           {/* Submit */}
           <DialogFooter className="mt-4">

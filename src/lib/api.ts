@@ -1,7 +1,7 @@
 import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote, NewlyAdded, Stats } from "@/types/entities";
 import type { APIResponse } from "@/types/api"
 
-const BASE_URL = import.meta.env.VITE_SERVER_URL;
+export const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 export async function safeFetch<T>(
   url: string,
