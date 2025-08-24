@@ -152,3 +152,13 @@ export interface Trash {
   purgeAfter: string | null;
   displayName: string;
 }
+
+export interface Stats {
+  testPaperCount: number;
+  mcqCount: number;
+  noteCount: number;
+  videoNoteCount: number;
+  userCount: number;
+  topicCount: number;
+  courseCount: number;
+}

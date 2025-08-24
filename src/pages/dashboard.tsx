@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTopicsByCourseType } from "@/lib/api";
-import type { Topic_schema } from "@/types/entities";
+import { getAllStats } from "@/lib/api";
+import type { Stats } from "@/types/entities";
 import {
   LineChart,
   Line,
@@ -15,15 +15,15 @@ import {
 import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function Dashboard() {
-  const [topics, setTopics] = useState<Topic_schema[] | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useProtectAdminRoute();
   useEffect(() => {
-    getTopicsByCourseType("CAFinal")
+    getAllStats()
       .then((res) => {
         const result = res.data;
-        setTopics(result ?? null);
+        setStats(result ?? null)
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -50,34 +50,50 @@ export default function Dashboard() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>Total Notes</CardTitle>
+                <CardTitle>Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{topics?.length ?? 0}</p>
+                <p className="text-2xl font-bold">{stats?.noteCount ?? 0}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Total Test Papers</CardTitle>
+                <CardTitle>Test Papers</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{stats?.testPaperCount}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Total Video Notes</CardTitle>
+                <CardTitle>Questions</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">{stats?.mcqCount}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Revision Tests Taken</CardTitle>
+                <CardTitle>Video Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">58</p>
+                <p className="text-2xl font-bold">{stats?.videoNoteCount}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Notes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{stats?.noteCount}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Users</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{stats?.userCount}</p>
               </CardContent>
             </Card>
           </>

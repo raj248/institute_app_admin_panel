@@ -1,4 +1,4 @@
-import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote, NewlyAdded } from "@/types/entities";
+import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote, NewlyAdded, Stats } from "@/types/entities";
 import type { APIResponse } from "@/types/api"
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
@@ -49,6 +49,12 @@ export async function logoutAdmin(): Promise<APIResponse<null>> {
     method: "POST",
     credentials: "include", // make sure cookie is set
   });
+}
+
+// ------------------- Stats & Settings --------------------
+
+export async function getAllStats(): Promise<APIResponse<Stats>> {
+  return safeFetch(`${BASE_URL}/api/stats`);
 }
 
 // ------------------- Courses & Topics --------------------
