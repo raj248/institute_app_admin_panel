@@ -40,7 +40,6 @@ const EXT: Record<ExportFormat, string> = {
 };
 
 export default function ExportUsersButton({
-  baseUrl = "",
   query,
   disabled,
   onError,
@@ -59,8 +58,8 @@ export default function ExportUsersButton({
       }
     }
     // If baseUrl is absolute, keep it; otherwise drop origin (relative)
-    const finalUrl = baseUrl.startsWith("http") ? url.toString() : url.pathname + "?" + url.searchParams.toString();
-    return finalUrl;
+    // const finalUrl = baseUrl.startsWith("http") ? url.toString() : url.pathname + "?" + url.searchParams.toString();
+    return url.toString();
   };
 
   const parseFilename = (res: Response, format: ExportFormat) => {
