@@ -1,7 +1,8 @@
 // src/components/layout.tsx
 
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+// import { AppSidebar } from "@/components/layout/app-sidebar";
+import { AppSidebar } from "./app-sidebar-collapsible";
 import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router-dom";
 import { useTheme } from "../theme/theme-provider";
@@ -27,7 +28,9 @@ export default function MainLayout() {
             "flex-1 transition-colors",
             resolvedTheme === "dark" ? "bg-neutral-950" : "bg-background"
           )}
-        >          {/* header with breadcrumbs */}
+        >
+          {" "}
+          {/* header with breadcrumbs */}
           <Header />
           <Outlet />
           <Toaster />
