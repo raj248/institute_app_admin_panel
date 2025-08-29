@@ -6,6 +6,7 @@ import { getVideoByCourse } from "@/lib/api";
 import type { VideoNote } from "@/types/entities";
 import VideoCard from "@/components/cards/VideoCard";
 import { useParams } from "react-router-dom";
+import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
 
 interface TopicVideosTabContentProps {
   type?: "all" | "rtp" | "mtp" | "revision" | "other";
@@ -110,6 +111,12 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
 
   return (
     <div className="space-y-4">
+      <AddVideoNoteDialog
+        topicId={""}
+        courseType={course as "CAInter" | "CAFinal"}
+        type={type as "all" | "rtp" | "mtp" | "revision" | "other"}
+        setVideos={setVideos}
+      />
       {loading ? (
         <div className="flex flex-wrap gap-4 justify-center">
           {Array.from({ length: 4 }).map((_, idx) => (

@@ -10,7 +10,7 @@ export const useProtectAdminRoute = () => {
       try {
         const res = await checkAdminSession();
         if (!res.success || !res.data?.isAdmin) {
-          alert("Session expired or unauthorized access.");
+          // alert("Session expired or unauthorized access.");
           navigate("/", { replace: true });
         }
       } catch (err) {

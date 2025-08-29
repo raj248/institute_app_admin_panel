@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -18,7 +18,12 @@ import { IconPlus } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { addNewlyAddedItem, addVideoNote, getVideoNotesByTopicId } from "@/lib/api";
+import {
+  addNewlyAddedItem,
+  addVideoNote,
+  getVideoByCourse,
+  getVideoNotesByTopicId,
+} from "@/lib/api";
 import type { VideoNote } from "@/types/entities";
 import {
   Select,
@@ -40,10 +45,12 @@ type AddVideoNoteSchema = z.infer<typeof addVideoNoteSchema>;
 export function AddVideoNoteDialog({
   topicId,
   courseType,
+  type,
   setVideos,
 }: {
-  topicId: string;
+  topicId?: string;
   courseType: "CAInter" | "CAFinal";
+  type?: "all" | "rtp" | "mtp" | "revision" | "other";
   setVideos: React.Dispatch<React.SetStateAction<VideoNote[] | null>>;
 }) {
   const [open, setOpen] = useState(false);
@@ -60,13 +67,10 @@ export function AddVideoNoteDialog({
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
+    control,
     reset,
-    setValue,
   } = useForm<AddVideoNoteSchema>({
     resolver: zodResolver(addVideoNoteSchema),
-    defaultValues: {
-      type: "other",
-    },
   });
 
   const url = watch("url");
@@ -78,7 +82,11 @@ export function AddVideoNoteDialog({
         return;
       }
       try {
-        const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+        const response = await fetch(
+          `https://www.youtube.com/oembed?url=${encodeURIComponent(
+            url
+          )}&format=json`
+        );
         const data = await response.json();
         setPreview({
           title: data.title,
@@ -95,8 +103,8 @@ export function AddVideoNoteDialog({
     try {
       const result = await addVideoNote({
         url: data.url,
-        name: preview?.title || '',
-        topicId,
+        name: preview?.title || "",
+        topicId: topicId || null,
         courseType,
         type: data.type,
         notify,
@@ -108,6 +116,14 @@ export function AddVideoNoteDialog({
         }
 
         toast.success("Video note added successfully!");
+        if (!topicId) {
+          const refreshed = await getVideoByCourse(courseType, data.type);
+          if (data.type === type) setVideos(refreshed.data ?? null);
+          setOpen(false);
+          reset();
+          setMarkAsNew(false); // reset switch
+          return;
+        }
         const refreshed = await getVideoNotesByTopicId(topicId);
         setVideos(refreshed.data ?? null);
         setOpen(false);
@@ -120,7 +136,6 @@ export function AddVideoNoteDialog({
       toast.error((error as Error).message);
     }
   };
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -137,12 +152,12 @@ export function AddVideoNoteDialog({
             Add Video Note
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Paste a YouTube URL and select type to add it as a video note with preview.
+            Paste a YouTube URL and select type to add it as a video note with
+            preview.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-
           {/* YouTube URL */}
           <div className="flex items-center gap-2">
             <Label htmlFor="url" className="w-28 text-xs">
@@ -162,25 +177,39 @@ export function AddVideoNoteDialog({
           )}
 
           {/* Video Type */}
-          <div className="flex items-center gap-2">
-            <Label htmlFor="type" className="w-28 text-xs">
-              Video Type
-            </Label>
-            <Select
-              defaultValue="other"
-              onValueChange={(value) => setValue("type", value as "mtp" | "rtp" | "revision" | "other")}
-            >
-              <SelectTrigger id="type" className="flex-1 text-sm">
-                <SelectValue placeholder="Select Video Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="mtp">MTP</SelectItem>
-                <SelectItem value="rtp">RTP</SelectItem>
-                <SelectItem value="revision">Revision</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Controller
+            name="type"
+            control={control}
+            // defaultValue={topicId ? "revision" : (type as VideoNote["type"])} // 👈 default depending on topicId
+            render={({ field }) => (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="type" className="w-28 text-xs">
+                  Video Type
+                </Label>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange} // react-hook-form tracking
+                >
+                  <SelectTrigger id="type" className="flex-1 text-sm">
+                    <SelectValue placeholder="Select Video Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {topicId ? (
+                      <>
+                        <SelectItem value="revision">Revision</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </>
+                    ) : (
+                      <>
+                        <SelectItem value="mtp">MTP</SelectItem>
+                        <SelectItem value="rtp">RTP</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          />
           {errors.type && (
             <p className="text-xs text-red-500 pl-28 -mt-1">
               {errors.type.message}
@@ -195,7 +224,9 @@ export function AddVideoNoteDialog({
                 alt="Thumbnail"
                 className="w-full max-w-xs rounded-md shadow-sm"
               />
-              <p className="font-medium text-sm text-center px-2">{preview.title}</p>
+              <p className="font-medium text-sm text-center px-2">
+                {preview.title}
+              </p>
             </div>
           )}
 
@@ -203,7 +234,11 @@ export function AddVideoNoteDialog({
             <Label htmlFor="markNew" className="w-28 text-xs">
               Mark as New?
             </Label>
-            <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+            <Switch
+              id="markNew"
+              checked={markAsNew}
+              onCheckedChange={setMarkAsNew}
+            />
           </div>
 
           <div className="flex items-center gap-2">
@@ -215,7 +250,11 @@ export function AddVideoNoteDialog({
 
           {/* Submit */}
           <DialogFooter className="mt-4">
-            <Button type="submit" disabled={isSubmitting} className="w-full text-sm py-2 rounded-xl">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full text-sm py-2 rounded-xl"
+            >
               {isSubmitting ? "Adding..." : "Add Video Note"}
             </Button>
           </DialogFooter>

@@ -321,7 +321,7 @@ export async function addVideoNote(data: {
   url: string;
   name: string;
   type: "rtp" | "mtp" | "revision" | "other";
-  topicId: string;
+  topicId: string | null;
   courseType: "CAInter" | "CAFinal";
   notify: boolean;
 }): Promise<APIResponse<VideoNote>> {
@@ -329,7 +329,7 @@ export async function addVideoNote(data: {
   formData.append("url", data.url);
   formData.append("name", data.name);
   if (data.type) formData.append("type", data.type);
-  formData.append("topicId", data.topicId);
+  if (data.topicId) formData.append("topicId", data.topicId);
   formData.append("courseType", data.courseType);
   formData.append("notify", data.notify.toString());
 
