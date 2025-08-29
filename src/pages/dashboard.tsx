@@ -1,27 +1,44 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, FileText, BarChart, BookOpen, ClipboardList, Video } from "lucide-react"
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
-import ExportUsersButton from "@/components/ExportUserButton"
-import { getAllStats } from "@/lib/api"
-import type { Stats } from "@/types/entities"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Users,
+  FileText,
+  BarChart,
+  BookOpen,
+  ClipboardList,
+  Video,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import ExportUsersButton from "@/components/ExportUserButton";
+import { getAllStats } from "@/lib/api";
+import type { Stats } from "@/types/entities";
+import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [stats, setStats] = useState<Stats | null>(null);
 
+  useProtectAdminRoute();
   useEffect(() => {
     async function fetchStats() {
-      const res = await getAllStats()
-      if (res.success) setStats(res.data ?? null)
+      const res = await getAllStats();
+      if (res.success) setStats(res.data ?? null);
     }
-    fetchStats()
-  }, [])
+    fetchStats();
+  }, []);
 
   // fallback if no stats yet
   if (!stats) {
-    return <div className="p-6">Loading stats...</div>
+    return <div className="p-6">Loading stats...</div>;
   }
 
   return (
@@ -34,16 +51,40 @@ export default function Dashboard() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Users" value={stats.userCount} icon={<Users className="w-4 h-4" />}
-          subtitle={`+${stats.registeredUsersThisWeek} this week`} />
+        <StatCard
+          title="Total Users"
+          value={stats.userCount}
+          icon={<Users className="w-4 h-4" />}
+          subtitle={`+${stats.registeredUsersThisWeek} this week`}
+        />
 
-        <StatCard title="Total Tests Taken" value={stats.totalTestsTaken} icon={<ClipboardList className="w-4 h-4" />}
-          subtitle={`+${stats.testsTakenThisWeek} this week`} />
+        <StatCard
+          title="Total Tests Taken"
+          value={stats.totalTestsTaken}
+          icon={<ClipboardList className="w-4 h-4" />}
+          subtitle={`+${stats.testsTakenThisWeek} this week`}
+        />
 
-        <StatCard title="Quizzes" value={stats.testPaperCount} icon={<FileText className="w-4 h-4" />} />
-        <StatCard title="MCQs" value={stats.mcqCount} icon={<BarChart className="w-4 h-4" />} />
-        <StatCard title="Notes" value={stats.noteCount} icon={<BookOpen className="w-4 h-4" />} />
-        <StatCard title="Video Notes" value={stats.videoNoteCount} icon={<Video className="w-4 h-4" />} />
+        <StatCard
+          title="Quizzes"
+          value={stats.testPaperCount}
+          icon={<FileText className="w-4 h-4" />}
+        />
+        <StatCard
+          title="MCQs"
+          value={stats.mcqCount}
+          icon={<BarChart className="w-4 h-4" />}
+        />
+        <StatCard
+          title="Notes"
+          value={stats.noteCount}
+          icon={<BookOpen className="w-4 h-4" />}
+        />
+        <StatCard
+          title="Video Notes"
+          value={stats.videoNoteCount}
+          icon={<Video className="w-4 h-4" />}
+        />
       </div>
 
       {/* User Growth Graph */}
@@ -53,8 +94,8 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent>
           {stats &&
-            (stats.graph.registrationsByWeek.length > 0 ||
-              stats.graph.testsTakenByWeek.length > 0) ? (
+          (stats.graph.registrationsByWeek.length > 0 ||
+            stats.graph.testsTakenByWeek.length > 0) ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart
                 data={stats.graph.registrationsByWeek.map((r, i) => ({
@@ -90,12 +131,21 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
-
     </div>
-  )
+  );
 }
 
-function StatCard({ title, value, subtitle, icon }: { title: string, value: number, subtitle?: string, icon: React.ReactNode }) {
+function StatCard({
+  title,
+  value,
+  subtitle,
+  icon,
+}: {
+  title: string;
+  value: number;
+  subtitle?: string;
+  icon: React.ReactNode;
+}) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -104,8 +154,10 @@ function StatCard({ title, value, subtitle, icon }: { title: string, value: numb
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value.toLocaleString()}</div>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+        {subtitle && (
+          <p className="text-xs text-muted-foreground">{subtitle}</p>
+        )}
       </CardContent>
     </Card>
-  )
+  );
 }

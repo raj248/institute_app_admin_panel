@@ -3,8 +3,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-  DialogDescription, DialogTrigger, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +19,13 @@ import { useState } from "react";
 import { createQuestion } from "@/lib/api";
 import { IconPlus } from "@tabler/icons-react";
 import { questionSchema, type QuestionSchema } from "@/types/entities";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export function AddQuestionsDialog({
   testPaperId,
@@ -46,7 +57,7 @@ export function AddQuestionsDialog({
     try {
       const res = await createQuestion({
         question: data.question,
-        explanation: data.explanation ?? '',
+        explanation: data.explanation ?? "",
         correctAnswer: data.correctAnswer,
         marks: data.marks,
         topicId: data.topicId,
@@ -82,7 +93,9 @@ export function AddQuestionsDialog({
 
       <DialogContent className="max-w-sm rounded-2xl p-4 sm:p-6">
         <DialogHeader className="items-center text-center">
-          <DialogTitle className="text-base font-semibold">Add New Question</DialogTitle>
+          <DialogTitle className="text-base font-semibold">
+            Add New Question
+          </DialogTitle>
           <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
             Fill details to create a new question in this test paper.
           </DialogDescription>
@@ -91,7 +104,9 @@ export function AddQuestionsDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           {/* Question */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="question" className="text-sm">Question</Label>
+            <Label htmlFor="question" className="text-sm">
+              Question
+            </Label>
             <Textarea
               id="question"
               {...register("question")}
@@ -105,7 +120,9 @@ export function AddQuestionsDialog({
 
           {/* Explanation */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="explanation" className="text-sm">Explanation (optional)</Label>
+            <Label htmlFor="explanation" className="text-sm">
+              Answer Explanation (optional)
+            </Label>
             <Textarea
               id="explanation"
               {...register("explanation")}
@@ -113,7 +130,9 @@ export function AddQuestionsDialog({
               placeholder="Add explanation if needed"
             />
             {errors.explanation && (
-              <p className="text-xs text-red-500">{errors.explanation.message}</p>
+              <p className="text-xs text-red-500">
+                {errors.explanation.message}
+              </p>
             )}
           </div>
 
@@ -121,29 +140,51 @@ export function AddQuestionsDialog({
           <div className="flex flex-col gap-1">
             <Label className="text-sm">Options</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {["option1", "option2", "option3", "option4"].map((optionKey, index) => (
-                <div key={optionKey}>
-                  <Input
-                    id={optionKey}
-                    {...register(optionKey as "option1" | "option2" | "option3" | "option4")}
-                    placeholder={`Option ${String.fromCharCode(65 + index)}`}
-                    className="text-sm"
-                  />
-                  {errors[optionKey as "option1" | "option2" | "option3" | "option4"]?.message && (
-                    <p className="text-xs text-red-500">
-                      {errors[optionKey as "option1" | "option2" | "option3" | "option4"]!.message}
-                    </p>
-                  )}
-                </div>
-              ))}
+              {["option1", "option2", "option3", "option4"].map(
+                (optionKey, index) => (
+                  <div key={optionKey}>
+                    <Input
+                      id={optionKey}
+                      {...register(
+                        optionKey as
+                          | "option1"
+                          | "option2"
+                          | "option3"
+                          | "option4"
+                      )}
+                      placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                      className="text-sm"
+                    />
+                    {errors[
+                      optionKey as "option1" | "option2" | "option3" | "option4"
+                    ]?.message && (
+                      <p className="text-xs text-red-500">
+                        {
+                          errors[
+                            optionKey as
+                              | "option1"
+                              | "option2"
+                              | "option3"
+                              | "option4"
+                          ]!.message
+                        }
+                      </p>
+                    )}
+                  </div>
+                )
+              )}
             </div>
           </div>
 
           {/* Correct Answer */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="correctAnswer" className="text-sm">Correct Answer</Label>
+            <Label htmlFor="correctAnswer" className="text-sm">
+              Correct Answer
+            </Label>
             <Select
-              onValueChange={(value) => setValue("correctAnswer", value as "a" | "b" | "c" | "d")}
+              onValueChange={(value) =>
+                setValue("correctAnswer", value as "a" | "b" | "c" | "d")
+              }
               value={watch("correctAnswer")}
             >
               <SelectTrigger id="correctAnswer" className="text-sm">
@@ -157,13 +198,17 @@ export function AddQuestionsDialog({
               </SelectContent>
             </Select>
             {errors.correctAnswer && (
-              <p className="text-xs text-red-500">{errors.correctAnswer.message}</p>
+              <p className="text-xs text-red-500">
+                {errors.correctAnswer.message}
+              </p>
             )}
           </div>
 
           {/* Marks */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="marks" className="text-sm">Marks</Label>
+            <Label htmlFor="marks" className="text-sm">
+              Marks
+            </Label>
             <Input
               id="marks"
               type="number"
@@ -183,13 +228,17 @@ export function AddQuestionsDialog({
           )}
 
           <DialogFooter className="mt-2">
-            <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
+            <Button
+              type="submit"
+              size="sm"
+              disabled={isSubmitting}
+              className="w-full"
+            >
               {isSubmitting ? "Adding..." : "Add Question"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-
   );
 }
