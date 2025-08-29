@@ -14,6 +14,7 @@ import { ConfirmDialogProvider } from "./components/modals/global-confirm-dialog
 import NewlyAdded from "./pages/newly-added";
 import Login from "./pages/login";
 import { AuthProvider } from "./context/auth-context";
+import VideoNotes from "./pages/video-notes";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/CAFinal" element={<CAFinal />} />
                 <Route path="/CAInter/:topicId" element={<TopicPage />} />
                 <Route path="/CAFinal/:topicId" element={<TopicPage />} />
+                <Route path="/Video/:course/:type" element={<VideoNotes />} />
                 <Route path="/Debug" element={<Debug />} />
                 <Route path="/Settings" element={<Settings />} />
                 <Route path="/Trash" element={<Trash />} />

@@ -53,12 +53,12 @@ const data = {
       items: [
         {
           title: "CA-Inter",
-          url: "#",
+          url: "/Video/CAInter/mtp",
           isActive: false,
         },
         {
           title: "CA-Final",
-          url: "#",
+          url: "/Video/CAFinal/mtp",
           isActive: false,
         },
       ],
@@ -69,12 +69,12 @@ const data = {
       items: [
         {
           title: "CA-Inter",
-          url: "#",
+          url: "/Video/CAInter/rtp",
           isActive: false,
         },
         {
           title: "CA-Final",
-          url: "#",
+          url: "/Video/CAFinal/rtp",
           isActive: false,
         },
       ],

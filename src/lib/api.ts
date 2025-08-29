@@ -1,5 +1,14 @@
-import type { Topic, TestPaper, MCQ, Trash, Note, VideoNote, NewlyAdded, Stats } from "@/types/entities";
-import type { APIResponse } from "@/types/api"
+import type {
+  Topic,
+  TestPaper,
+  MCQ,
+  Trash,
+  Note,
+  VideoNote,
+  NewlyAdded,
+  Stats,
+} from "@/types/entities";
+import type { APIResponse } from "@/types/api";
 
 export const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -8,6 +17,7 @@ export async function safeFetch<T>(
   options: RequestInit = {}
 ): Promise<{ success: boolean; data?: T; error?: string }> {
   try {
+    console.log("Fetching:", url);
     const res = await fetch(url, {
       ...options,
       credentials: "include", // ⬅ ensures cookies are sent
@@ -28,7 +38,10 @@ export async function safeFetch<T>(
 
 // ---------------- Admin Auth ------------------
 
-export async function loginAdmin(email: string, password: string): Promise<APIResponse<null>> {
+export async function loginAdmin(
+  email: string,
+  password: string
+): Promise<APIResponse<null>> {
   return safeFetch(`${BASE_URL}/api/admin/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,7 +50,9 @@ export async function loginAdmin(email: string, password: string): Promise<APIRe
   });
 }
 
-export async function checkAdminSession(): Promise<APIResponse<{ isAdmin: boolean }>> {
+export async function checkAdminSession(): Promise<
+  APIResponse<{ isAdmin: boolean }>
+> {
   return safeFetch(`${BASE_URL}/api/admin/check`, {
     method: "GET",
     credentials: "include", // make sure cookie is set
@@ -63,12 +78,19 @@ export async function getAllTopic(): Promise<APIResponse<Topic[]>> {
   return safeFetch(`${BASE_URL}/api/topics`);
 }
 
-export async function getTopicsByCourseType(courseType: string): Promise<APIResponse<Topic[]>> {
-  const params = new URLSearchParams({ type: 'all' });
-  return safeFetch(`${BASE_URL}/api/courses/${courseType}/topics?${params.toString()}`, { cache: "no-store" });
+export async function getTopicsByCourseType(
+  courseType: string
+): Promise<APIResponse<Topic[]>> {
+  const params = new URLSearchParams({ type: "all" });
+  return safeFetch(
+    `${BASE_URL}/api/courses/${courseType}/topics?${params.toString()}`,
+    { cache: "no-store" }
+  );
 }
 
-export async function getTopicById(topicId: string): Promise<APIResponse<Topic>> {
+export async function getTopicById(
+  topicId: string
+): Promise<APIResponse<Topic>> {
   return safeFetch(`${BASE_URL}/api/topics/${topicId}`);
 }
 
@@ -101,19 +123,30 @@ export async function updateTopic(
 
 // ------------------- Test Papers --------------------
 
-export async function getAllTestPapersByTopicId(topicId: string): Promise<APIResponse<TestPaper[]>> {
-  const params = new URLSearchParams({ type: 'all' });
-  return safeFetch(`${BASE_URL}/api/topics/${topicId}/testpapers?${params.toString()}`);
+export async function getAllTestPapersByTopicId(
+  topicId: string
+): Promise<APIResponse<TestPaper[]>> {
+  const params = new URLSearchParams({ type: "all" });
+  return safeFetch(
+    `${BASE_URL}/api/topics/${topicId}/testpapers?${params.toString()}`
+  );
 }
 
-export async function getTestPaperById(testPaperId: string): Promise<APIResponse<TestPaper>> {
+export async function getTestPaperById(
+  testPaperId: string
+): Promise<APIResponse<TestPaper>> {
   return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`);
 }
 
-export async function toggleTestPaperPublish(id: string): Promise<APIResponse<TestPaper>> {
-  return safeFetch<TestPaper>(`${BASE_URL}/api/testpapers/test/${id}/toggle-publish`, {
-    method: "PATCH",
-  });
+export async function toggleTestPaperPublish(
+  id: string
+): Promise<APIResponse<TestPaper>> {
+  return safeFetch<TestPaper>(
+    `${BASE_URL}/api/testpapers/test/${id}/toggle-publish`,
+    {
+      method: "PATCH",
+    }
+  );
 }
 
 export async function createTestPaper(data: {
@@ -152,13 +185,13 @@ export async function getMCQById(id: string): Promise<APIResponse<MCQ>> {
 }
 
 export async function createQuestion(data: {
-  question: string,
-  options: object,
-  explanation: string,
-  marks: number,
-  correctAnswer: string,
-  topicId: string,
-  testPaperId: string,
+  question: string;
+  options: object;
+  explanation: string;
+  marks: number;
+  correctAnswer: string;
+  topicId: string;
+  testPaperId: string;
 }): Promise<APIResponse<MCQ>> {
   return safeFetch<MCQ>(`${BASE_URL}/api/mcqs`, {
     method: "POST",
@@ -203,7 +236,9 @@ export async function getNoteById(noteId: string): Promise<APIResponse<Note>> {
 /**
  * Get all notes under a topic
  */
-export async function getNotesByTopicId(topicId: string): Promise<APIResponse<Note[]>> {
+export async function getNotesByTopicId(
+  topicId: string
+): Promise<APIResponse<Note[]>> {
   return safeFetch(`${BASE_URL}/api/notes/topic/${topicId}`);
 }
 
@@ -214,7 +249,7 @@ export async function uploadNote(data: {
   file: File;
   name: string;
   description?: string;
-  type: "rtp" | "mtp" | "other"
+  type: "rtp" | "mtp" | "other";
   topicId: string;
   courseType: "CAInter" | "CAFinal";
   notify: boolean;
@@ -227,7 +262,6 @@ export async function uploadNote(data: {
   formData.append("topicId", data.topicId);
   formData.append("courseType", data.courseType);
   formData.append("notify", data.notify.toString());
-
 
   try {
     const res = await fetch(`${BASE_URL}/api/notes/upload-note`, {
@@ -250,21 +284,43 @@ export async function uploadNote(data: {
 
 // ------------------ Video ---------------------
 
-export async function getVideoNotesByTopicId(topicId: string): Promise<APIResponse<VideoNote[]>> {
-  return safeFetch(`${BASE_URL}/api/videonotes/topic/${topicId}`);
+export async function getAllVideoNotes(): Promise<APIResponse<VideoNote[]>> {
+  return safeFetch(`${BASE_URL}/api/videonotes`);
+}
+
+export async function getVideoByCourse(
+  courseType: "CAInter" | "CAFinal",
+  type: "all" | "rtp" | "mtp" | "revision" | "other"
+): Promise<APIResponse<VideoNote[]>> {
+  return safeFetch(
+    `${BASE_URL}/api/videonotes/course/${courseType}?type=${type}`
+  );
+}
+
+/**
+ * Get all video notes under a topic
+ */
+
+export async function getVideoNotesByTopicId(
+  topicId: string,
+  type: "all" | "rtp" | "mtp" | "revision" | "other" = "all"
+): Promise<APIResponse<VideoNote[]>> {
+  return safeFetch(`${BASE_URL}/api/videonotes/topic/${topicId}?type=${type}`);
 }
 
 /**
  * Get a video by its ID
  */
-export async function getVideoNoteById(videoNoteId: string): Promise<APIResponse<VideoNote>> {
+export async function getVideoNoteById(
+  videoNoteId: string
+): Promise<APIResponse<VideoNote>> {
   return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`);
 }
 
 export async function addVideoNote(data: {
   url: string;
   name: string;
-  type: "rtp" | "mtp" | "revision" | "other"
+  type: "rtp" | "mtp" | "revision" | "other";
   topicId: string;
   courseType: "CAInter" | "CAFinal";
   notify: boolean;
@@ -297,24 +353,38 @@ export async function addVideoNote(data: {
 
 // ------------------- Move to Trash --------------------
 
-export async function moveTopicToTrash(topicId: string): Promise<APIResponse<Topic>> {
-  return safeFetch(`${BASE_URL}/api/topics/${topicId}/move-to-trash`, { method: "POST" });
+export async function moveTopicToTrash(
+  topicId: string
+): Promise<APIResponse<Topic>> {
+  return safeFetch(`${BASE_URL}/api/topics/${topicId}/move-to-trash`, {
+    method: "POST",
+  });
 }
 
-export async function moveTestPaperToTrash(testPaperId: string): Promise<APIResponse<TestPaper>> {
-  return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`, { method: "DELETE" });
+export async function moveTestPaperToTrash(
+  testPaperId: string
+): Promise<APIResponse<TestPaper>> {
+  return safeFetch(`${BASE_URL}/api/testpapers/${testPaperId}`, {
+    method: "DELETE",
+  });
 }
 
 export async function moveMCQToTrash(mcqId: string): Promise<APIResponse<MCQ>> {
   return safeFetch(`${BASE_URL}/api/mcqs/${mcqId}`, { method: "DELETE" });
 }
 
-export async function moveNoteToTrash(noteId: string): Promise<APIResponse<Note>> {
+export async function moveNoteToTrash(
+  noteId: string
+): Promise<APIResponse<Note>> {
   return safeFetch(`${BASE_URL}/api/notes/${noteId}`, { method: "DELETE" });
 }
 
-export async function moveVideoNoteToTrash(videoNoteId: string): Promise<APIResponse<VideoNote>> {
-  return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`, { method: "DELETE" });
+export async function moveVideoNoteToTrash(
+  videoNoteId: string
+): Promise<APIResponse<VideoNote>> {
+  return safeFetch(`${BASE_URL}/api/videonotes/${videoNoteId}`, {
+    method: "DELETE",
+  });
 }
 
 // ------------------- Newly Added --------------------
@@ -331,7 +401,10 @@ export async function getNewlyAddedItems(): Promise<APIResponse<NewlyAdded[]>> {
  * @param tableName - "MCQ" | "TestPaper" | "Note" | "VideoNote"
  * @param entityId - ID of the entity to mark as newly added
  */
-export async function addNewlyAddedItem(tableName: "MCQ" | "TestPaper" | "Note" | "VideoNote", entityId: string): Promise<APIResponse<NewlyAdded>> {
+export async function addNewlyAddedItem(
+  tableName: "MCQ" | "TestPaper" | "Note" | "VideoNote",
+  entityId: string
+): Promise<APIResponse<NewlyAdded>> {
   return safeFetch<NewlyAdded>(`${BASE_URL}/api/newlyadded`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -342,7 +415,9 @@ export async function addNewlyAddedItem(tableName: "MCQ" | "TestPaper" | "Note" 
 /**
  * Remove an item from newly added by its ID
  */
-export async function removeNewlyAddedItem(id: string): Promise<APIResponse<string>> {
+export async function removeNewlyAddedItem(
+  id: string
+): Promise<APIResponse<string>> {
   return safeFetch(`${BASE_URL}/api/newlyadded/${id}`, {
     method: "DELETE",
   });
@@ -354,11 +429,15 @@ export async function getTrashItems(): Promise<APIResponse<Trash[]>> {
   return safeFetch(`${BASE_URL}/api/trash`);
 }
 
-export async function restoreTrashItem(id: string): Promise<APIResponse<string>> {
+export async function restoreTrashItem(
+  id: string
+): Promise<APIResponse<string>> {
   return safeFetch(`${BASE_URL}/api/trash/${id}/restore`, { method: "POST" });
 }
 
-export async function permanentlyDeleteTrashItem(id: string): Promise<APIResponse<string>> {
+export async function permanentlyDeleteTrashItem(
+  id: string
+): Promise<APIResponse<string>> {
   return safeFetch(`${BASE_URL}/api/trash/${id}`, { method: "DELETE" });
 }
 

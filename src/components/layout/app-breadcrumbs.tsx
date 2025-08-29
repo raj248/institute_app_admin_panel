@@ -27,14 +27,19 @@ export function AppBreadcrumbs() {
 
           // Check for topicId directly after CAInter/CAFinal
           if (prevSegment === "CAInter" || prevSegment === "CAFinal") {
+            if (segment === "mtp" || segment === "rtp") {
+              updates[segment] = segment.toUpperCase();
+              return;
+            }
             const topic = await getTopicById(segment);
-            if (topic) updates[segment] = topic.data?.name || 'Unknown Topic';
+            if (topic) updates[segment] = topic.data?.name || "Unknown Topic";
           }
 
           // Check for testPaperId after "topic"
           if (prevSegment === "testpaper") {
             const testPaper = await getTestPaperById(segment);
-            if (testPaper) updates[segment] = testPaper.data?.name || 'Unknown Test Paper';
+            if (testPaper)
+              updates[segment] = testPaper.data?.name || "Unknown Test Paper";
           }
         })
       );
@@ -46,7 +51,9 @@ export function AppBreadcrumbs() {
   }, [location.pathname]);
 
   const segments = location.pathname.split("/").filter(Boolean);
-  const paths = segments.map((_, idx) => "/" + segments.slice(0, idx + 1).join("/"));
+  const paths = segments.map(
+    (_, idx) => "/" + segments.slice(0, idx + 1).join("/")
+  );
 
   // Simple label beautifier for static segments
   const beautify = (segment: string) => {
@@ -68,7 +75,9 @@ export function AppBreadcrumbs() {
             <span key={path} className="flex items-center">
               <BreadcrumbItem>
                 {idx === paths.length - 1 ? (
-                  <BreadcrumbPage className="text-base font-medium">{name}</BreadcrumbPage>
+                  <BreadcrumbPage className="text-base font-medium">
+                    {name}
+                  </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild className="text-base font-medium">
                     <Link to={path}>{name}</Link>
@@ -82,5 +91,4 @@ export function AppBreadcrumbs() {
       </BreadcrumbList>
     </Breadcrumb>
   );
-
 }
