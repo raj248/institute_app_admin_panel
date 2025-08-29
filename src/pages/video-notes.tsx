@@ -111,12 +111,18 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
 
   return (
     <div className="space-y-4">
-      <AddVideoNoteDialog
-        topicId={""}
-        courseType={course as "CAInter" | "CAFinal"}
-        type={type as "all" | "rtp" | "mtp" | "revision" | "other"}
-        setVideos={setVideos}
-      />
+      {/* Header row with add button */}
+      <div className="flex justify-between items-center px-2 mt-3">
+        <h2 className="text-base font-semibold text-muted-foreground">
+          Video Notes
+        </h2>
+        <AddVideoNoteDialog
+          topicId={""}
+          courseType={course as "CAInter" | "CAFinal"}
+          type={type as "all" | "rtp" | "mtp" | "revision" | "other"}
+          setVideos={setVideos}
+        />
+      </div>
       {loading ? (
         <div className="flex flex-wrap gap-4 justify-center">
           {Array.from({ length: 4 }).map((_, idx) => (
