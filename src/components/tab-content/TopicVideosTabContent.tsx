@@ -36,7 +36,10 @@ export default function TopicVideosTabContent({
     try {
       const updated = await Promise.all(
         videoNotes.map(async (video) => {
-          if (!video.url.includes("youtube.com") && !video.url.includes("youtu.be")) {
+          if (
+            !video.url.includes("youtube.com") &&
+            !video.url.includes("youtu.be")
+          ) {
             return {
               ...video,
               title: "Invalid YouTube URL",
@@ -45,7 +48,9 @@ export default function TopicVideosTabContent({
           }
           try {
             const response = await fetch(
-              `https://www.youtube.com/oembed?url=${encodeURIComponent(video.url)}&format=json`
+              `https://www.youtube.com/oembed?url=${encodeURIComponent(
+                video.url
+              )}&format=json`
             );
             if (!response.ok) throw new Error("Failed to fetch video data");
             const data = await response.json();
@@ -96,8 +101,9 @@ export default function TopicVideosTabContent({
     if (!unenriched || unenriched.length === 0) return;
 
     fetchVideoDetails(unenriched).then((enriched) => {
-      setVideos((prev) =>
-        prev?.map((v) => enriched.find((e) => e.id === v.id) ?? v) ?? null
+      setVideos(
+        (prev) =>
+          prev?.map((v) => enriched.find((e) => e.id === v.id) ?? v) ?? null
       );
     });
   }, [videos]);
@@ -118,7 +124,7 @@ export default function TopicVideosTabContent({
         </div>
       ) : filteredVideos.length > 0 ? (
         filterType === "all" ? (
-          ["mtp", "rtp", "revision", "other"].map((type) => {
+          ["revision", "other"].map((type) => {
             const group = filteredVideos.filter((v) => v.type === type);
             if (group.length === 0) return null;
             return (
@@ -131,8 +137,13 @@ export default function TopicVideosTabContent({
                     <VideoCard
                       key={video.id}
                       video={video}
-                      onDelete={() => setVideos((prev) => prev?.filter((v) => v.id !== video.id) ?? null)}
-                      onClick={() => { }}
+                      onDelete={() =>
+                        setVideos(
+                          (prev) =>
+                            prev?.filter((v) => v.id !== video.id) ?? null
+                        )
+                      }
+                      onClick={() => {}}
                     />
                   ))}
                 </div>
@@ -145,14 +156,20 @@ export default function TopicVideosTabContent({
               <VideoCard
                 key={video.id}
                 video={video}
-                onDelete={() => setVideos((prev) => prev?.filter((v) => v.id !== video.id) ?? null)}
-                onClick={() => { }}
+                onDelete={() =>
+                  setVideos(
+                    (prev) => prev?.filter((v) => v.id !== video.id) ?? null
+                  )
+                }
+                onClick={() => {}}
               />
             ))}
           </div>
         )
       ) : (
-        <p className="text-center text-muted-foreground">No video notes found for this topic.</p>
+        <p className="text-center text-muted-foreground">
+          No video notes found for this topic.
+        </p>
       )}
     </div>
   );
