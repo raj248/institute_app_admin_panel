@@ -21,6 +21,7 @@ import { IconDotsVertical } from "@tabler/icons-react";
 import { toggleTestPaperPublish } from "@/lib/api";
 import type { ConfirmContextType } from "../modals/global-confirm-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { AddQuestionsDialog } from "../modals/AddQuestionsDialog";
 
 export function getTestPaperColumns(
   handleCardClick: (id: string) => void,
@@ -129,10 +130,11 @@ export function getTestPaperColumns(
                 size="sm"
                 variant="outline"
                 className={`text-xs cursor-pointer 
-                ${isPublished
+                ${
+                  isPublished
                     ? "text-blue-600 border-blue-600 hover:bg-blue-100"
                     : "text-green-600 border-green-600 hover:bg-green-100"
-                  }`}
+                }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleToggle();
@@ -146,6 +148,34 @@ export function getTestPaperColumns(
               <p>{isPublished ? "Click to unpublish" : "Click to publish"}</p>
             </TooltipContent>
           </Tooltip>
+        );
+      },
+    },
+    {
+      id: "new",
+      header: "New MCQ",
+      size: 80,
+      enableResizing: false,
+      cell: ({ row }) => {
+        const testPaper = row.original;
+
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <AddQuestionsDialog
+              testPaperId={testPaper.id}
+              topicId={testPaper.topicId}
+              // trigger={
+              //   <Button
+              //     variant="default"
+              //     className="cursor-pointer"
+              //     onClick={(e) => e.stopPropagation()}
+              //     onPointerDown={(e) => e.stopPropagation()}
+              //   >
+              //     Open Custom Dialog
+              //   </Button>
+              // }
+            />
+          </div>
         );
       },
     },

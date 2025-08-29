@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { createQuestion } from "@/lib/api";
 import { IconPlus } from "@tabler/icons-react";
 import { questionSchema, type QuestionSchema } from "@/types/entities";
@@ -31,10 +31,12 @@ export function AddQuestionsDialog({
   testPaperId,
   topicId,
   fetchData,
+  trigger,
 }: {
   testPaperId: string;
   topicId: string | null;
-  fetchData: () => Promise<void>;
+  fetchData?: () => Promise<void>;
+  trigger?: ReactNode; // allow passing a custom trigger
 }) {
   const [open, setOpen] = useState(false);
 
@@ -72,7 +74,7 @@ export function AddQuestionsDialog({
       if (res.success) {
         setOpen(false);
         reset({ testPaperId }); // reset while preserving testPaperId
-        fetchData(); // refresh test paper after adding
+        fetchData?.(); // refresh test paper after adding
       } else {
         alert(res.error);
       }
@@ -85,10 +87,17 @@ export function AddQuestionsDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <IconPlus className="size-4" />
-          <span className="hidden lg:inline">Add Question</span>
-        </Button>
+        {trigger ?? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <IconPlus className="size-4" />
+            <span className="hidden lg:inline">Add Question</span>
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="max-w-sm rounded-2xl p-4 sm:p-6">
