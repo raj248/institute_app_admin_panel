@@ -37,7 +37,7 @@ import { Switch } from "@/components/ui/switch";
 // ✅ Extend schema to include type
 const addVideoNoteSchema = z.object({
   url: z.url("Please enter a valid YouTube URL"),
-  type: z.enum(["mtp", "rtp", "revision", "other"]),
+  type: z.enum(["mtp", "rtp", "revision"]),
 });
 
 type AddVideoNoteSchema = z.infer<typeof addVideoNoteSchema>;
@@ -50,7 +50,7 @@ export function AddVideoNoteDialog({
 }: {
   topicId?: string;
   courseType: "CAInter" | "CAFinal";
-  type?: "all" | "rtp" | "mtp" | "revision" | "other";
+  type?: "all" | "rtp" | "mtp" | "revision";
   setVideos: React.Dispatch<React.SetStateAction<VideoNote[] | null>>;
 }) {
   const [open, setOpen] = useState(false);
@@ -197,7 +197,6 @@ export function AddVideoNoteDialog({
                     {topicId ? (
                       <>
                         <SelectItem value="revision">Revision</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
                       </>
                     ) : (
                       <>

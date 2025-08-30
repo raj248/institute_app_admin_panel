@@ -119,7 +119,7 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
         <AddVideoNoteDialog
           topicId={""}
           courseType={course as "CAInter" | "CAFinal"}
-          type={type as "all" | "rtp" | "mtp" | "revision" | "other"}
+          type={type as "all" | "rtp" | "mtp" | "revision"}
           setVideos={setVideos}
         />
       </div>
