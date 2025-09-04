@@ -30,11 +30,13 @@ const topicSchema = z.object({
 
 type TopicSchema = z.infer<typeof topicSchema>;
 
-export function AddTopicDialog({ defaultCourseType, setTopics }:
-  {
-    setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>,
-    defaultCourseType: "CAInter" | "CAFinal"
-  }) {
+export function AddTopicDialog({
+  defaultCourseType,
+  setTopics,
+}: {
+  setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>;
+  defaultCourseType: "CAInter" | "CAFinal";
+}) {
   const [open, setOpen] = useState(false);
 
   const {
@@ -55,8 +57,9 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
     if (res.success) {
       setOpen(false);
       reset();
-      getTopicsByCourseType(data.courseType)
-        .then((res) => { setTopics(res.data ?? null) })
+      getTopicsByCourseType(data.courseType).then((res) => {
+        setTopics(res.data ?? null);
+      });
     } else {
       alert(res.error);
     }
@@ -110,7 +113,7 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
               {...register("description")}
               rows={2}
               placeholder="Brief overview of the topic"
-              className="flex-1 text-sm"
+              className="flex-1 text-sm h-32 overflow-y-auto"
             />
           </div>
           {errors.description && (
@@ -145,13 +148,16 @@ export function AddTopicDialog({ defaultCourseType, setTopics }:
 
           {/* Submit */}
           <DialogFooter className="mt-4">
-            <Button type="submit" disabled={isSubmitting} className="w-full text-sm py-2 rounded-xl">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full text-sm py-2 rounded-xl"
+            >
               {isSubmitting ? "Creating..." : "Create Topic"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-
   );
 }

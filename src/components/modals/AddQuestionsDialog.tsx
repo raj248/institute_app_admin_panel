@@ -135,7 +135,7 @@ export function AddQuestionsDialog({
             <Textarea
               id="explanation"
               {...register("explanation")}
-              className="text-sm"
+              className="text-sm h-32 overflow-y-auto"
               placeholder="Add explanation if needed"
             />
             {errors.explanation && (

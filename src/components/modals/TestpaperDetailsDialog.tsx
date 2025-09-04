@@ -92,11 +92,13 @@ export function TestpaperDetailsDialog({
     );
   };
 
+  console.log(typeof testPaper?.totalMarks);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-[95vw] lg:max-w-[1000px]">
+      <DialogContent className="w-full max-w-[95vw] lg:max-w-[80%] h-[90vh] rounded-2xl p-4 sm:p-6 flex flex-col">
         {loading || !testPaper ? (
-          <div className="space-y-4">
+          <div className="space-y-4 flex-1 overflow-y-auto">
             <Skeleton className="h-5 w-1/3 mx-auto" />
             <Skeleton className="h-3 w-2/3 mx-auto" />
             <div className="flex justify-center gap-3">
@@ -115,36 +117,46 @@ export function TestpaperDetailsDialog({
                 {testPaper.description}
               </DialogDescription>
             </DialogHeader>
+            <ScrollArea className="flex-1 overflow-y-auto border rounded-md mt-4">
+              <div className="flex flex-wrap justify-center gap-2 text-xs mb-4">
+                {testPaper.timeLimitMinutes != null && (
+                  <Badge
+                    variant="secondary"
+                    className="rounded-full px-3 py-1 text-xs"
+                  >
+                    Time Limit: {testPaper.timeLimitMinutes} min
+                  </Badge>
+                )}
+                {testPaper.totalMarks != null &&
+                  Number(testPaper.totalMarks) > 0 && (
+                    <Badge
+                      variant="secondary"
+                      className="rounded-full px-3 py-1 text-xs"
+                    >
+                      Total Marks: {testPaper.totalMarks}
+                    </Badge>
+                  )}
+              </div>
 
-            <div className="flex flex-wrap justify-center gap-2 text-xs mb-4">
-              {testPaper.timeLimitMinutes && (
-                <Badge
-                  variant="secondary"
-                  className="rounded-full px-3 py-1 text-xs"
-                >
-                  Time Limit: {testPaper.timeLimitMinutes} min
-                </Badge>
+              {testPaper.isCaseStudy && testPaper.caseText && (
+                <div className="mb-4 mx-4">
+                  <h4 className="text-md font-medium mb-4 text-center">
+                    Case Study Text
+                  </h4>
+                  <p className="whitespace-pre-wrap">{testPaper.caseText}</p>
+                  {/* <ScrollArea className="max-h-[150px] border rounded-md p-3 text-xs bg-gray-50 dark:bg-gray-800"> */}
+                  {/* </ScrollArea> */}
+                </div>
               )}
-              {testPaper.totalMarks && (
-                <Badge
-                  variant="secondary"
-                  className="rounded-full px-3 py-1 text-xs"
-                >
-                  Total Marks: {testPaper.totalMarks}
-                </Badge>
-              )}
-            </div>
+              <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+                <h4 className="text-sm font-medium"> </h4>
+                <AddQuestionsDialog
+                  testPaperId={testPaper.id}
+                  topicId={topicId}
+                  fetchData={fetchData}
+                />
+              </div>
 
-            <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
-              <h4 className="text-sm font-medium">Questions</h4>
-              <AddQuestionsDialog
-                testPaperId={testPaper.id}
-                topicId={topicId}
-                fetchData={fetchData}
-              />
-            </div>
-
-            <ScrollArea className="max-h-[400px] border rounded-md">
               <div className="w-full overflow-x-auto">
                 <Table className="w[90%] mx-auto">
                   <TableHeader>
@@ -158,62 +170,79 @@ export function TestpaperDetailsDialog({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {testPaper.mcqs?.map((mcq) => (
-                      <TableRow key={mcq.id}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
+                    {testPaper.mcqs && testPaper.mcqs.length > 0 ? (
+                      testPaper.mcqs.map((mcq) => (
+                        <TableRow key={mcq.id}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
+                                {mcq.question}
+                              </TableCell>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-sm text-xs">
                               {mcq.question}
-                            </TableCell>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-sm text-xs">
-                            {mcq.question}
-                          </TooltipContent>
-                        </Tooltip>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
+                                {mcq.explanation ?? "-"}
+                              </TableCell>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-sm text-xs">
                               {mcq.explanation ?? "-"}
-                            </TableCell>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-sm text-xs">
-                            {mcq.explanation ?? "-"}
-                          </TooltipContent>
-                        </Tooltip>
-                        <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
-                          <ul className="space-y-0.5">
-                            {Object.entries(mcq.options).map(([key, value]) => (
-                              <li key={key}>
-                                <span className="font-medium">
-                                  {key.toUpperCase()}:
-                                </span>{" "}
-                                {value}
-                              </li>
-                            ))}
-                          </ul>
-                        </TableCell>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        <TableCell className="text-xs">
-                          {mcq.correctAnswer.toUpperCase()}
-                        </TableCell>
-                        <TableCell className="text-xs">
-                          {mcq.marks ?? "-"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-end gap-1">
-                            <EditMCQViewer item={mcq} refreshMCQs={fetchData} />
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleMoveToTrash(mcq.id)}
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
+                          <TableCell className="max-w-[180px] break-words whitespace-normal text-xs">
+                            <ul className="space-y-0.5">
+                              {Object.entries(mcq.options).map(
+                                ([key, value]) => (
+                                  <li key={key}>
+                                    <span className="font-medium">
+                                      {key.toUpperCase()}:
+                                    </span>{" "}
+                                    {value}
+                                  </li>
+                                )
+                              )}
+                            </ul>
+                          </TableCell>
+
+                          <TableCell className="text-xs">
+                            {mcq.correctAnswer.toUpperCase()}
+                          </TableCell>
+                          <TableCell className="text-xs">
+                            {mcq.marks ?? "-"}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center justify-end gap-1">
+                              <EditMCQViewer
+                                item={mcq}
+                                refreshMCQs={fetchData}
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleMoveToTrash(mcq.id)}
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="h-24 text-center text-sm text-muted-foreground"
+                        >
+                          No questions found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </div>

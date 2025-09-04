@@ -51,7 +51,7 @@ export interface TestPaper {
   name: string;
   description?: string;
   timeLimitMinutes?: number;
-  totalMarks?: string
+  totalMarks?: string;
   topicId: string;
   createdAt: string;
   updatedAt: string;
@@ -60,6 +60,8 @@ export interface TestPaper {
   topic?: Topic;
   mcqCount?: number;
   mcqs?: MCQ[];
+  isCaseStudy?: boolean;
+  caseText?: string;
 }
 
 export const testPaperSchema = z.object({
@@ -67,11 +69,11 @@ export const testPaperSchema = z.object({
   description: z.string().optional(),
   timeLimitMinutes: z.coerce.number().min(1, "Time limit is required"),
   topicId: z.string().min(1, "Topic is required"),
+  isCaseStudy: z.boolean().optional(),
+  caseText: z.string().optional(),
 });
 
-
 export type TestPaperSchema = z.infer<typeof testPaperSchema>;
-
 
 export interface MCQ {
   id: string;
@@ -122,14 +124,14 @@ export interface Note {
 
 // types/entities.ts
 export interface VideoNote {
-  id: string;         // UUID from your DB
+  id: string; // UUID from your DB
   newlyAddedId: string | null;
-  url: string;        // YouTube URL
-  name: string | undefined;       // Title of the video
+  url: string; // YouTube URL
+  name: string | undefined; // Title of the video
   type: "rtp" | "mtp" | "revision" | "other";
   topicId: string;
   courseType: string;
-  title?: string;     // optional if you fetch on frontend
+  title?: string; // optional if you fetch on frontend
   thumbnail?: string; // optional if you fetch on frontend
   createdAt: string;
   deletedAt: string | null;
@@ -167,5 +169,5 @@ export interface Stats {
   graph: {
     registrationsByWeek: { week: string; count: number }[];
     testsTakenByWeek: { week: string; count: number }[];
-  }
+  };
 }

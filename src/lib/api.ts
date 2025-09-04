@@ -152,6 +152,8 @@ export async function toggleTestPaperPublish(
 export async function createTestPaper(data: {
   name: string;
   description?: string;
+  isCaseStudy?: boolean;
+  caseText?: string;
   timeLimitMinutes: number;
   topicId: string;
 }): Promise<APIResponse<TestPaper>> {
@@ -169,6 +171,8 @@ export async function updateTestPaper(
     description: string;
     timeLimitMinutes: number;
     topicId: string;
+    isCaseStudy?: boolean;
+    caseText?: string;
   }
 ): Promise<APIResponse<TestPaper>> {
   return safeFetch<TestPaper>(`${BASE_URL}/api/testpapers/${id}`, {

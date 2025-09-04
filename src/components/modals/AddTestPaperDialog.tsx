@@ -101,7 +101,7 @@ export function AddTestPaperDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md rounded-2xl p-4 sm:p-6">
+      <DialogContent className="w-full max-w-[95vw] lg:max-w-[1000px] rounded-2xl p-4 sm:p-6">
         <DialogHeader className="space-y-1 text-center">
           <DialogTitle className="text-base font-semibold tracking-tight">
             Add New Test Paper
@@ -141,11 +141,39 @@ export function AddTestPaperDialog({
             <Textarea
               id="description"
               {...register("description")}
-              className="flex-1 text-sm"
+              className="flex-1 text-sm h-32 overflow-y-auto"
               rows={2}
               placeholder="Brief description"
             />
           </div>
+
+          {/* Is Case Study */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="isCaseStudy" className="w-28 text-xs">
+              Is Case Study?
+            </Label>
+            <Switch
+              id="isCaseStudy"
+              checked={watch("isCaseStudy")}
+              onCheckedChange={(checked) => setValue("isCaseStudy", checked)}
+            />
+          </div>
+
+          {/* Case Text (conditionally rendered) */}
+          {watch("isCaseStudy") && (
+            <div className="flex items-start gap-2">
+              <Label htmlFor="caseText" className="w-28 text-xs pt-2">
+                Case Text
+              </Label>
+              <Textarea
+                id="caseText"
+                {...register("caseText")}
+                className="flex-1 text-sm h-32 overflow-y-auto"
+                rows={4}
+                placeholder="Enter the case study text here"
+              />
+            </div>
+          )}
 
           {/* Time Limit */}
           <div className="flex items-center gap-2">
