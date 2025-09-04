@@ -100,7 +100,7 @@ export function AddQuestionsDialog({
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-sm rounded-2xl p-4 sm:p-6">
+      <DialogContent className="w-full max-w-[95vw] lg:max-w-[1000px] rounded-2xl p-4 sm:p-6">
         <DialogHeader className="items-center text-center">
           <DialogTitle className="text-base font-semibold">
             Add New Question
@@ -119,7 +119,7 @@ export function AddQuestionsDialog({
             <Textarea
               id="question"
               {...register("question")}
-              className="text-sm"
+              className="text-sm h-32 overflow-y-auto"
               placeholder="Type your question here"
             />
             {errors.question && (
