@@ -28,6 +28,7 @@ import {
   createTestPaper,
   getAllTestPapersByTopicId,
   getTopicsByCourseType,
+  uploadNote,
 } from "@/lib/api";
 import { IconPlus } from "@tabler/icons-react";
 import {
@@ -76,6 +77,24 @@ export function AddTestPaperDialog({
   }, [open]);
 
   const onSubmit = async (data: TestPaperSchema) => {
+    const pdf = await uploadNote({
+      name: data.name,
+      description: data.description,
+      file: data.file[0],
+      topicId,
+      courseType,
+      type: "case", // Assuming 'case' type for test paper PDFs
+      notify: false, // Assuming no notification for test paper PDFs
+    });
+    if (!pdf.success) {
+      toast.error(pdf.error);
+      return;
+    }
+    console.log("FIle Url: ", pdf.data?.fileUrl);
+    data.notePath = pdf.data?.fileUrl;
+
+    console.log("Form Data: ", data.notePath);
+
     const res = await createTestPaper(data);
     if (res.success) {
       if (markAsNew && res.data) {
@@ -174,6 +193,29 @@ export function AddTestPaperDialog({
               />
             </div>
           )}
+
+          {/* Optional Upload case study pdf */}
+          {watch("isCaseStudy") && (
+            <div className="flex items-center gap-2">
+              <Label htmlFor="file" className="text-sm w-28">
+                Upload PDF
+              </Label>
+              <Input
+                id="file"
+                type="file"
+                accept="application/pdf"
+                {...register("file")}
+                className="text-sm flex-1"
+              />
+            </div>
+          )}
+          {errors.file &&
+            "message" in errors.file &&
+            typeof errors.file.message === "string" && (
+              <p className="text-xs text-red-500 ml-28 -mt-2">
+                {errors.file.message}
+              </p>
+            )}
 
           {/* Time Limit */}
           <div className="flex items-center gap-2">

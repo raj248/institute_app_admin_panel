@@ -62,6 +62,7 @@ export interface TestPaper {
   mcqs?: MCQ[];
   isCaseStudy?: boolean;
   caseText?: string;
+  notePath?: string;
 }
 
 export const testPaperSchema = z.object({
@@ -70,7 +71,16 @@ export const testPaperSchema = z.object({
   timeLimitMinutes: z.coerce.number().min(1, "Time limit is required"),
   topicId: z.string().min(1, "Topic is required"),
   isCaseStudy: z.boolean().optional(),
+  file: z
+    .any()
+    .refine((file) => file?.length === 1, "PDF file is required")
+    .refine(
+      (file) => file?.[0]?.type === "application/pdf",
+      "Only PDF files are allowed"
+    )
+    .optional(),
   caseText: z.string().optional(),
+  notePath: z.string().optional(),
 });
 
 export type TestPaperSchema = z.infer<typeof testPaperSchema>;

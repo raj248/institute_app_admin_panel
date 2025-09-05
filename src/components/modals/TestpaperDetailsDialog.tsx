@@ -92,8 +92,8 @@ export function TestpaperDetailsDialog({
     );
   };
 
-  console.log(typeof testPaper?.totalMarks);
-
+  // console.log(typeof testPaper?.totalMarks);
+  console.log(testPaper?.notePath);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-[95vw] lg:max-w-[80%] h-[90vh] rounded-2xl p-4 sm:p-6 flex flex-col">
@@ -143,11 +143,31 @@ export function TestpaperDetailsDialog({
                   <h4 className="text-md font-medium mb-4 text-center">
                     Case Study Text
                   </h4>
-                  <p className="whitespace-pre-wrap">{testPaper.caseText}</p>
+                  <p className="whitespace-pre-wrap">
+                    {testPaper.caseText ?? "-"}
+                  </p>
                   {/* <ScrollArea className="max-h-[150px] border rounded-md p-3 text-xs bg-gray-50 dark:bg-gray-800"> */}
                   {/* </ScrollArea> */}
                 </div>
               )}
+              {/* show a view casepdf button if testpaper.noteId is available */}
+              {testPaper.notePath && (
+                <div className="flex justify-center mb-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const url = `${import.meta.env.VITE_SERVER_URL}${
+                        testPaper.notePath
+                      }`;
+                      // Logic to view the PDF, e.g., open in new tab
+                      window.open(url, "_blank");
+                    }}
+                  >
+                    View Case Study PDF
+                  </Button>
+                </div>
+              )}
+
               <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
                 <h4 className="text-sm font-medium"> </h4>
                 <AddQuestionsDialog

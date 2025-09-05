@@ -156,6 +156,7 @@ export async function createTestPaper(data: {
   caseText?: string;
   timeLimitMinutes: number;
   topicId: string;
+  noteId?: string;
 }): Promise<APIResponse<TestPaper>> {
   return safeFetch<TestPaper>(`${BASE_URL}/api/testpapers`, {
     method: "POST",
@@ -262,7 +263,7 @@ export async function uploadNote(data: {
   file: File;
   name: string;
   description?: string;
-  type: "rtp" | "mtp" | "other";
+  type: "rtp" | "mtp" | "other" | "case";
   topicId: string;
   courseType: "CAInter" | "CAFinal";
   notify: boolean;
@@ -288,6 +289,7 @@ export async function uploadNote(data: {
       console.error(`API error (uploadNote):`, result.error ?? res.statusText);
       return { success: false, error: result.error ?? res.statusText };
     }
+    console.log("REsult of Note Upload: ", result);
     return result;
   } catch (error) {
     console.error(`Fetch error (uploadNote):`, error);
