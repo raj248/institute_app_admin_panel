@@ -174,6 +174,7 @@ export async function updateTestPaper(
     topicId: string;
     isCaseStudy?: boolean;
     caseText?: string;
+    notePath?: string;
   }
 ): Promise<APIResponse<TestPaper>> {
   return safeFetch<TestPaper>(`${BASE_URL}/api/testpapers/${id}`, {
@@ -295,6 +296,16 @@ export async function uploadNote(data: {
     console.error(`Fetch error (uploadNote):`, error);
     return { success: false, error: (error as Error).message };
   }
+}
+
+export async function deleteCaseNoteByPath(
+  fileUrl: string
+): Promise<APIResponse<Note>> {
+  return safeFetch(`${BASE_URL}/api/notes/delete-case`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fileUrl }),
+  });
 }
 
 // ------------------ Video ---------------------

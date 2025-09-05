@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { updateTestPaper } from "@/lib/api";
+import { deleteCaseNoteByPath, updateTestPaper, uploadNote } from "@/lib/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { TestPaper } from "@/types/entities";
 import { PenIcon } from "lucide-react";
@@ -46,7 +46,45 @@ export function EditTestViewer({
   );
   const [formCaseText, setFormCaseText] = useState(item.caseText ?? "");
 
+  // pdf file for new upload
+  const [newPdfFile, setNewPdfFile] = useState<File | null>(null);
+
   const handleSubmit = async () => {
+    // upload the new file if available
+    if (newPdfFile) {
+      // Upload the new PDF file first
+      const pdfUploadResult = await uploadNote({
+        name: formName, // Use form name for the PDF name
+        description: formDescription, // Use form description for the PDF description
+        file: newPdfFile,
+        topicId: item.topicId,
+        courseType: item.topic?.courseType || "CAInter", // Assuming courseType is available or default
+        type: "case",
+        notify: false,
+      });
+
+      if (!pdfUploadResult.success) {
+        toast.error(pdfUploadResult.error ?? "Failed to upload new PDF.");
+        return;
+      }
+      // delete the old file
+      if (item.notePath) {
+        // Delete the old PDF file if it exists
+        const oldNoteId = item.notePath.split("/").pop()?.split(".")[0]; // Extract ID from fileUrl
+        if (oldNoteId) {
+          const deleteResult = await deleteCaseNoteByPath(item.notePath);
+          if (!deleteResult.success) {
+            toast.error(deleteResult.error ?? "Failed to delete old PDF file.");
+            return;
+          }
+          console.log("Deleted file:", oldNoteId);
+        }
+      }
+
+      // Update the item's notePath with the new PDF's fileUrl
+      item.notePath = pdfUploadResult.data?.fileUrl;
+    }
+
     const result = await updateTestPaper(item.id, {
       name: formName,
       description: formDescription,
@@ -54,6 +92,7 @@ export function EditTestViewer({
       topicId: item.topicId,
       isCaseStudy: formIsCaseStudy,
       caseText: formCaseText,
+      notePath: item.notePath,
     });
 
     if (result.success) {
@@ -168,6 +207,45 @@ export function EditTestViewer({
                   value={formCaseText}
                   onChange={(e) => setFormCaseText(e.target.value)}
                   className="flex-1 resize-none text-sm min-h-[200px]"
+                />
+              </div>
+            )}
+            {/* Add file upload for case study PDF if needed */}
+            {item.notePath && (
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="currentPdf" className="text-xs">
+                  Current Case Study PDF
+                </Label>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const url = `${import.meta.env.VITE_SERVER_URL}${
+                      item.notePath
+                    }`;
+                    window.open(url, "_blank");
+                  }}
+                >
+                  View Current PDF
+                </Button>
+              </div>
+            )}
+            {formIsCaseStudy && (
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="uploadPdf" className="text-xs">
+                  Upload New Case Study PDF (Optional)
+                </Label>
+                <Input
+                  id="uploadPdf"
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => {
+                    // Handle file upload logic here
+                    // You might want to use a state to store the new file
+                    // and then send it with the updateTestPaper call
+                    setNewPdfFile(e.target.files?.[0] ?? null);
+                    console.log(e.target.files?.[0]);
+                  }}
+                  className="text-sm"
                 />
               </div>
             )}
