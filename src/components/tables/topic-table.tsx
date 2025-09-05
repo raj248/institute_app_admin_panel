@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -8,7 +8,7 @@ import {
   IconChevronsLeft,
   IconChevronsRight,
   IconLayoutColumns,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   flexRender,
   getCoreRowModel,
@@ -18,25 +18,24 @@ import {
   type SortingState,
   useReactTable,
   type VisibilityState,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button"
-
+import { Button } from "@/components/ui/button";
 
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -44,32 +43,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import type { Topic, Topic_schema } from "@/types/entities"
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
-import { TopicGridView } from "@/components/cards/TopicGridView"
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Topic, Topic_schema } from "@/types/entities";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { TopicGridView } from "@/components/cards/TopicGridView";
 import { AddTopicDialog } from "@/components/modals/AddTopicDialog";
 import { getTopicColumns } from "../table-columns/topic-columns";
-import Row from "./TopicRow"
-import { Input } from "@/components/ui/input"
-
+import Row from "./TopicRow";
+import { Input } from "@/components/ui/input";
 
 interface DataTableProps {
-  data: Topic_schema[],
-  setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>,
-  loading: boolean,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  data: Topic_schema[];
+  setData: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function DataTable({ data: topic, setData: setTopics, loading: loading }: DataTableProps) {
-
+export function DataTable({
+  data: topic,
+  setData: setTopics,
+  loading: loading,
+}: DataTableProps) {
   const navigate = useNavigate();
 
   const handleClick = (topic: Topic) => {
@@ -78,17 +74,14 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
 
   const columns = getTopicColumns(setTopics);
 
-
-
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
-  })
-
-
+  });
 
   const table = useReactTable({
     data: topic || [],
@@ -101,16 +94,19 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    globalFilterFn: 'includesString',
+    globalFilterFn: "includesString",
     state: {
       sorting,
       globalFilter,
       columnVisibility,
       pagination,
     },
-  })
+  });
 
   const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
+
+  const location = useLocation();
+  const courseType = location.pathname.split("/")[1];
 
   return (
     <Tabs
@@ -123,7 +119,10 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
           View
         </Label>
 
-        <Select defaultValue={currentTab} onValueChange={(value) => setCurrentTab(value as "table" | "grid")}>
+        <Select
+          defaultValue={currentTab}
+          onValueChange={(value) => setCurrentTab(value as "table" | "grid")}
+        >
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
             size="sm"
@@ -177,15 +176,13 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
                       >
                         {column.id}
                       </DropdownMenuCheckboxItem>
-                    )
+                    );
                   })}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
           <AddTopicDialog
-            defaultCourseType={topic && topic.length > 0 && (topic[0].courseType === "CAInter" || topic[0].courseType === "CAFinal")
-              ? topic[0].courseType
-              : "CAInter"}
+            defaultCourseType={courseType === "CAInter" ? "CAInter" : "CAFinal"}
             setTopics={setTopics}
           />
         </div>
@@ -195,8 +192,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="overflow-hidden rounded-lg border">
-
-          <Table >
+          <Table>
             <TableHeader className="bg-muted sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -206,20 +202,27 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </TableHead>
-                    )
+                    );
                   })}
                 </TableRow>
               ))}
             </TableHeader>
             <TableBody className="**:data-[slot=table-cell]:first:w-8">
               {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row, index) => (
-                  <Row key={row.id} row={row} onRowClick={handleClick} index={index} />
-                ))
+                table
+                  .getRowModel()
+                  .rows.map((row, index) => (
+                    <Row
+                      key={row.id}
+                      row={row}
+                      onRowClick={handleClick}
+                      index={index}
+                    />
+                  ))
               ) : (
                 <TableRow>
                   <TableCell
@@ -246,7 +249,7 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
               <Select
                 value={`${table.getState().pagination.pageSize}`}
                 onValueChange={(value) => {
-                  table.setPageSize(Number(value))
+                  table.setPageSize(Number(value));
                 }}
               >
                 <SelectTrigger size="sm" className="w-20" id="rows-per-page">
@@ -316,10 +319,15 @@ export function DataTable({ data: topic, setData: setTopics, loading: loading }:
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
         <div className="w-full flex-1 rounded-lg ">
-          <TopicGridView topics={topic as Topic[]} setTopics={setTopics as React.Dispatch<React.SetStateAction<Topic[] | null>>} loading={loading} />
+          <TopicGridView
+            topics={topic as Topic[]}
+            setTopics={
+              setTopics as React.Dispatch<React.SetStateAction<Topic[] | null>>
+            }
+            loading={loading}
+          />
         </div>
       </TabsContent>
     </Tabs>
-  )
+  );
 }
-

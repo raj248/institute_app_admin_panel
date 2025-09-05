@@ -40,12 +40,20 @@ const data = {
       url: "CAFinal",
     },
     {
-      title: "Settings",
-      url: "Settings",
-    },
-    {
-      title: "Trash",
-      url: "Trash",
+      title: "Notes",
+      url: "#",
+      items: [
+        {
+          title: "CA-Inter",
+          url: "/Notes/CAInter",
+          isActive: false,
+        },
+        {
+          title: "CA-Final",
+          url: "/Notes/CAFinal",
+          isActive: false,
+        },
+      ],
     },
     {
       title: "MTP",
@@ -78,6 +86,46 @@ const data = {
           isActive: false,
         },
       ],
+    },
+    {
+      title: "Revision",
+      url: "#",
+      items: [
+        {
+          title: "CA-Inter",
+          url: "/Video/CAInter/revision",
+          isActive: false,
+        },
+        {
+          title: "CA-Final",
+          url: "/Video/CAFinal/revision",
+          isActive: false,
+        },
+      ],
+    },
+    {
+      title: "Other",
+      url: "#",
+      items: [
+        {
+          title: "CA-Inter",
+          url: "/Video/CAInter/other",
+          isActive: false,
+        },
+        {
+          title: "CA-Final",
+          url: "/Video/CAFinal/other",
+          isActive: false,
+        },
+      ],
+    },
+    // {
+    //   title: "Settings",
+    //   url: "Settings",
+    // },
+    {
+      title: "Trash",
+      url: "Trash",
     },
   ],
 };

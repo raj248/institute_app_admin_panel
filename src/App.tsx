@@ -15,6 +15,7 @@ import NewlyAdded from "./pages/newly-added";
 import Login from "./pages/login";
 import { AuthProvider } from "./context/auth-context";
 import VideoNotes from "./pages/video-notes";
+import Notes from "./pages/notes";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/CAInter/:topicId" element={<TopicPage />} />
                 <Route path="/CAFinal/:topicId" element={<TopicPage />} />
                 <Route path="/Video/:course/:type" element={<VideoNotes />} />
+                <Route path="/Notes/:course" element={<Notes />} />
                 <Route path="/Debug" element={<Debug />} />
                 <Route path="/Settings" element={<Settings />} />
                 <Route path="/Trash" element={<Trash />} />

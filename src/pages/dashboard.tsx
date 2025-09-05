@@ -23,6 +23,20 @@ import ExportUsersButton from "@/components/ExportUserButton";
 import { getAllStats } from "@/lib/api";
 import type { Stats } from "@/types/entities";
 import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
+import { parse, startOfISOWeek, endOfISOWeek, format } from "date-fns";
+
+function weekLabel(weekStr: string) {
+  // "2025-34" → ISO year 2025, week 34
+  const [year, week] = weekStr.split("-");
+  const date = parse(`${year} ${week}`, "RRRR II", new Date());
+  // RRRR = ISO year, II = ISO week number
+
+  const weekStart = startOfISOWeek(date);
+  const weekEnd = endOfISOWeek(date);
+
+  return `${format(weekStart, "MMM d")}–${format(weekEnd, "d")}`;
+  // e.g., "Aug 18–24"
+}
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -99,7 +113,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart
                 data={stats.graph.registrationsByWeek.map((r, i) => ({
-                  name: r.week, // e.g., "2025-34"
+                  name: weekLabel(r.week),
                   registrations: r.count,
                   tests: stats.graph.testsTakenByWeek[i]?.count ?? 0,
                 }))}

@@ -247,6 +247,15 @@ export async function getNotesByTopicId(
 }
 
 /**
+ * Get all notes under a course type
+ */
+export async function getNotesByCourseType(
+  courseType: "CAInter" | "CAFinal"
+): Promise<APIResponse<Note[]>> {
+  return safeFetch(`${BASE_URL}/api/notes/course/${courseType}`);
+}
+
+/**
  * Upload a note (PDF) with metadata
  */
 export async function uploadNote(data: {
