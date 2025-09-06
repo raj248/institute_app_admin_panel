@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { List, LayoutGrid } from "lucide-react";
 import { getAllTestPapersByTopicId, getTopicById } from "@/lib/api";
-import type { Note, TestPaper, Topic, VideoNote } from "@/types/entities";
+import type { TestPaper, Topic } from "@/types/entities";
 import { TestpaperDetailsDialog } from "@/components/modals/TestpaperDetailsDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -17,10 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { AddTestPaperDialog } from "@/components/modals/AddTestPaperDialog";
-import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
-import { AddNotesDialog } from "@/components/modals/AddNotesDialog";
-import TopicNotesTabContent from "@/components/tab-content/TopicNotesTabContent";
-import TopicVideosTabContent from "@/components/tab-content/TopicVideosTabContent";
 import TestpaperGridView from "@/components/cards/TestPaperGridView";
 import TestpaperListView from "@/components/TestpaperListView";
 import { Input } from "@/components/ui/input";
@@ -29,9 +25,7 @@ import { useProtectAdminRoute } from "@/hooks/useProtectAdminRoute";
 export default function TopicPage() {
   const { topicId } = useParams<{ topicId: string }>();
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
-  const [tab, setTab] = useState<
-    "testpapers" | "notes" | "revision_test" | "videos"
-  >("testpapers");
+  const [tab, setTab] = useState<"testpapers">("testpapers");
 
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedTestPaperId, setSelectedTestPaperId] = useState<string | null>(
@@ -40,15 +34,7 @@ export default function TopicPage() {
 
   const [topic, setTopic] = useState<Topic | null>(null);
   const [testPapers, setTestPapers] = useState<TestPaper[] | null>(null);
-  const [notes, setNotes] = useState<Note[] | null>(null);
-  const [videos, setVideos] = useState<VideoNote[] | null>(null);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [videoFilterType, setVideoFilterType] = useState<
-    VideoNote["type"] | "all"
-  >("all");
-  const [noteFilterType, setNoteFilterType] = useState<Note["type"] | "all">(
-    "all"
-  );
 
   const [loading, setLoading] = useState(true);
 
@@ -96,9 +82,7 @@ export default function TopicPage() {
       </div>
       <Tabs
         value={tab}
-        onValueChange={(value) =>
-          setTab(value as "testpapers" | "notes" | "revision_test" | "videos")
-        }
+        onValueChange={(value) => setTab(value as "testpapers")}
         className="w-full flex-col justify-start gap-6"
       >
         <div className="flex items-center justify-between">
@@ -107,11 +91,7 @@ export default function TopicPage() {
           </Label>
           <Select
             defaultValue={tab}
-            onValueChange={(value) =>
-              setTab(
-                value as "testpapers" | "notes" | "revision_test" | "videos"
-              )
-            }
+            onValueChange={(value) => setTab(value as "testpapers")}
           >
             <SelectTrigger
               className="flex w-fit md:hidden"
@@ -122,14 +102,10 @@ export default function TopicPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="testpapers">Test Papers</SelectItem>
-              {/* <SelectItem value="notes">Notes</SelectItem> */}
-              {/* <SelectItem value="videos">Videos</SelectItem> */}
             </SelectContent>
           </Select>
           <TabsList className=" **:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 md:flex lg:flex">
             <TabsTrigger value="testpapers">Test Papers</TabsTrigger>
-            {/* <TabsTrigger value="notes">Notes</TabsTrigger> */}
-            {/* <TabsTrigger value="videos">Video Notes</TabsTrigger> */}
           </TabsList>
           <Input
             placeholder="Search name or description..."
@@ -165,70 +141,6 @@ export default function TopicPage() {
                 />
               </>
             )}
-            {tab === "videos" && (
-              <>
-                {/* Filter Select */}
-                <Select
-                  value={videoFilterType}
-                  onValueChange={(val) =>
-                    setVideoFilterType(val as VideoNote["type"] | "all")
-                  }
-                >
-                  <SelectTrigger
-                    className="w-40 text-xs rounded-md"
-                    style={{ height: "32px" }}
-                  >
-                    {" "}
-                    <SelectValue placeholder="Filter by Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="mtp">MTP</SelectItem>
-                    <SelectItem value="rtp">RTP</SelectItem>
-                    <SelectItem value="revision">Revision</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <AddVideoNoteDialog
-                  topicId={topicId ?? ""}
-                  courseType={
-                    location.pathname.split("/")[1] as "CAInter" | "CAFinal"
-                  }
-                  setVideos={setVideos}
-                />
-              </>
-            )}
-            {tab === "notes" && (
-              <>
-                <Select
-                  value={noteFilterType}
-                  onValueChange={(val) =>
-                    setNoteFilterType(val as Note["type"] | "all")
-                  }
-                >
-                  <SelectTrigger
-                    className="w-40 text-xs rounded-md"
-                    style={{ height: "32px" }}
-                  >
-                    {" "}
-                    <SelectValue placeholder="Filter by Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="mtp">MTP</SelectItem>
-                    <SelectItem value="rtp">RTP</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <AddNotesDialog
-                  topicId={topicId ?? ""}
-                  courseType={
-                    location.pathname.split("/")[1] as "CAInter" | "CAFinal"
-                  }
-                  setNotes={setNotes}
-                />
-              </>
-            )}
           </div>
         </div>
 
@@ -260,29 +172,6 @@ export default function TopicPage() {
               handleCardClick={handleCardClick}
             />
           )}
-        </TabsContent>
-
-        <TabsContent value="notes">
-          <TopicNotesTabContent
-            notes={notes}
-            setNotes={setNotes}
-            topicId={topicId ?? ""}
-            globalFilter={globalFilter}
-            filterType={noteFilterType}
-          />
-        </TabsContent>
-
-        <TabsContent
-          value="videos"
-          className="relative flex flex-col gap-4 overflow-auto"
-        >
-          <TopicVideosTabContent
-            videos={videos}
-            setVideos={setVideos}
-            topicId={topicId ?? ""}
-            globalFilter={globalFilter}
-            filterType={videoFilterType}
-          />
         </TabsContent>
       </Tabs>
     </div>

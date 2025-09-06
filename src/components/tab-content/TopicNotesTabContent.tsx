@@ -1,106 +1,105 @@
-"use client";
+// "use client";
 
-import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getNotesByTopicId } from "@/lib/api";
-import type { Note } from "@/types/entities";
-import NoteCard from "@/components/cards/NoteCard";
+// import { useEffect, useState } from "react";
+// import { Skeleton } from "@/components/ui/skeleton";
+// import { getNotesByTopicId } from "@/lib/api";
+// import type { Note } from "@/types/entities";
+// import NoteCard from "@/components/cards/NoteCard";
 
-interface TopicNotesTabContentProps {
-  notes: Note[] | null;
-  topicId: string;
-  setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>;
-  globalFilter: string;
-  filterType: Note["type"] | "all";
-}
+// interface TopicNotesTabContentProps {
+//   notes: Note[] | null;
+//   topicId: string;
+//   setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>;
+//   globalFilter: string;
+//   filterType: Note["type"] | "all";
+// }
 
-const typeLabels: Record<Note["type"], string> = {
-  mtp: "MTP",
-  rtp: "RTP",
-  other: "Other",
-};
+// const typeLabels: Record<Note["type"], string> = {
+//   mtp: "MTP",
+//   rtp: "RTP",
+//   other: "Other",
+// };
 
-export default function TopicNotesTabContent({
-  notes,
-  setNotes,
-  topicId,
-  globalFilter,
-  filterType,
-}: TopicNotesTabContentProps) {
-  const [loading, setLoading] = useState(false);
+// export default function TopicNotesTabContent({
+//   notes,
+//   setNotes,
+//   topicId,
+//   globalFilter,
+//   filterType,
+// }: TopicNotesTabContentProps) {
+//   const [loading, setLoading] = useState(false);
 
-  const loadNotes = async () => {
-    if (!topicId) return;
-    setLoading(true);
-    try {
-      const res = await getNotesByTopicId(topicId);
-      if (!res.data) return;
-      setNotes(res.data);
-      setLoading(false);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+//   const loadNotes = async () => {
+//     if (!topicId) return;
+//     setLoading(true);
+//     try {
+//       const res = await getNotesByTopicId(topicId);
+//       if (!res.data) return;
+//       setNotes(res.data);
+//       setLoading(false);
+//     } catch (e) {
+//       console.error(e);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
+//   useEffect(() => {
+//     loadNotes();
+//   }, [topicId]);
 
-  useEffect(() => {
-    loadNotes();
-  }, [topicId]);
+//   const lowerFilter = globalFilter.trim().toLowerCase();
 
-  const lowerFilter = globalFilter.trim().toLowerCase();
+//   const filteredNotes = (notes ?? [])
+//     .filter((n) => filterType === "all" || n.type === filterType)
+//     .filter((n) => n.name.toLowerCase().includes(lowerFilter));
 
-  const filteredNotes = (notes ?? [])
-    .filter((n) => filterType === "all" || n.type === filterType)
-    .filter((n) => n.name.toLowerCase().includes(lowerFilter));
-
-  return (
-    <div className="space-y-4">
-      {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <Skeleton key={idx} className="h-24 w-72 rounded-lg" />
-          ))}
-        </div>
-      ) : filteredNotes.length > 0 ? (
-        filterType === "all" ? (
-          ["mtp", "rtp", "other"].map((type) => {
-            const group = filteredNotes.filter((n) => n.type === type);
-            if (group.length === 0) return null;
-            return (
-              <div key={type} className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  {typeLabels[type as Note["type"]]}
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {group.map((note) => (
-                    <NoteCard
-                      key={note.id}
-                      note={note}
-                      onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
-                      onClick={() => { }}
-                    />
-                  ))}
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
-            {filteredNotes.map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
-                onClick={() => { }}
-              />
-            ))}
-          </div>
-        )
-      ) : (
-        <p className="text-center text-muted-foreground">No notes found for this topic.</p>
-      )}
-    </div>
-  );
-}
+//   return (
+//     <div className="space-y-4">
+//       {loading ? (
+//         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+//           {Array.from({ length: 4 }).map((_, idx) => (
+//             <Skeleton key={idx} className="h-24 w-72 rounded-lg" />
+//           ))}
+//         </div>
+//       ) : filteredNotes.length > 0 ? (
+//         filterType === "all" ? (
+//           ["mtp", "rtp", "other"].map((type) => {
+//             const group = filteredNotes.filter((n) => n.type === type);
+//             if (group.length === 0) return null;
+//             return (
+//               <div key={type} className="space-y-2">
+//                 <h3 className="text-sm font-semibold text-muted-foreground">
+//                   {typeLabels[type as Note["type"]]}
+//                 </h3>
+//                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+//                   {group.map((note) => (
+//                     <NoteCard
+//                       key={note.id}
+//                       note={note}
+//                       onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
+//                       onClick={() => { }}
+//                     />
+//                   ))}
+//                 </div>
+//               </div>
+//             );
+//           })
+//         ) : (
+//           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4">
+//             {filteredNotes.map((note) => (
+//               <NoteCard
+//                 key={note.id}
+//                 note={note}
+//                 onDelete={() => setNotes((prev) => prev?.filter((n) => n.id !== note.id) ?? null)}
+//                 onClick={() => { }}
+//               />
+//             ))}
+//           </div>
+//         )
+//       ) : (
+//         <p className="text-center text-muted-foreground">No notes found for this topic.</p>
+//       )}
+//     </div>
+//   );
+// }

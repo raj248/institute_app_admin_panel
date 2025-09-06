@@ -240,15 +240,6 @@ export async function getNoteById(noteId: string): Promise<APIResponse<Note>> {
 }
 
 /**
- * Get all notes under a topic
- */
-export async function getNotesByTopicId(
-  topicId: string
-): Promise<APIResponse<Note[]>> {
-  return safeFetch(`${BASE_URL}/api/notes/topic/${topicId}`);
-}
-
-/**
  * Get all notes under a course type
  */
 export async function getNotesByCourseType(
@@ -265,7 +256,7 @@ export async function uploadNote(data: {
   name: string;
   description?: string;
   type: "rtp" | "mtp" | "other" | "case";
-  topicId: string;
+  topicId?: string;
   courseType: "CAInter" | "CAFinal";
   notify: boolean;
 }): Promise<APIResponse<Note>> {
@@ -274,7 +265,7 @@ export async function uploadNote(data: {
   formData.append("name", data.name);
   if (data.type) formData.append("type", data.type);
   if (data.description) formData.append("description", data.description);
-  formData.append("topicId", data.topicId);
+  if (data.topicId) formData.append("topicId", data.topicId);
   formData.append("courseType", data.courseType);
   formData.append("notify", data.notify.toString());
 

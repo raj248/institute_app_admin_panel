@@ -52,13 +52,7 @@ export default function Notes({}: NotesPageProps) {
       {/* Header row with add button */}
       <div className="flex justify-between items-center px-2 mt-3">
         <h2 className="text-base font-semibold text-muted-foreground">Notes</h2>
-        {course && (
-          <AddNotesDialog
-            topicId={""} // Not associated with a specific topic on this page
-            courseType={course as "CAInter" | "CAFinal"}
-            setNotes={setNotes}
-          />
-        )}
+        {course && <AddNotesDialog setNotes={setNotes} />}
       </div>
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

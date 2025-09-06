@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { z } from "zod";
-import { addNewlyAddedItem, getNotesByTopicId, uploadNote } from "@/lib/api";
+import { addNewlyAddedItem, getNotesByCourseType, uploadNote } from "@/lib/api";
 import { toast } from "sonner";
 import type { Note } from "@/types/entities";
 import {
@@ -34,23 +34,23 @@ import { Switch } from "@/components/ui/switch";
 const addNoteSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
+  courseType: z.enum(["CAInter", "CAFinal"]),
   file: z
     .any()
     .refine((file) => file?.length === 1, "PDF file is required")
-    .refine((file) => file?.[0]?.type === "application/pdf", "Only PDF files are allowed"),
+    .refine(
+      (file) => file?.[0]?.type === "application/pdf",
+      "Only PDF files are allowed"
+    ),
   type: z.enum(["mtp", "rtp", "other"]),
 });
 
 type AddNoteSchema = z.infer<typeof addNoteSchema>;
 
 export function AddNotesDialog({
-  topicId,
-  courseType,
   setNotes,
 }: {
-  topicId: string;
-  courseType: "CAInter" | "CAFinal";
-  setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>,
+  setNotes: React.Dispatch<React.SetStateAction<Note[] | null>>;
 }) {
   const [open, setOpen] = useState(false);
   const [markAsNew, setMarkAsNew] = useState(false);
@@ -66,17 +66,19 @@ export function AddNotesDialog({
     resolver: zodResolver(addNoteSchema),
     defaultValues: {
       type: "other",
+      courseType: location.pathname.split("/")[1] as "CAInter" | "CAFinal",
     },
   });
 
   const onSubmit = async (data: AddNoteSchema) => {
+    console.log("Form Data: ", data);
+
     try {
       const result = await uploadNote({
         name: data.name,
         description: data.description,
         file: data.file[0],
-        topicId,
-        courseType,
+        courseType: data.courseType,
         type: data.type,
         notify,
       });
@@ -86,7 +88,7 @@ export function AddNotesDialog({
           await addNewlyAddedItem("Note", result.data.id);
         }
         toast.success("Note added successfully!");
-        const refreshed = await getNotesByTopicId(topicId)
+        const refreshed = await getNotesByCourseType(data.courseType);
         setNotes(refreshed.data ?? null);
         setOpen(false);
         setMarkAsNew(false); // reset switch
@@ -110,7 +112,9 @@ export function AddNotesDialog({
 
       <DialogContent className="max-w-sm rounded-2xl p-4 sm:p-6">
         <DialogHeader className="items-center text-center">
-          <DialogTitle className="text-base font-semibold">Add New Note</DialogTitle>
+          <DialogTitle className="text-base font-semibold">
+            Add New Note
+          </DialogTitle>
           <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
             Fill details and upload a PDF to add new notes.
           </DialogDescription>
@@ -130,7 +134,9 @@ export function AddNotesDialog({
             />
           </div>
           {errors.name && (
-            <p className="text-xs text-red-500 ml-24 -mt-2">{errors.name.message}</p>
+            <p className="text-xs text-red-500 ml-24 -mt-2">
+              {errors.name.message}
+            </p>
           )}
 
           {/* Description */}
@@ -153,7 +159,9 @@ export function AddNotesDialog({
             </Label>
             <Select
               defaultValue="other"
-              onValueChange={(value) => setValue("type", value as "mtp" | "rtp" | "other")}
+              onValueChange={(value) =>
+                setValue("type", value as "mtp" | "rtp" | "other")
+              }
             >
               <SelectTrigger id="type" className="flex-1 text-sm">
                 <SelectValue placeholder="Select Note Type" />
@@ -166,7 +174,34 @@ export function AddNotesDialog({
             </Select>
           </div>
           {errors.type && (
-            <p className="text-xs text-red-500 ml-24 -mt-2">{errors.type.message}</p>
+            <p className="text-xs text-red-500 ml-24 -mt-2">
+              {errors.type.message}
+            </p>
+          )}
+
+          {/* Course Type */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="courseType" className="text-sm w-24">
+              Course Type
+            </Label>
+            <Select
+              onValueChange={(value) =>
+                setValue("courseType", value as "CAInter" | "CAFinal")
+              }
+            >
+              <SelectTrigger id="courseType" className="flex-1 text-sm">
+                <SelectValue placeholder="Select Course Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CAInter">CA Inter</SelectItem>
+                <SelectItem value="CAFinal">CA Final</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {errors.courseType && (
+            <p className="text-xs text-red-500 ml-24 -mt-2">
+              {errors.courseType.message}
+            </p>
           )}
 
           {/* File */}
@@ -182,15 +217,23 @@ export function AddNotesDialog({
               className="text-sm flex-1"
             />
           </div>
-          {errors.file && "message" in errors.file && typeof errors.file.message === "string" && (
-            <p className="text-xs text-red-500 ml-24 -mt-2">{errors.file.message}</p>
-          )}
+          {errors.file &&
+            "message" in errors.file &&
+            typeof errors.file.message === "string" && (
+              <p className="text-xs text-red-500 ml-24 -mt-2">
+                {errors.file.message}
+              </p>
+            )}
 
           <div className="flex items-center gap-2">
             <Label htmlFor="markNew" className="w-28 text-xs">
               Mark as New
             </Label>
-            <Switch id="markNew" checked={markAsNew} onCheckedChange={setMarkAsNew} />
+            <Switch
+              id="markNew"
+              checked={markAsNew}
+              onCheckedChange={setMarkAsNew}
+            />
           </div>
 
           <div className="flex items-center gap-2">
@@ -201,7 +244,12 @@ export function AddNotesDialog({
           </div>
 
           <DialogFooter className="mt-2">
-            <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
+            <Button
+              type="submit"
+              size="sm"
+              disabled={isSubmitting}
+              className="w-full"
+            >
               {isSubmitting ? "Adding..." : "Add Note"}
             </Button>
           </DialogFooter>
