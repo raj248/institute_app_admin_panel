@@ -77,21 +77,23 @@ export function AddTestPaperDialog({
   }, [open]);
 
   const onSubmit = async (data: TestPaperSchema) => {
-    const pdf = await uploadNote({
-      name: data.name,
-      description: data.description,
-      file: data.file[0],
-      topicId,
-      courseType,
-      type: "case", // Assuming 'case' type for test paper PDFs
-      notify: false, // Assuming no notification for test paper PDFs
-    });
-    if (!pdf.success) {
-      toast.error(pdf.error);
-      return;
+    if (data.file) {
+      const pdf = await uploadNote({
+        name: data.name,
+        description: data.description,
+        file: data.file[0],
+        topicId,
+        courseType,
+        type: "case", // Assuming 'case' type for test paper PDFs
+        notify: false, // Assuming no notification for test paper PDFs
+      });
+      if (!pdf.success) {
+        toast.error(pdf.error);
+        return;
+      }
+      console.log("FIle Url: ", pdf.data?.fileUrl);
+      data.notePath = pdf.data?.fileUrl;
     }
-    console.log("FIle Url: ", pdf.data?.fileUrl);
-    data.notePath = pdf.data?.fileUrl;
 
     console.log("Form Data: ", data.notePath);
 

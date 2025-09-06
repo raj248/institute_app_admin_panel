@@ -69,7 +69,7 @@ export function getTestPaperColumns(
       header: "Description",
       size: 300,
       cell: ({ row }) => (
-        <div className="truncate text-sm">
+        <div className="max-w-[50vw] truncate overflow-hidden text-sm">
           {row.original.description || (
             <span className="italic text-muted-foreground">No description</span>
           )}

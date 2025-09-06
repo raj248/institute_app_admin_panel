@@ -37,7 +37,7 @@ import { Switch } from "@/components/ui/switch";
 // ✅ Extend schema to include type
 const addVideoNoteSchema = z.object({
   url: z.url("Please enter a valid YouTube URL"),
-  type: z.enum(["mtp", "rtp", "revision"]),
+  type: z.enum(["mtp", "rtp", "revision", "other"]),
 });
 
 type AddVideoNoteSchema = z.infer<typeof addVideoNoteSchema>;
@@ -124,6 +124,7 @@ export function AddVideoNoteDialog({
           setMarkAsNew(false); // reset switch
           return;
         }
+        // legacy code ahead
         const refreshed = await getVideoNotesByTopicId(topicId);
         setVideos(refreshed.data ?? null);
         setOpen(false);
@@ -202,6 +203,8 @@ export function AddVideoNoteDialog({
                       <>
                         <SelectItem value="mtp">MTP</SelectItem>
                         <SelectItem value="rtp">RTP</SelectItem>
+                        <SelectItem value="revision">Revision</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </>
                     )}
                   </SelectContent>

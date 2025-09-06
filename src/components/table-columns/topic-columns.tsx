@@ -1,20 +1,29 @@
 import { format } from "date-fns";
 import { IconDotsVertical } from "@tabler/icons-react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { EditTopicViewer } from "@/components/modals/EditTopicViewer";
 import type { Topic_schema } from "@/types/entities";
 import { moveTopicToTrash } from "@/lib/api";
 import { useConfirm } from "@/components/modals/global-confirm-dialog";
 
-export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>) {
+export function getTopicColumns(
+  setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>
+) {
   const confirm = useConfirm();
 
   const handleMoveToTrash = async (topicId: string) => {
     const confirmed = await confirm({
       title: "Move This Topic To Trash?",
-      description: "This will move the topic to trash along with its test papers and MCQs. You can restore it later if needed.",
+      description:
+        "This will move the topic to trash along with its test papers and MCQs. You can restore it later if needed.",
       confirmText: "Move to Trash",
       cancelText: "Cancel",
       variant: "destructive",
@@ -36,7 +45,11 @@ export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<T
     {
       accessorKey: "name",
       header: () => <span className="ml-2 font-medium">Name</span>,
-      cell: ({ row }) => <div className="ml-2 font-medium truncate max-w-[240px]">{row.original.name}</div>,
+      cell: ({ row }) => (
+        <div className="ml-2 font-medium truncate max-w-[240px]">
+          {row.original.name}
+        </div>
+      ),
       enableHiding: false,
       filterFn: "includesString",
       size: 250,
@@ -46,10 +59,12 @@ export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<T
       header: "Description",
       cell: ({ row }) => (
         <div
-          className="truncate"
+          className="truncate text-sm overflow-hidden max-w-[50vw]"
           title={row.original.description ?? "No description provided."}
         >
-          {row.original.description ?? <em className="text-muted-foreground">No description</em>}
+          {row.original.description ?? (
+            <em className="text-muted-foreground">No description</em>
+          )}
         </div>
       ),
       filterFn: "includesString",
@@ -69,7 +84,9 @@ export function getTopicColumns(setTopics: React.Dispatch<React.SetStateAction<T
       accessorKey: "Test Paper Count",
       header: () => <div className="text-center"># Test Papers</div>,
       cell: ({ row }) => (
-        <div className="text-sm text-center">{row.original.testPaperCount ?? 0}</div>
+        <div className="text-sm text-center">
+          {row.original.testPaperCount ?? 0}
+        </div>
       ),
       // size: 10,
     },

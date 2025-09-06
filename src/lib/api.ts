@@ -252,7 +252,7 @@ export async function getNotesByCourseType(
  * Upload a note (PDF) with metadata
  */
 export async function uploadNote(data: {
-  file: File;
+  file?: File;
   name: string;
   description?: string;
   type: "rtp" | "mtp" | "other" | "case";
@@ -261,7 +261,7 @@ export async function uploadNote(data: {
   notify: boolean;
 }): Promise<APIResponse<Note>> {
   const formData = new FormData();
-  formData.append("file", data.file);
+  if (data.file) formData.append("file", data.file);
   formData.append("name", data.name);
   if (data.type) formData.append("type", data.type);
   if (data.description) formData.append("description", data.description);

@@ -32,7 +32,8 @@ export function AppBreadcrumbs() {
               return;
             }
             const topic = await getTopicById(segment);
-            if (topic) updates[segment] = topic.data?.name || "Unknown Topic";
+            if (topic)
+              updates[segment] = topic.data?.name || segment.toUpperCase();
           }
 
           // Check for testPaperId after "topic"
