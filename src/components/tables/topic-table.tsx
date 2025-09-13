@@ -101,6 +101,7 @@ export function DataTable({
       columnVisibility,
       pagination,
     },
+    autoResetPageIndex: false,
   });
 
   const [currentTab, setCurrentTab] = useState<"table" | "grid">("table");
