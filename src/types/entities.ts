@@ -65,23 +65,46 @@ export interface TestPaper {
   notePath?: string;
 }
 
-export const testPaperSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  timeLimitMinutes: z.coerce.number().min(1, "Time limit is required"),
-  topicId: z.string().min(1, "Topic is required"),
-  isCaseStudy: z.boolean().optional(),
-  file: z
-    .any()
-    .refine((file) => file?.length === 1, "PDF file is required")
-    .refine(
-      (file) => file?.[0]?.type === "application/pdf",
-      "Only PDF files are allowed"
-    )
-    .optional(),
-  caseText: z.string().optional(),
-  notePath: z.string().optional(),
-});
+export const testPaperSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    description: z.string().optional(),
+    timeLimitMinutes: z.coerce.number().min(1, "Time limit is required"),
+    topicId: z.string().min(1, "Topic is required"),
+    isCaseStudy: z.boolean().optional(),
+    file: z.any().optional(),
+    caseText: z.string().optional(),
+    notePath: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    // Only validate `file` if isCaseStudy is true
+    if (data.isCaseStudy) {
+      if (data.file) {
+        if (data.file.length > 1) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["file"],
+            message: "Only one PDF file can be uploaded",
+          });
+        } else if (data.file[0]?.type !== "application/pdf" && !data.caseText) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["file"],
+            message: "Add 1 PDF File or Case Text",
+          });
+        }
+      }
+    } else {
+      // If not a case study, prevent file uploads
+      if (data.file && data.file.length > 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["file"],
+          message: "File upload is only allowed for case studies",
+        });
+      }
+    }
+  });
 
 export type TestPaperSchema = z.infer<typeof testPaperSchema>;
 

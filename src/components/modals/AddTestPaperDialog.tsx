@@ -77,7 +77,9 @@ export function AddTestPaperDialog({
   }, [open]);
 
   const onSubmit = async (data: TestPaperSchema) => {
-    if (data.file) {
+    console.log("Form Data: ", data);
+
+    if (data.file && data.file.length > 0 && data.isCaseStudy) {
       const pdf = await uploadNote({
         name: data.name,
         description: data.description,
