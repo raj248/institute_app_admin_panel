@@ -46,7 +46,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Topic, Topic_schema } from "@/types/entities";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { TopicGridView } from "@/components/cards/TopicGridView";
 import { AddTopicDialog } from "@/components/modals/AddTopicDialog";
@@ -78,10 +78,23 @@ export function DataTable({
     React.useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialPageIndex = Number(searchParams.get("page")) || 0;
+  const initialPageSize = Number(searchParams.get("pageSize")) || 10;
+
   const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
+    pageIndex: initialPageIndex,
+    pageSize: initialPageSize,
   });
+
+  React.useEffect(() => {
+    setSearchParams({
+      page: pagination.pageIndex.toString(),
+      pageSize: pagination.pageSize.toString(),
+    });
+  }, [pagination, setSearchParams]);
 
   const table = useReactTable({
     data: topic || [],
