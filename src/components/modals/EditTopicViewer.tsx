@@ -135,7 +135,7 @@ export function EditTopicViewer({
                 id="description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
-                className="h-28 text-sm"
+                className="h-48 text-sm"
               />
             </div>
           </div>

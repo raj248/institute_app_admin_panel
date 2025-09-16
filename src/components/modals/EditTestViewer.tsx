@@ -177,7 +177,7 @@ export function EditTestViewer({
                 id="description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
-                className="flex-1 resize-none text-sm min-h-[150px]"
+                className="flex-1 text-sm min-h-[250px]"
               />
             </div>
 
@@ -203,7 +203,7 @@ export function EditTestViewer({
                   id="caseText"
                   value={formCaseText}
                   onChange={(e) => setFormCaseText(e.target.value)}
-                  className="flex-1 resize-none text-sm min-h-[200px]"
+                  className="flex-1 text-sm min-h-[300px]"
                 />
               </div>
             )}
