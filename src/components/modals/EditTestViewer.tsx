@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -121,26 +121,23 @@ export function EditTestViewer({
         </Button>
       )}
 
-      <Drawer
-        direction={isMobile ? "bottom" : "right"}
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <DrawerContent
-          className="w-[95vw] sm:w-[600px] lg:w-[800px] max-w-none"
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side={isMobile ? "bottom" : "right"}
+          className="w-[90vw] h-full max-w-full sm:max-w-full p-6 overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >
-          <DrawerHeader className="gap-1 text-center">
-            <DrawerTitle className="text-base font-semibold">
+          <SheetHeader className="gap-1 text-center">
+            <SheetTitle className="text-base font-semibold">
               Edit Test Paper
-            </DrawerTitle>
-            <DrawerDescription className="text-xs text-muted-foreground">
+            </SheetTitle>
+            <SheetDescription className="text-xs text-muted-foreground">
               Edit the test paper details below.
-            </DrawerDescription>
-          </DrawerHeader>
+            </SheetDescription>
+          </SheetHeader>
 
-          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm max-w-lg w-full mx-auto flex-1">
+          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm w-full">
             {/* Name */}
             <div className="flex flex-col gap-1">
               <Label htmlFor="name" className="text-xs">
@@ -251,18 +248,18 @@ export function EditTestViewer({
             )}
           </div>
 
-          <DrawerFooter>
+          <SheetFooter>
             <Button onClick={handleSubmit} className="text-sm py-2 rounded-xl">
               Submit
             </Button>
-            <DrawerClose asChild>
+            <SheetClose asChild>
               <Button variant="outline" className="text-sm py-2 rounded-xl">
                 Close
               </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +19,13 @@ import { updateMCQ } from "@/lib/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { MCQ } from "@/types/entities";
 import { PenIcon } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export function EditMCQViewer({
   item,
@@ -33,9 +39,13 @@ export function EditMCQViewer({
 
   // Controlled states
   const [formQuestion, setFormQuestion] = useState(item.question);
-  const [formExplanation, setFormExplanation] = useState(item.explanation ?? "");
+  const [formExplanation, setFormExplanation] = useState(
+    item.explanation ?? ""
+  );
   const [formMarks, setFormMarks] = useState(item.marks ?? 1);
-  const [formCorrectAnswer, setFormCorrectAnswer] = useState(item.correctAnswer ?? "a");
+  const [formCorrectAnswer, setFormCorrectAnswer] = useState(
+    item.correctAnswer ?? "a"
+  );
 
   const [formOptionA, setFormOptionA] = useState(item.options?.a ?? "");
   const [formOptionB, setFormOptionB] = useState(item.options?.b ?? "");
@@ -78,45 +88,68 @@ export function EditMCQViewer({
         <span className="hidden lg:inline">Edit</span>
       </Button>
 
-      <Drawer
-        direction={isMobile ? "bottom" : "right"}
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <DrawerContent
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          className="w-[90vw] h-full max-w-full sm:max-w-full p-6 overflow-y-auto"
+          side={isMobile ? "bottom" : "right"}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >
-          <DrawerHeader className="gap-1 text-center">
-            <DrawerTitle className="text-base font-semibold">Edit MCQ</DrawerTitle>
-            <DrawerDescription className="text-xs text-muted-foreground">
+          <SheetHeader className="gap-1 text-center">
+            <SheetTitle className="text-base font-semibold">
+              Edit MCQ
+            </SheetTitle>
+            <SheetDescription className="text-xs text-muted-foreground">
               Edit the MCQ details below.
-            </DrawerDescription>
-          </DrawerHeader>
+            </SheetDescription>
+          </SheetHeader>
 
-          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm max-w-lg w-full mx-auto">
-
+          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm w-full">
             {/* Question */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="question" className="text-xs">Question</Label>
+              <Label htmlFor="question" className="text-xs">
+                Question
+              </Label>
               <Textarea
                 id="question"
                 value={formQuestion}
                 onChange={(e) => setFormQuestion(e.target.value)}
-                className="h-24 text-sm"
+                className="h-48 text-sm"
               />
             </div>
 
             {/* Options */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { id: "optionA", label: "Option A", value: formOptionA, setValue: setFormOptionA },
-                { id: "optionB", label: "Option B", value: formOptionB, setValue: setFormOptionB },
-                { id: "optionC", label: "Option C", value: formOptionC, setValue: setFormOptionC },
-                { id: "optionD", label: "Option D", value: formOptionD, setValue: setFormOptionD },
+                {
+                  id: "optionA",
+                  label: "Option A",
+                  value: formOptionA,
+                  setValue: setFormOptionA,
+                },
+                {
+                  id: "optionB",
+                  label: "Option B",
+                  value: formOptionB,
+                  setValue: setFormOptionB,
+                },
+                {
+                  id: "optionC",
+                  label: "Option C",
+                  value: formOptionC,
+                  setValue: setFormOptionC,
+                },
+                {
+                  id: "optionD",
+                  label: "Option D",
+                  value: formOptionD,
+                  setValue: setFormOptionD,
+                },
               ].map((opt) => (
                 <div key={opt.id} className="flex flex-col gap-1">
-                  <Label htmlFor={opt.id} className="text-xs">{opt.label}</Label>
+                  <Label htmlFor={opt.id} className="text-xs">
+                    {opt.label}
+                  </Label>
                   <Input
                     id={opt.id}
                     value={opt.value}
@@ -131,10 +164,14 @@ export function EditMCQViewer({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Correct Answer */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="correctAnswer" className="text-xs">Correct Answer</Label>
+                <Label htmlFor="correctAnswer" className="text-xs">
+                  Correct Answer
+                </Label>
                 <Select
                   value={formCorrectAnswer}
-                  onValueChange={(value) => setFormCorrectAnswer(value as "a" | "b" | "c" | "d")}
+                  onValueChange={(value) =>
+                    setFormCorrectAnswer(value as "a" | "b" | "c" | "d")
+                  }
                 >
                   <SelectTrigger id="correctAnswer" className="text-sm">
                     <SelectValue placeholder="Select correct option" />
@@ -150,7 +187,9 @@ export function EditMCQViewer({
 
               {/* Marks */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="marks" className="text-xs">Marks</Label>
+                <Label htmlFor="marks" className="text-xs">
+                  Marks
+                </Label>
                 <Input
                   id="marks"
                   type="number"
@@ -164,7 +203,9 @@ export function EditMCQViewer({
 
             {/* Explanation */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="explanation" className="text-xs">Explanation</Label>
+              <Label htmlFor="explanation" className="text-xs">
+                Explanation
+              </Label>
               <Textarea
                 id="explanation"
                 value={formExplanation}
@@ -174,19 +215,18 @@ export function EditMCQViewer({
             </div>
           </div>
 
-          <DrawerFooter>
+          <SheetFooter>
             <Button onClick={handleSubmit} className="text-sm py-2 rounded-xl">
               Submit
             </Button>
-            <DrawerClose asChild>
+            <SheetClose asChild>
               <Button variant="outline" className="text-sm py-2 rounded-xl">
                 Close
               </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

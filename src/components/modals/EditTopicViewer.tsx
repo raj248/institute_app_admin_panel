@@ -2,28 +2,48 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { getTopicsByCourseType, updateTopic } from "@/lib/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { Topic_schema } from "@/types/entities";
 
-export function EditTopicViewer(
-  { item, setTopics }: {
-    item: Topic_schema,
-    setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>
-  }) {
+export function EditTopicViewer({
+  item,
+  setTopics,
+}: {
+  item: Topic_schema;
+  setTopics: React.Dispatch<React.SetStateAction<Topic_schema[] | null>>;
+}) {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
 
   // Controlled form states
   const [formName, setFormName] = useState(item.name);
-  const [formDescription, setFormDescription] = useState(item.description ?? "");
-  const [formCourseType, setFormCourseType] = useState<"CAInter" | "CAFinal">(item.courseType as "CAInter" | "CAFinal");
+  const [formDescription, setFormDescription] = useState(
+    item.description ?? ""
+  );
+  const [formCourseType, setFormCourseType] = useState<"CAInter" | "CAFinal">(
+    item.courseType as "CAInter" | "CAFinal"
+  );
 
   const handleSubmit = async () => {
     const result = await updateTopic(item.id, {
@@ -35,8 +55,9 @@ export function EditTopicViewer(
     if (result.success) {
       toast.success("Topic updated");
       setOpen(false);
-      getTopicsByCourseType(item.courseType)
-        .then((res) => { setTopics(res.data ?? null) })
+      getTopicsByCourseType(item.courseType).then((res) => {
+        setTopics(res.data ?? null);
+      });
     } else {
       toast.error(result.error ?? "Failed to update topic");
     }
@@ -54,27 +75,28 @@ export function EditTopicViewer(
       >
         Edit
       </Button>
-      <Drawer
-        direction={isMobile ? "bottom" : "right"}
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <DrawerContent
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          className="w-[90vw] h-full max-w-full sm:max-w-full p-6 overflow-y-auto"
+          side={isMobile ? "bottom" : "right"}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >
-          <DrawerHeader className="gap-1 text-center">
-            <DrawerTitle className="text-base font-semibold">Edit Topic</DrawerTitle>
-            <DrawerDescription className="text-xs text-muted-foreground">
+          <SheetHeader className="gap-1 text-center">
+            <SheetTitle className="text-base font-semibold">
+              Edit Topic
+            </SheetTitle>
+            <SheetDescription className="text-xs text-muted-foreground">
               Edit the topic details below.
-            </DrawerDescription>
-          </DrawerHeader>
+            </SheetDescription>
+          </SheetHeader>
 
-          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm max-w-lg w-full mx-auto">
-
+          <div className="flex flex-col gap-3 overflow-y-auto px-4 text-sm w-full">
             {/* Name */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="name" className="text-xs">Name</Label>
+              <Label htmlFor="name" className="text-xs">
+                Name
+              </Label>
               <Input
                 id="name"
                 value={formName}
@@ -85,10 +107,14 @@ export function EditTopicViewer(
 
             {/* Course */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="course" className="text-xs">Course</Label>
+              <Label htmlFor="course" className="text-xs">
+                Course
+              </Label>
               <Select
                 value={formCourseType}
-                onValueChange={(value) => setFormCourseType(value as "CAInter" | "CAFinal")}
+                onValueChange={(value) =>
+                  setFormCourseType(value as "CAInter" | "CAFinal")
+                }
               >
                 <SelectTrigger id="course" className="text-sm">
                   <SelectValue placeholder="Select a Course" />
@@ -102,7 +128,9 @@ export function EditTopicViewer(
 
             {/* Description */}
             <div className="flex flex-col gap-1">
-              <Label htmlFor="description" className="text-xs">Description</Label>
+              <Label htmlFor="description" className="text-xs">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 value={formDescription}
@@ -112,19 +140,18 @@ export function EditTopicViewer(
             </div>
           </div>
 
-          <DrawerFooter>
+          <SheetFooter>
             <Button onClick={handleSubmit} className="text-sm py-2 rounded-xl">
               Submit
             </Button>
-            <DrawerClose asChild>
+            <SheetClose asChild>
               <Button variant="outline" className="text-sm py-2 rounded-xl">
                 Close
               </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
