@@ -9,7 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, FileSpreadsheet, FileJson, FileText, Download } from "lucide-react";
+import {
+  Loader2,
+  FileSpreadsheet,
+  FileJson,
+  FileText,
+  Download,
+} from "lucide-react";
 import { BASE_URL } from "@/lib/api";
 
 type ExportFormat = "csv" | "json" | "excel" | "word";
@@ -50,7 +56,7 @@ export default function ExportUsersButton({
 
   const buildUrl = (format: ExportFormat) => {
     // const url = new URL(baseUrl + path, typeof window !== "undefined" ? window.location.origin : "http://localhost");
-    const url = new URL(`${BASE_URL}/api/user`)
+    const url = new URL(`${BASE_URL}/api/user/export`);
     url.searchParams.set("format", format);
     if (query) {
       for (const [k, v] of Object.entries(query)) {
@@ -87,7 +93,9 @@ export default function ExportUsersButton({
 
       if (!res.ok) {
         const text = await safeText(res);
-        throw new Error(`Export failed (${res.status}): ${text || res.statusText}`);
+        throw new Error(
+          `Export failed (${res.status}): ${text || res.statusText}`
+        );
       }
 
       const blob = await res.blob();
@@ -116,7 +124,11 @@ export default function ExportUsersButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className={className} disabled={disabled || !!loading}>
+        <Button
+          variant="outline"
+          className={className}
+          disabled={disabled || !!loading}
+        >
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
