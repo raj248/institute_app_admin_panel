@@ -420,12 +420,13 @@ export async function getNewlyAddedItems(): Promise<APIResponse<NewlyAdded[]>> {
  */
 export async function addNewlyAddedItem(
   tableName: "MCQ" | "TestPaper" | "Note" | "VideoNote",
-  entityId: string
+  entityId: string,
+  silent: boolean = false
 ): Promise<APIResponse<NewlyAdded>> {
   return safeFetch<NewlyAdded>(`${BASE_URL}/api/newlyadded`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tableName, entityId }),
+    body: JSON.stringify({ tableName, entityId, silent }),
   });
 }
 

@@ -112,7 +112,7 @@ export function AddVideoNoteDialog({
 
       if (result.success) {
         if (markAsNew && result.data) {
-          await addNewlyAddedItem("VideoNote", result.data.id);
+          await addNewlyAddedItem("VideoNote", result.data.id, true);
         }
 
         toast.success("Video note added successfully!");

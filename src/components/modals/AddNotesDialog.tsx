@@ -85,7 +85,7 @@ export function AddNotesDialog({
 
       if (result.success) {
         if (markAsNew && result.data) {
-          await addNewlyAddedItem("Note", result.data.id);
+          await addNewlyAddedItem("Note", result.data.id, true);
         }
         toast.success("Note added successfully!");
         const refreshed = await getNotesByCourseType(data.courseType);
