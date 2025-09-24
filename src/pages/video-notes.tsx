@@ -25,7 +25,7 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
 
   // pagination state
   const [page, setPage] = useState(1);
-  const pageSize = 10; // 👈 how many cards per page
+  const pageSize = 12; // 👈 how many cards per page
 
   const fetchVideoDetails = async (videoNotes: VideoNote[]) => {
     if (!videoNotes || videoNotes.length === 0) return [];

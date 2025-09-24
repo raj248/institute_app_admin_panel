@@ -164,7 +164,7 @@ export default function VideoCard({
         <div className="p-3 flex flex-col gap-1 flex-1">
           <div className="flex items-center justify-between gap-2">
             {/* limit the description size */}
-            <h3 className="text-sm font-medium line-clamp-2 leading-snug h-[2.5rem]  max-w-[15vw] overflow-hidden">
+            <h3 className="text-sm font-medium line-clamp-2 leading-snug h-[2.5rem]  min-w-[15vw] max-w-[18vw] overflow-hidden">
               {video.title ?? "Untitled Video"}
             </h3>
 
