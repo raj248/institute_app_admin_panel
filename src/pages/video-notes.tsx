@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getVideoByCourse } from "@/lib/api";
@@ -7,23 +5,27 @@ import type { VideoNote } from "@/types/entities";
 import VideoCard from "@/components/cards/VideoCard";
 import { useParams } from "react-router-dom";
 import { AddVideoNoteDialog } from "@/components/modals/AddVideoNoteDialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface TopicVideosTabContentProps {
   type?: "all" | "rtp" | "mtp" | "revision" | "other";
 }
-
-// const typeLabels: Record<VideoNote["type"], string> = {
-//   mtp: "MTP",
-//   rtp: "RTP",
-//   revision: "Revision",
-//   other: "Other",
-// };
 
 export default function VideoNotes({}: TopicVideosTabContentProps) {
   const { course, type } = useParams<{ course: string; type: string }>();
 
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState<VideoNote[] | null>(null);
+
+  // pagination state
+  const [page, setPage] = useState(1);
+  const pageSize = 10; // 👈 how many cards per page
 
   const fetchVideoDetails = async (videoNotes: VideoNote[]) => {
     if (!videoNotes || videoNotes.length === 0) return [];
@@ -103,11 +105,8 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
     });
   }, [videos]);
 
-  //   const lowerFilter = globalFilter?.trim().toLowerCase();
-
-  //   const filteredVideos = (videos ?? [])
-  //     .filter((v) => filterType === "all" || v.type === filterType)
-  //     .filter((v) => v.title?.toLowerCase().includes(lowerFilter));
+  // slice videos for pagination
+  const paginatedVideos = videos?.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="space-y-4">
@@ -123,42 +122,59 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
           setVideos={setVideos}
         />
       </div>
+
       {loading ? (
         <div className="flex flex-wrap gap-4 justify-center">
           {Array.from({ length: 4 }).map((_, idx) => (
             <Skeleton key={idx} className="h-40 w-72 rounded-lg" />
           ))}
         </div>
-      ) : videos && videos?.length > 0 ? (
-        ["mtp", "rtp", "revision", "other"].map((type) => {
-          const group = videos.filter((v) => v.type === type);
-          if (videos.length === 0) return null;
-          return (
-            <div key={type} className="space-y-2 mx-2">
-              {/* <h3 className="text-sm font-semibold text-muted-foreground">
-                {typeLabels[type as VideoNote["type"]]}
-              </h3> */}
-              <div className="flex flex-wrap my-4 gap-4">
-                {group.map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    video={video}
-                    onDelete={() =>
-                      setVideos(
-                        (prev) => prev?.filter((v) => v.id !== video.id) ?? null
-                      )
-                    }
-                    onClick={() => {}}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })
+      ) : paginatedVideos && paginatedVideos.length > 0 ? (
+        <div className="flex flex-wrap my-4 gap-4">
+          {paginatedVideos.map((video) => (
+            <VideoCard
+              key={video.id}
+              video={video}
+              onDelete={() =>
+                setVideos(
+                  (prev) => prev?.filter((v) => v.id !== video.id) ?? null
+                )
+              }
+              onClick={() => {}}
+            />
+          ))}
+        </div>
       ) : (
         <p className="text-center text-muted-foreground">
-          No video notes found for this topic.
+          No video notes found.
         </p>
+      )}
+
+      {/* Pagination Controls */}
+      {videos && videos.length > pageSize && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <span className="px-2">
+                Page {page} of {Math.ceil(videos.length / pageSize)}
+              </span>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setPage((p) =>
+                    Math.min(Math.ceil(videos.length / pageSize), p + 1)
+                  )
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
     </div>
   );

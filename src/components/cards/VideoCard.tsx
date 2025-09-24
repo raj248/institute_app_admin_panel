@@ -26,7 +26,11 @@ interface VideoCardProps {
   onClick?: () => void;
 }
 
-export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) {
+export default function VideoCard({
+  video,
+  onDelete,
+  onClick,
+}: VideoCardProps) {
   const typeColors: Record<VideoNote["type"], string> = {
     mtp: "bg-blue-100 text-blue-800",
     rtp: "bg-green-100 text-green-800",
@@ -35,13 +39,16 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
   };
 
   const [loading, setLoading] = useState(false);
-  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(video.newlyAddedId);
+  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(
+    video.newlyAddedId
+  );
   const confirm = useConfirm();
 
   const handleMoveToTrash = async (id: string) => {
     const confirmed = await confirm({
       title: "Delete This Video Note?",
-      description: "This will move the video note to trash. You can restore it later if needed.",
+      description:
+        "This will move the video note to trash. You can restore it later if needed.",
       confirmText: "Yes, Delete",
       cancelText: "Cancel",
       variant: "destructive",
@@ -156,10 +163,16 @@ export default function VideoCard({ video, onDelete, onClick }: VideoCardProps) 
         )}
         <div className="p-3 flex flex-col gap-1 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-medium line-clamp-2">
+            {/* limit the description size */}
+            <h3 className="text-sm font-medium line-clamp-2 leading-snug h-[2.5rem]  max-w-[15vw] overflow-hidden">
               {video.title ?? "Untitled Video"}
             </h3>
-            <Badge className={`text-xs px-2 py-0.5 rounded ${typeColors[video.type]}`}>
+
+            <Badge
+              className={`text-xs px-2 py-0.5 rounded ${
+                typeColors[video.type]
+              }`}
+            >
               {video.type.toUpperCase()}
             </Badge>
           </div>
