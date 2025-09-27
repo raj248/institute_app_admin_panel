@@ -368,6 +368,24 @@ export async function addVideoNote(data: {
   }
 }
 
+// update video note
+export async function updateVideoNote(
+  id: string,
+  data: Partial<{
+    url: string;
+    name: string;
+    type: "rtp" | "mtp" | "revision" | "other";
+    courseType: "CAInter" | "CAFinal";
+  }>
+): Promise<APIResponse<VideoNote>> {
+  return safeFetch<VideoNote>(`${BASE_URL}/api/videonotes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+}
+
 // ------------------- Move to Trash --------------------
 
 export async function moveTopicToTrash(

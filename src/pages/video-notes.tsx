@@ -25,7 +25,7 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
 
   // pagination state
   const [page, setPage] = useState(1);
-  const pageSize = 12; // 👈 how many cards per page
+  const pageSize = 2; // 👈 how many cards per page
 
   const fetchVideoDetails = async (videoNotes: VideoNote[]) => {
     if (!videoNotes || videoNotes.length === 0) return [];
@@ -123,6 +123,7 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
         />
       </div>
 
+      {/* Video Cards */}
       {loading ? (
         <div className="flex flex-wrap gap-4 justify-center">
           {Array.from({ length: 4 }).map((_, idx) => (
@@ -140,6 +141,7 @@ export default function VideoNotes({}: TopicVideosTabContentProps) {
                   (prev) => prev?.filter((v) => v.id !== video.id) ?? null
                 )
               }
+              onRefresh={loadVideos}
               onClick={() => {}}
             />
           ))}

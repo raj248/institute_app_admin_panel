@@ -4,7 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { VideoNote } from "@/types/entities";
 import { Button } from "../ui/button";
-import { MinusCircle, MoreVertical, PlusCircle, Trash2 } from "lucide-react";
+import {
+  MinusCircle,
+  MoreVertical,
+  PenIcon,
+  PlusCircle,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import {
   addNewlyAddedItem,
@@ -19,17 +25,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { EditVideoNoteDialog } from "../modals/EditVideoNoteDialog";
 
 interface VideoCardProps {
   video: VideoNote;
   onDelete?: () => void;
   onClick?: () => void;
+  onRefresh?: () => Promise<void>;
 }
 
 export default function VideoCard({
   video,
   onDelete,
-  onClick,
+  onRefresh,
 }: VideoCardProps) {
   const typeColors: Record<VideoNote["type"], string> = {
     mtp: "bg-blue-100 text-blue-800",
@@ -95,8 +103,13 @@ export default function VideoCard({
   };
 
   return (
-    <Card
-      className="
+    <EditVideoNoteDialog
+      note={video}
+      topicId={""}
+      onRefresh={onRefresh}
+      trigger={({ open }) => (
+        <Card
+          className="
         relative group
         hover:scale-[1.02]
         rounded-xl overflow-hidden shadow-sm
@@ -104,81 +117,96 @@ export default function VideoCard({
         transition-transform duration-150 cursor-pointer
         bg-background hover:bg-accent/30
       "
-      onClick={() => {
-        onClick?.();
-        handleViewVideo(video);
-      }}
-    >
-      {/* Dropdown menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
-          >
-            <MoreVertical size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleNewlyAdded();
-            }}
-            disabled={loading}
-          >
-            {newlyAddedId ? (
-              <>
-                <MinusCircle className="mr-2 size-4" />
-                <span>Unmark Newly Added</span>
-              </>
-            ) : (
-              <>
-                <PlusCircle className="mr-2 size-4" />
-                <span>Mark as Newly Added</span>
-              </>
+          onClick={() => {
+            handleViewVideo(video);
+          }}
+        >
+          {/* Dropdown menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+              >
+                <MoreVertical size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleNewlyAdded();
+                }}
+                disabled={loading}
+              >
+                {newlyAddedId ? (
+                  <>
+                    <MinusCircle className="mr-2 size-4" />
+                    <span>Unmark Newly Added</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 size-4" />
+                    <span>Mark as Newly Added</span>
+                  </>
+                )}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  open();
+                }}
+                variant="default"
+              >
+                <PenIcon className="mr-2 size-4 text-destructive" />
+                <span>Edit</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveToTrash(video.id);
+                }}
+                variant="destructive"
+              >
+                <Trash2 className="mr-2 size-4 text-destructive" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <CardContent className="p-0 flex flex-col">
+            {video.thumbnail && (
+              <img
+                src={video.thumbnail}
+                alt={video.title ?? "Video Thumbnail"}
+                className="w-full h-48 object-cover"
+              />
             )}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveToTrash(video.id);
-            }}
-            variant="destructive"
-          >
-            <Trash2 className="mr-2 size-4 text-destructive" />
-            <span>Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <div className="p-3 flex flex-col gap-1 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                {/* limit the description size */}
+                <h3 className="text-sm font-medium line-clamp-2 leading-snug h-[2.5rem]  min-w-[15vw] max-w-[18vw] overflow-hidden">
+                  {video.title ?? "Untitled Video"}
+                </h3>
 
-      <CardContent className="p-0 flex flex-col">
-        {video.thumbnail && (
-          <img
-            src={video.thumbnail}
-            alt={video.title ?? "Video Thumbnail"}
-            className="w-full h-48 object-cover"
-          />
-        )}
-        <div className="p-3 flex flex-col gap-1 flex-1">
-          <div className="flex items-center justify-between gap-2">
-            {/* limit the description size */}
-            <h3 className="text-sm font-medium line-clamp-2 leading-snug h-[2.5rem]  min-w-[15vw] max-w-[18vw] overflow-hidden">
-              {video.title ?? "Untitled Video"}
-            </h3>
-
-            <Badge
-              className={`text-xs px-2 py-0.5 rounded ${
-                typeColors[video.type]
-              }`}
-            >
-              {video.type.toUpperCase()}
-            </Badge>
-          </div>
-          <p className="text-xs text-muted-foreground break-all">{video.url}</p>
-        </div>
-      </CardContent>
-    </Card>
+                <Badge
+                  className={`text-xs px-2 py-0.5 rounded ${
+                    typeColors[video.type]
+                  }`}
+                >
+                  {video.type.toUpperCase()}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground break-all">
+                {video.url}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    />
   );
 }
