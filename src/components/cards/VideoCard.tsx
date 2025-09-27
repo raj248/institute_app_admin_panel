@@ -160,7 +160,7 @@ export default function VideoCard({
                 }}
                 variant="default"
               >
-                <PenIcon className="mr-2 size-4 text-destructive" />
+                <PenIcon className="mr-2 size-4" />
                 <span>Edit</span>
               </DropdownMenuItem>
 
