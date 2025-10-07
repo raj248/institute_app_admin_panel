@@ -74,6 +74,7 @@ export default function Notes({}: NotesPageProps) {
             <NoteCard
               key={note.id}
               note={note}
+              onRefresh={loadNotes}
               onDelete={() =>
                 setNotes(
                   (prev) => prev?.filter((n) => n.id !== note.id) ?? null

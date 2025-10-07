@@ -289,6 +289,43 @@ export async function uploadNote(data: {
   }
 }
 
+export async function updateNote(
+  id: string,
+  data: Partial<{
+    name: string;
+    description: string;
+    courseType: "CAInter" | "CAFinal";
+    type: "rtp" | "mtp" | "other";
+  }>,
+  file?: File
+): Promise<APIResponse<Note>> {
+  const formData = new FormData();
+  if (file) formData.append("file", file);
+  if (data.name) formData.append("name", data.name);
+  if (data.type) formData.append("type", data.type);
+  if (data.description) formData.append("description", data.description);
+  if (data.courseType) formData.append("courseType", data.courseType);
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/notes/update-note/${id}`, {
+      method: "POST",
+      body: formData,
+      credentials: "include", // 👈 ADD THIS
+    });
+
+    const result = await res.json();
+    if (!res.ok || !result.success) {
+      console.error(`API error (updateNote):`, result.error ?? res.statusText);
+      return { success: false, error: result.error ?? res.statusText };
+    }
+    console.log("Result of Note Update: ", result);
+    return result;
+  } catch (error) {
+    console.error(`Fetch error (updateNote):`, error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
 export async function deleteCaseNoteByPath(
   fileUrl: string
 ): Promise<APIResponse<Note>> {

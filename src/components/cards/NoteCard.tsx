@@ -3,35 +3,61 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MinusCircle, MoreVertical, PlusCircle, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  MinusCircle,
+  MoreVertical,
+  PenIcon,
+  PlusCircle,
+  Trash2,
+} from "lucide-react";
 import { format } from "date-fns";
 import type { Note } from "@/types/entities";
 import { useState } from "react";
-import { addNewlyAddedItem, moveNoteToTrash, removeNewlyAddedItem } from "@/lib/api";
+import {
+  addNewlyAddedItem,
+  moveNoteToTrash,
+  removeNewlyAddedItem,
+} from "@/lib/api";
 import { toast } from "sonner";
 import { useConfirm } from "../modals/global-confirm-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { EditNoteDialog } from "../modals/EditNotesDialog";
 
 interface NoteCardProps {
   note: Note;
+  onRefresh?: () => Promise<void>;
   onDelete?: () => void;
   onClick?: () => void;
 }
 
-export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
+export default function NoteCard({
+  note,
+  onDelete,
+  onClick,
+  onRefresh,
+}: NoteCardProps) {
   const typeColors: Record<Note["type"], string> = {
     mtp: "bg-blue-100 text-blue-800",
     rtp: "bg-green-100 text-green-800",
     other: "bg-gray-100 text-gray-800",
   };
   const [loading, setLoading] = useState(false);
-  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(note.newlyAddedId);
+  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(
+    note.newlyAddedId
+  );
   const confirm = useConfirm();
 
   const handleMoveToTrash = async (id: string) => {
     const confirmed = await confirm({
       title: "Delete This Note?",
-      description: "This will move the note to trash. You can restore it later if needed.",
+      description:
+        "This will move the note to trash. You can restore it later if needed.",
       confirmText: "Yes, Delete",
       cancelText: "Cancel",
       variant: "destructive",
@@ -78,77 +104,102 @@ export default function NoteCard({ note, onDelete, onClick }: NoteCardProps) {
   };
 
   return (
-    <Card
-      key={note.id}
-      className="relative transition hover:shadow-md hover:shadow-primary/40 border rounded-xl mx-2 sm:mx-4 max-w-xs min-w-[220px] flex-1 group bg-background hover:bg-accent/30"
-    >
-      {/* Dropdown Menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
-          >
-            <MoreVertical size={16} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleNewlyAdded();
+    <EditNoteDialog
+      note={note}
+      refreshNotes={onRefresh}
+      trigger={({ open }) => (
+        <Card
+          key={note.id}
+          className="relative transition hover:shadow-md hover:shadow-primary/40 border rounded-xl mx-2 sm:mx-4 max-w-xs min-w-[220px] flex-1 group bg-background hover:bg-accent/30"
+        >
+          {/* Dropdown Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+              >
+                <MoreVertical size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleNewlyAdded();
+                }}
+                disabled={loading}
+              >
+                {newlyAddedId ? (
+                  <>
+                    <MinusCircle className="mr-2 size-4" />
+                    <span>Unmark Newly Added</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 size-4" />
+                    <span>Mark as Newly Added</span>
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  open();
+                }}
+                variant="default"
+              >
+                <PenIcon className="mr-2 size-4" />
+                <span>Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMoveToTrash(note.id);
+                }}
+                variant="destructive"
+              >
+                <Trash2 className="mr-2 size-4 text-destructive" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Clickable Card Area */}
+          <div
+            onClick={() => {
+              onClick?.();
+              handleViewNote(note);
             }}
-            disabled={loading}
+            className="cursor-pointer flex flex-col h-full justify-between p-4"
           >
-            {newlyAddedId ? (
-              <>
-                <MinusCircle className="mr-2 size-4" />
-                <span>Unmark Newly Added</span>
-              </>
-            ) : (
-              <>
-                <PlusCircle className="mr-2 size-4" />
-                <span>Mark as Newly Added</span>
-              </>
-            )}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMoveToTrash(note.id);
-            }}
-            variant="destructive"
-          >
-            <Trash2 className="mr-2 size-4 text-destructive" />
-            <span>Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <div className="space-y-1 text-center">
+              <CardTitle className="text-sm font-semibold text-foreground">
+                {note.name ?? "Untitled Note"}
+              </CardTitle>
+              <CardContent className="text-xs text-muted-foreground">
+                {note.description ?? <em>No description</em>}
+              </CardContent>
+            </div>
 
-      {/* Clickable Card Area */}
-      <div onClick={() => { onClick?.(); handleViewNote(note) }} className="cursor-pointer flex flex-col h-full justify-between p-4">
-        <div className="space-y-1 text-center">
-          <CardTitle className="text-sm font-semibold text-foreground">
-            {note.name ?? "Untitled Note"}
-          </CardTitle>
-          <CardContent className="text-xs text-muted-foreground">
-            {note.description ?? <em>No description</em>}
-          </CardContent>
-        </div>
+            <div className="mt-3 flex justify-center">
+              <Badge
+                className={`text-[10px] rounded-full px-2 py-0.5 ${
+                  typeColors[note.type]
+                }`}
+              >
+                {note.type.toUpperCase()}
+              </Badge>
+            </div>
 
-        <div className="mt-3 flex justify-center">
-          <Badge className={`text-[10px] rounded-full px-2 py-0.5 ${typeColors[note.type]}`}>
-            {note.type.toUpperCase()}
-          </Badge>
-        </div>
-
-        <div className="mt-2 flex justify-center gap-1 text-xs text-muted-foreground">
-          <Calendar size={14} />
-          {format(new Date(note.createdAt), "dd MMM yyyy")}
-        </div>
-      </div>
-    </Card>
-
+            <div className="mt-2 flex justify-center gap-1 text-xs text-muted-foreground">
+              <Calendar size={14} />
+              {format(new Date(note.createdAt), "dd MMM yyyy")}
+            </div>
+          </div>
+        </Card>
+      )}
+    />
   );
 }
