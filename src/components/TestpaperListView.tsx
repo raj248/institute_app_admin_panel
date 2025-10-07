@@ -11,7 +11,14 @@ import {
   flexRender,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   IconChevronLeft,
@@ -22,9 +29,16 @@ import {
 import type { TestPaper } from "@/types/entities";
 import { getTestPaperColumns } from "@/components/table-columns/test-paper-columns";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { Row } from "@/components/tables/TestPaperRow"; // adjust import path
 import { useConfirm } from "./modals/global-confirm-dialog";
+import { useSearchParams } from "react-router-dom";
 
 interface TestpaperListViewProps {
   testPapers: TestPaper[];
@@ -46,14 +60,31 @@ export default function TestpaperListView({
   const confirm = useConfirm();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialPageIndex = Number(searchParams.get("page")) || 0;
+  const initialPageSize = Number(searchParams.get("pageSize")) || 10;
+
+  const [pagination, setPagination] = React.useState({
+    pageIndex: initialPageIndex,
+    pageSize: initialPageSize,
+  });
+
+  React.useEffect(() => {
+    setSearchParams({
+      page: pagination.pageIndex.toString(),
+      pageSize: pagination.pageSize.toString(),
+    });
+  }, [pagination, setSearchParams]);
 
   const columns = getTestPaperColumns(
     handleCardClick,
     refreshPapers,
     confirm,
-    (id: string) => setPapers((prev) => prev?.filter((p) => p.id !== id) ?? null)
+    (id: string) =>
+      setPapers((prev) => prev?.filter((p) => p.id !== id) ?? null)
   );
 
   const table = useReactTable({
@@ -69,6 +100,7 @@ export default function TestpaperListView({
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
     globalFilterFn: "includesString",
+    autoResetPageIndex: false,
   });
 
   return (
@@ -82,48 +114,60 @@ export default function TestpaperListView({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
-
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map((row, index) => (
-                <Row
-                  key={row.id}
-                  row={row}
-                  index={index}
-                  onRowClick={handleCardClick}
-                />
-              ))
+              table
+                .getRowModel()
+                .rows.map((row, index) => (
+                  <Row
+                    key={row.id}
+                    row={row}
+                    index={index}
+                    onRowClick={handleCardClick}
+                  />
+                ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-6">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-6"
+                >
                   No test papers found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
-
         </Table>
       </div>
 
       <div className="flex items-center justify-between px-2">
         <div className="flex items-center gap-2">
-          <Label htmlFor="rows-per-page" className="text-sm">Rows per page</Label>
+          <Label htmlFor="rows-per-page" className="text-sm">
+            Rows per page
+          </Label>
           <Select
             value={pagination.pageSize.toString()}
-            onValueChange={(value) => setPagination({ ...pagination, pageSize: parseInt(value) })}
+            onValueChange={(value) =>
+              setPagination({ ...pagination, pageSize: parseInt(value) })
+            }
           >
             <SelectTrigger id="rows-per-page" className="w-20">
               <SelectValue placeholder={pagination.pageSize} />
             </SelectTrigger>
             <SelectContent>
               {[5, 10, 20, 30, 50].map((size) => (
-                <SelectItem key={size} value={size.toString()}>{size}</SelectItem>
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
